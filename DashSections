@@ -1,0 +1,80 @@
+.GS Codes 
+
+Main.gs - Entry point, menu creation, and navigation
+OneOnOneService.gs - Core service for session management
+TeamService.gs - Team member management and data
+ActionItemService.gs - Action item tracking and follow-ups
+ExportService.gs - Export functionality (PDF, Excel, Email)
+UtilityService.gs - Helper functions, dates, formatting, etc.
+DashboardService.gs - Dashboard data and statistics
+ConfigService.gs - System configuration and settingsCore Dashboard & Navigation
+
+
+HTMLS
+
+Dashboard - 
+dashboard.html - Main application dashboard
+
+One-on-One Notes System
+one-on-one-details.html - Detailed view of a specific session
+one-on-one-export.html - Export options for one-on-one notes
+
+Team Member Management
+add-team-member-form.html - Form to add new team members
+update-status-form.html - Update team member status
+team-view.html - View all team members
+team-member-selector.html - Component for selecting team members
+
+Manager One-on-One
+manager-one-on-one-form.html - Create/edit manager one-on-one sessions
+manager-one-on-one-notes.html - View manager one-on-one notes
+manager-one-on-one-dashboard.html - Manager one-on-one analytics
+
+General Notes
+general-note-form.html - Create general notes
+general-notes.html - View general notes
+general-notes-dashboard.html - General notes analytics
+
+Metrics Management
+metrics-form.html - Enter metrics data
+metrics-reports.html - View metrics reports
+metrics-dashboard.html - Metrics analytics dashboard
+metrics-export.html - Export metrics data
+metrics-email-config.html - Configure metrics email reports
+
+QA Reports
+qa-review-form.html - Create QA review
+qa-reports.html - View QA reports
+qa-dashboard.html - QA analytics dashboard
+qa-export.html - Export QA data
+
+Time & Schedule Management
+time-tracker.html - Time tracking form
+time-reports.html - Time tracking reports
+schedule-manager.html - Manage team schedule
+initialize-week-form.html - Initialize week in schedule (can start any day of the week as this is a 24 hr service and team members will come in at anytime) 
+schedule-reports.html - Schedule reports and analytics
+
+Task Management
+task-form.html - Create/edit tasks
+asana-task-form.html  - Create/ add asana task (TL and or Team member) 
+tasks-list.html - View and manage tasks
+
+Action Items
+action-items-form.html - Manage action items
+action-items-view.html - View action items
+action-items-reminders.html - Set reminders for action items
+
+Settings & Support
+settings.html - System settings (includes sheet validation, and html functionality validation
+help.html - Help documentation
+user-preferences.html - User-specific preferences ( Asana api information and user (team lead) information) 
+
+Reusable Components
+components/session-card.html - Reusable session card component
+components/team-member-card.html - Team member display component
+components/filters.html - Reusable filtering interface
+components/pagination.html - Pagination component
+components/action-item.html - Action item component
+components/toast-notifications.html - Toast notification system
+components/date-picker.html - Enhanced date picker
