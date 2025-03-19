@@ -1,0 +1,2095 @@
+# Enhanced Crisis Services Team Management System
+## Comprehensive Design & Implementation Guide
+
+## Executive Summary
+
+This document outlines a complete Google Apps Script-based management system specifically designed for crisis services team leaders. The system integrates counselor quality reviews, one-on-one meeting management, metrics tracking, and team coordination within a cohesive platform that supports the unique needs of crisis intervention services, particularly for LGBTQ+ support teams. This solution is designed to be duplicated and used by any team lead, with no hard-coded user information.
+
+## The Critical Role of Google Sheets in This System
+
+The Google Sheet serves as the central database for this entire system, providing several key advantages:
+
+1. **Centralized Data Repository**: All team member information, metrics, quality reviews, and one-on-one notes are stored in a structured, accessible format that can be backed up, shared, and analyzed.
+
+2. **Cross-Platform Accessibility**: Team leads can access data from any device with internet access, ensuring continuity of supervision even in a 24/7 service environment.
+
+3. **Permission-Based Security**: Confidential information about counselor performance and development can be protected through Google's robust permission system.
+
+4. **Integration Capabilities**: The system seamlessly connects with Google Calendar, Gmail, and other G Suite tools to create a comprehensive team management ecosystem.
+
+5. **Scalability**: As teams grow, the sheet-based architecture can scale to accommodate additional team members and expanded data requirements.
+
+6. **No Hard-Coded User Information**: The system is designed to be duplicated and used by any team lead, with all user information stored in the sheet rather than coded into the application.
+
+The overall system relies on a sheet structure with multiple tabs for different data categories, ensuring information is both organized and interconnected.
+
+## UI Style Implementation
+
+The system will implement a modern, professional UI style with the following characteristics:
+
+### Color Scheme
+```css
+:root {
+  /* Primary colors */
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #c7d2fe;
+  --primary-bg: #eef2ff;
+  
+  /* Secondary colors */
+  --secondary: #f43f5e;
+  --secondary-dark: #e11d48;
+  --secondary-light: #fecdd3;
+  --secondary-bg: #fff1f2;
+  
+  /* Success colors */
+  --success: #10b981;
+  --success-dark: #059669;
+  --success-light: #a7f3d0;
+  --success-bg: #ecfdf5;
+  
+  /* Warning colors */
+  --warning: #f59e0b;
+  --warning-dark: #d97706;
+  --warning-light: #fde68a;
+  --warning-bg: #fffbeb;
+  
+  /* Danger colors */
+  --danger: #ef4444;
+  --danger-dark: #dc2626;
+  --danger-light: #fca5a5;
+  --danger-bg: #fee2e2;
+  
+  /* Neutral colors */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+}
+```
+
+### Layout Structure
+- Dark sidebar with navigation sections
+- Main content area with header and container
+- Card-based content presentation
+- Responsive grid layouts
+- Standardized spacing and typography
+
+### Key Components
+- **Dashboard**: Two-panel layout with sidebar navigation and main content area
+- **Cards**: Consistent card design for metrics, sessions, and team members
+- **Tables**: Clean, readable data tables with subtle row highlighting
+- **Forms**: Structured form layouts with clear section organization
+- **Charts**: Visualization components for metrics and trends
+- **Navigation**: Intuitive hierarchical navigation system
+
+### UI Patterns
+- **Progress Indicators**: Visual feedback for completion status
+- **Filter Bars**: Consistent filtering interface across all data views
+- **Empty States**: User-friendly messaging when no data is available
+- **Loading States**: Clear loading indicators for asynchronous operations
+- **Notification System**: Toast notifications for feedback and alerts
+
+This consistent UI style will be applied across all sections to create a cohesive, professional user experience that supports the serious nature of crisis services work.
+
+## Detailed Section Implementations
+
+### 1. Dashboard Overview
+
+**Purpose**: Provide a centralized hub for team leads to monitor key metrics, upcoming sessions, action items, and team performance.
+
+**Key Components**:
+- Team performance summary with comparison to targets
+- One-on-one session calendar with upcoming meetings
+- Action item status overview
+- Quality review trends
+- Team availability visualization
+
+**Implementation Approach**:
+- Client-side data visualization using Chart.js
+- Aggregated metrics pulled from various sheets
+- Interactive calendar integration with Google Calendar
+- Custom notification system for upcoming deadlines
+
+**Importance to Crisis Services**:
+The dashboard enables team leads to quickly identify areas requiring attention in a high-stakes crisis service environment, ensuring supervisory resources are allocated to the most critical needs.
+
+**Viewing Options**:
+- Individual counselor performance view
+- Team aggregate performance view
+- Comparative analysis between team members
+- Historical trend analysis for individuals and team
+
+### 2. One-on-One Meeting Management
+
+**Purpose**: Document, track, and analyze biweekly counselor meetings with structured templates designed for crisis services supervision.
+
+**Key Components**:
+- Structured meeting template with pre/during/post sections
+- Action item tracking and follow-up
+- Performance and development documentation
+- Crisis-specific support needs assessment
+- Integration with quality review data
+- **Email follow-up functionality**
+
+**Implementation Approach**:
+- Client-side form with structured tabs
+- Dual team member selection (dropdown or manual entry)
+- Local storage for session drafts
+- Batch processing for submission
+- **Email template system with variable substitution**
+
+**Importance to Crisis Services**:
+Consistent, structured one-on-one meetings are essential for supporting counselors in emotionally demanding roles and ensuring quality of crisis intervention services.
+
+**Email Follow-Up System**:
+After completing a one-on-one session or coaching conversation, the system will provide an option to send a follow-up email to the team member. The email will:
+- Summarize key discussion points
+- Document agreed-upon action items and commitments
+- Provide links to relevant resources discussed
+- Set expectations for next steps and follow-up timeline
+- Use a professional, supportive tone aligned with crisis services values
+
+**Viewing Options**:
+- Individual counselor meeting history
+- Team-wide meeting completion rates
+- Action item status by counselor and team-wide
+
+### 3. Quality Review System
+
+**Purpose**: Evaluate counselor interactions against standardized criteria specific to crisis services and LGBTQ+ support.
+
+**Key Components**:
+- Standardized evaluation criteria
+- Scoring system with detailed notes
+- Trend analysis over time
+- Integration with development planning
+- **Email follow-up with review results and development suggestions**
+
+**Implementation Approach**:
+- Client-side scoring calculation
+- Real-time validation
+- Comprehensive note templates
+- Visualization of quality trends
+- **Customizable email template for feedback delivery**
+
+**Importance to Crisis Services**:
+Quality assurance in crisis intervention is literally life-saving. This system ensures consistent application of best practices in supporting vulnerable individuals.
+
+**Viewing Options**:
+- Individual counselor quality trends
+- Team-wide quality metrics
+- Criteria-specific performance analysis
+- Comparative ranking (for team lead view only)
+
+### 4. Team Member Management
+
+**Purpose**: Maintain comprehensive profiles of team members, track statuses, and manage team composition.
+
+**Key Components**:
+- Detailed counselor profiles
+- Status tracking (Active, Training, PTO, LOA, Disappeared,UTO)
+- Performance history
+- Development pathway tracking
+
+**Implementation Approach**:
+- Client-side filtering and sorting
+- Batch operations for multiple team members
+- Status visualization
+- Integration with Google Contacts
+
+**Importance to Crisis Services**:
+In a 24/7 crisis service, having accurate, up-to-date information about team availability and capabilities is essential for maintaining coverage and service quality.
+
+**Viewing Options**:
+- Individual team member detailed profile
+- Team roster with status indicators
+- Skills and certification mapping
+- Team composition analysis
+
+### 5. Metrics Management
+
+**Purpose**: Track and analyze individual and team performance metrics specifically tailored to crisis services.
+
+**Key Components**:
+- Individual counselor metrics
+- Team-wide performance indicators
+- Comparison to targets
+- Trend analysis
+
+**Target Metrics**:
+- **Calls Offered:** [Target: Track total volume]
+- **Calls Accepted:** [Target: Track total volume]
+- **Answer Rate:** [Target: ≥ 95%]
+- **Average Talk Time:** [Target: > 13:00 minutes]
+- **ACW (After Call Work) Percentage:** [Target: < 5 min]
+- **On Queue Percentage:** [Target: ≥ 60%]
+- **Off Queue Percentage:** [Target: < 40%]
+- **Interacting Percentage:** [Target: > 80%]
+
+**Implementation Approach**:
+- Flexible reporting periods
+- Client-side chart generation
+- Comparative analysis tools
+- Export functionality
+
+**Importance to Crisis Services**:
+Data-informed leadership is crucial in crisis services to ensure resources are properly allocated and interventions are effective.
+
+**Viewing Options**:
+- Individual performance dashboard
+- Team aggregate performance
+- Metric-specific analysis views
+- Target achievement tracking
+
+### 6. Action Item Management
+
+**Purpose**: Track development tasks, commitments, and follow-up items from one-on-one meetings and quality reviews.
+
+**Key Components**:
+- Task assignment and ownership
+- Due date tracking
+- Status updates
+- Integration with meetings
+- **Email reminders for action items**
+
+**Implementation Approach**:
+- Client-side filtering and sorting
+- Status update via drag-and-drop
+- Email reminders
+- Calendar integration
+- **Follow-up email templates for action item updates**
+
+**Importance to Crisis Services**:
+Ensuring follow-through on development commitments directly impacts service quality and counselor growth in a high-stakes environment.
+
+**Viewing Options**:
+- Individual counselor action items
+- Team-wide action item status
+- Due date-based views
+- Source-based filtering (from 1:1s, quality reviews, etc.)
+
+### 7. Coaching Conversation Tracker
+
+**Purpose**: Document coaching moments outside formal one-on-ones to capture development opportunities and growth.
+
+**Key Components**:
+- Quick conversation documentation
+- Strength/growth area categorization
+- Follow-up tracking
+- Integration with one-on-ones
+- **Email follow-up with coaching summary**
+
+**Implementation Approach**:
+- Lightweight interface for quick entry
+- Categorization system
+- Pattern recognition for development trends
+- Integration with overall development planning
+- **Customizable coaching follow-up email template**
+
+**Coaching Email Example**:
+```
+I hope this message finds you well. I wanted to follow up on our priority coaching session tonight January 23rd, to recap what we discussed and outline the steps we'll be taking together to ensure you feel supported as you grow in your role. The focus of our conversation is to align your work with our organization's mission of providing compassionate and high-quality support to every caller.
+
+During our discussion, we identified key behaviors to prioritize:
+
+1. **Call Timeliness:** Ensuring calls are answered promptly is essential to building trust and engagement. Moving forward, we'll focus on answering calls within 20 seconds to prevent delays in support.
+
+2. **Engagement in Safety Assessments:** Promptly addressing safety concerns is a cornerstone of our work. We'll work on consistently asking the initial safety question earlier in the call (within the first 5-10 minutes) and continuing to assess thoroughly as the conversation unfolds.
+
+3. **Exploring Support Needs:** Fully understanding and addressing the caller's needs—especially when specific requests arise—is critical to providing meaningful support. Strengthening these conversations will help build rapport and ensure the caller feels cared for.
+
+4. **Language and Boundaries:** Incorporating gender-neutral language consistently shows our commitment to inclusivity. Maintaining professional boundaries by avoiding personal disclosures is equally important for fostering a safe and focused environment for our callers.
+
+**Next Steps:** To help you implement these adjustments, here's our plan:
+* This week, we'll schedule a shadow session where I'll observe your calls and provide real-time feedback on timeliness, engagement, and language use. This will be a collaborative opportunity to practice and refine these behaviors.
+* I encourage you to reflect on the areas above and consider how you can adapt your approach to align with these goals before our shadow session.
+* We'll reconnect within the next week to celebrate your growth moments and address any ongoing areas for improvement as needed.
+
+I'm confident in your ability to integrate these changes and feel supported every step of the way. This process is about helping you feel more empowered in your role while continuing to deliver the best possible care to those who rely on us.
+
+Looking forward to working together and seeing your progress!
+
+Kindest,
+[Team Lead Name]
+```
+
+**Importance to Crisis Services**:
+In crisis services, coaching moments often arise from specific intervention scenarios; tracking these creates a more comprehensive development approach.
+
+**Viewing Options**:
+- Individual coaching history
+- Team-wide coaching themes
+- Growth area tracking over time
+- Strength reinforcement frequency
+
+### 8. Time Tracker for Team Lead
+
+**Purpose**: Enable team leads to monitor time spent on various leadership activities to optimize their impact.
+
+**Key Components**:
+- Activity categorization
+- Time logging
+- Analysis by category
+- Goal setting for time allocation
+
+**Implementation Approach**:
+- Simple start/stop interface
+- Automatic calculation of durations
+- Activity categorization
+- Visualization of time distribution
+
+**Importance to Crisis Services**:
+Team leads in crisis services must balance administrative duties with direct support; time tracking ensures sufficient focus on high-impact activities.
+
+**Viewing Options**:
+- Daily/weekly/monthly time distribution
+- Category comparison over time
+- Alignment with leadership priorities
+- Efficiency trend analysis
+
+### 9. Schedule Management
+
+**Purpose**: Coordinate team schedules to ensure appropriate coverage for crisis services.
+
+**Key Components**:
+- Shift assignment
+- Coverage visualization
+- Absence management
+- Integration with team member status
+
+**Implementation Approach**:
+- Calendar visualization
+- Conflict detection
+- Coverage analysis
+- Integration with Google Calendar
+
+**Importance to Crisis Services**:
+In a 24/7 crisis service, maintaining appropriate coverage is essential for responding to individuals in crisis.
+
+**Viewing Options**:
+- Individual schedule view
+- Team coverage visualization
+- Gap identification
+- Historical coverage analysis
+
+### 10. Manager-Team Lead One-on-One Template
+
+**Purpose**: Facilitate structured growth conversations between the team lead and their manager, focusing on leadership development and team performance.
+
+**Template Structure**:
+```
+# MANAGER-TEAM LEAD ONE-ON-ONE SESSION (broken into tabs)
+
+## PREPARATION
+
+### Team Status Overview
+Team Size: [Number]
+Team Composition: [Brief description]
+Current Team Challenges: [List key challenges]
+Recent Team Wins: [List recent successes]
+
+### Key Performance Indicators
+| Metric | Team Performance | Target | % of Target | Trend |
+|--------|------------------|--------|------------|-------|
+| Answer Rate | [Value] | 95% | [Value] | [↑/↓/→] |
+| Average Talk Time | [Value] | >13min | [Value] | [↑/↓/→] |
+| ACW | [Value] | <5min | [Value] | [↑/↓/→] |
+| On Queue % | [Value] | ≥60% | [Value] | [↑/↓/→] |
+| Interacting % | [Value] | >50% | [Value] | [↑/↓/→] |
+| Quality Score | [Value] | >90% | [Value] | [↑/↓/→] |
+
+### Leadership Focus Areas
+Current Leadership Priorities:
+1. [Priority 1]
+2. [Priority 2]
+3. [Priority 3]
+
+Progress on Previous Action Items:
+1. [Previous item 1] - Status: [Complete/In Progress/Blocked]
+2. [Previous item 2] - Status: [Complete/In Progress/Blocked]
+3. [Previous item 3] - Status: [Complete/In Progress/Blocked]
+
+## DURING MEETING
+
+### Team Lead Check-In
+Personal Wellbeing: [Notes on work-life balance, stress management, etc.]
+Current Satisfaction: [1-10 scale with notes]
+Support Needs: [Immediate support needs]
+
+### Team Leadership Discussion
+#### Team Performance Review
+[Notes on overall team performance trends]
+
+#### Individual Counselor Concerns
+[Notes on specific counselor situations requiring manager input]
+
+#### Team Development Strategy
+[Notes on approach to team skill development]
+
+### Leadership Development
+#### Strengths Demonstrated
+- [Specific leadership strength observed]
+- [Specific leadership strength observed]
+- [Specific leadership strength observed]
+
+#### Growth Opportunities
+- [Leadership growth area]
+- [Leadership growth area]
+- [Leadership growth area]
+
+#### Skill Development Plan
+[Notes on specific leadership skills to develop]
+
+### Strategic Alignment
+#### Organizational Priorities
+[Notes on how team efforts align with broader organizational goals]
+
+#### Resource Needs
+[Notes on resources needed to achieve goals]
+
+### Manager Feedback
+[Direct feedback from manager on team lead performance]
+
+## ACTION ITEMS & COMMITMENTS
+
+### Team Lead Commitments
+1. [Specific commitment with timeline]
+2. [Specific commitment with timeline]
+3. [Specific commitment with timeline]
+
+### Manager Commitments
+1. [Specific commitment with timeline]
+2. [Specific commitment with timeline]
+3. [Specific commitment with timeline]
+
+### Key Takeaways
+[Team lead's summary of most important insights from session]
+
+## FOLLOW-UP
+
+Next One-on-One Date: [Date]
+
+Priority Focus for Next Meeting:
+[Topic to prioritize in next session]
+
+Mid-Point Check-In: [Date/Method]
+
+## REFLECTION NOTES
+[Private notes for team lead on session effectiveness, insights gained, etc.]
+```
+
+**Implementation Approach**:
+- Structured template with preparation section
+- Integration with team metrics for data-driven discussions
+- Commitment tracking with email follow-up
+- Development planning tools
+
+**Importance to Crisis Services Leadership**:
+Team leads in crisis services face unique stressors and challenges; structured support from managers ensures they can effectively lead their teams while maintaining their own wellbeing.
+
+### 11. System Settings and Configuration
+
+**Purpose**: Allow customization of system behavior, connection to data sources, and user preferences.
+
+**Key Components**:
+- Data source configuration
+- Template customization
+- Notification preferences
+- System validation
+- Email template management
+
+**Implementation Approach**:
+- Client-side validation
+- Sheet connection testing
+- Template previews
+- User preference storage
+- Email formatting tools
+
+**Importance to Crisis Services**:
+Different crisis services have unique needs; configuration ensures the system supports specific service delivery models.
+
+## Key Template Designs
+
+### One-on-One Meeting Template (broken down into tabs)
+
+```
+# PRE-MEETING PREPARATION
+
+## Preparation Checklist
+- [ ] Review previous meeting notes
+- [ ] Check performance metrics
+- [ ] Gather relevant team/department updates
+- [ ] Prepare preliminary discussion points
+
+## Data Collection
+- [ ] Review recent call quality reports
+- [ ] Check individual performance indicators
+- [ ] Note any team-wide or individual challenges
+- [ ] Identify potential support resources
+
+## Preparation Notes
+[Document key points to address during the meeting...]
+
+# DURING MEETING (30-Minute Precision Communication)
+
+## 1. Quick Status Sync (5 Minutes)
+### What's critical to discuss today?
+[Document the counselor's top priorities for this meeting...]
+
+### Current Workload Status
+Workload Level: ○ Underutilized ○ Balanced ○ Heavy ○ Overwhelming
+
+### Immediate Blockers
+[Document any immediate obstacles preventing effective work...]
+
+### Energy/Motivation Level
+Energy Level: ○ Low ○ Moderate ○ High ○ Very High
+
+## 2. Performance Deep Dive (10 Minutes)
+### Quantitative Metrics Review
+[Document observations about call handling, complex case management, quality indicators, and comparative benchmarks...]
+
+### Qualitative Impact Assessment
+[Document most meaningful interventions, skill demonstration highlights, areas of exceptional contribution, and growth opportunities...]
+
+### Strategic Insight Capture
+[Document strengths to leverage, skill development pathways, and performance trend analysis...]
+
+## 3. Strategic Development Planning (7 Minutes)
+### Skill Mastery Mapping
+[Document current competency levels, target skill acquisitions, and learning resource identification...]
+
+### Career Trajectory Alignment
+[Document individual aspirations, organizational needs, and bridging development gaps...]
+
+### Action Development Tracker
+[Identify 2-3 specific skill development goals matched with organizational requirements and preliminary learning pathway...]
+
+## 4. Support and Resource Optimization (5 Minutes)
+### Obstacle Identification
+[Document systemic challenges, resource constraints, and potential intervention points...]
+
+### Leadership Support Calibration
+[Document immediate support needs, potential mentorship opportunities, and training/resource recommendations...]
+
+## 5. Commitment and Momentum Generation (3 Minutes)
+### Commitments Synthesis
+[Document clearly articulated action items, mutual accountability establishment, and next check-in preparation...]
+
+### Momentum Acceleration Checklist
+- [ ] Confirmed 3 specific action items
+- [ ] Established clear ownership
+- [ ] Set precise follow-up expectations
+
+# POST-MEETING FOLLOW-UP
+
+## Immediate Documentation
+- [ ] Finalize meeting notes
+- [ ] Clarify and expand on key discussion points
+- [ ] Document action items with clear ownership
+- [ ] Note any required follow-up resources
+
+## Action Item Tracking
+[List of action items with owner, due date, and status]
+
+## Continued Support Mechanisms
+- [ ] Schedule follow-up check-in points
+- [ ] Identify potential mentorship or training opportunities
+- [ ] Connect to additional resources if needed
+
+## Reflection and Improvement
+### What support did the counselor most need?
+[Document insights about counselor support needs...]
+
+### How can I better facilitate their growth?
+[Document ways to improve your coaching approach...]
+
+### Are there systemic support mechanisms we can improve?
+[Document potential improvements to systems and processes...]
+
+## Confidential Development Notes
+### Discrete observations about potential growth areas
+[Document private observations about growth areas...]
+
+### Strengths to further develop
+[Document strengths that can be further developed...]
+
+### Long-term career development insights
+[Document insights about long-term career development...]
+
+## Meeting Dates
+Meeting Date: [Date]
+Next Check-In Date: [Date]
+
+## Email Follow-Up
+□ Send follow-up email with session summary and action items
+Email Template: ○ Standard ○ Development Focus ○ Performance Review ○ Custom
+```
+
+### Quality Review Template
+
+```
+# QUALITY REVIEW EVALUATION
+
+## Counselor Information
+Counselor Name: [Name]
+Interaction Date: [Date]
+Interaction ID: [ID]
+
+## Evaluation Criteria
+Rate each area: 2 points (Fully Met), 1 point (Partially Met), 0 points (Not Met), or N/A
+
+### Call Opening
+#### Answered interaction in less than 20 seconds of joining
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Opening message completed with tact
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+### Risk Assessment
+#### SASS/Screener questions attempted at least twice (unless contact requested otherwise)
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Used creative non-judgmental empathy and built rapport
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+### Communication Skills
+#### Demonstrated active listening through reflective responses
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Used appropriate LGBTQ+ inclusive language
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Responded to emotional content with appropriate empathy
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+### Support Effectiveness
+#### Provided appropriate resources relevant to the contact's needs
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Helped identify coping strategies or action steps
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+### Call Closure
+#### Summarized key points of the interaction
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Completed closure process appropriately
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+## Overall Feedback
+[Provide comprehensive feedback about the interaction, including specific strengths and growth opportunities]
+
+## Score Calculation
+Total Points: [X] out of [Y] possible points
+Percentage Score: [Z]%
+
+## Quality Status
+○ Excellent (90-100%)
+○ Good (75-89%)
+○ Needs Improvement (<75%)
+
+## Follow-Up Actions
+- [Action item 1]
+- [Action item 2]
+- [Action item 3]
+
+## Email Follow-Up
+□ Send quality review results to counselor
+Email Template: ○ Standard ○ Development Focus ○ Recognition ○ Custom
+
+Reviewer: [Name]
+Review Date: [Date]
+```
+
+### Metrics Tracking Template with Targets
+
+```
+# PERFORMANCE METRICS TRACKING
+
+## Reporting Information
+Reporting Period: ○ Daily ○ Weekly ○ Monthly
+Period Start Date: [Date]
+Period End Date: [Date]
+Counselor Name: [Name]
+
+## Call Handling Metrics
+
+### Volume Metrics
+| Metric | Actual | Target | % of Target |
+|--------|--------|--------|------------|
+| Calls Offered | [Value] | - | - |
+| Calls Accepted | [Value] | - | - |
+| Answer Rate | [Value] | ≥ 95% | [%] |
+| Average Talk Time | [Value] | > 13:00 min | [%] |
+| ACW (After Call Work) | [Value] | < 5:00 min | [%] |
+| On Queue Percentage | [Value] | ≥ 60% | [%] |
+| Off Queue Percentage | [Value] | < 40% | [%] |
+| Interacting Percentage | [Value] | > 80% | [%] |
+
+### Quality Indicators
+| Metric | Actual | Target | % of Target |
+|--------|--------|--------|------------|
+| Risk Assessment Completion Rate (%) | [Value] | 95% | [%] |
+| Documentation Completeness Score (1-10) | [Value] | 8 | [%] |
+| Resource Connection Rate (%) | [Value] | 90% | [%] |
+| LGBTQ+ Affirming Language Score (1-10) | [Value] | 9 | [%] |
+| De-escalation Success Rate (%) | [Value] | 85% | [%] |
+
+### Development Metrics
+| Metric | Actual | Target | % of Target |
+|--------|--------|--------|------------|
+| Training Hours Completed | [Value] | 8 | [%] |
+| Peer Support Sessions Attended | [Value] | 2 | [%] |
+| New Skills Demonstrated | [Value] | 1 | [%] |
+| Knowledge Assessment Score (%) | [Value] | 85% | [%] |
+
+## Caller Demographics (Aggregate Data)
+| Demographic Category | Count | Percentage |
+|----------------------|-------|------------|
+| LGBTQ+ Youth (13-17) | [Value] | [%] |
+| LGBTQ+ Young Adults (18-24) | [Value] | [%] |
+| LGBTQ+ Adults (25+) | [Value] | [%] |
+| Allies/Family Members | [Value] | [%] |
+| Other/Not Specified | [Value] | [%] |
+
+## Key Performance Indicators Analysis
+### Strengths
+- [Identified strength based on metrics]
+- [Identified strength based on metrics]
+- [Identified strength based on metrics]
+
+### Growth Opportunities
+- [Growth area based on metrics]
+- [Growth area based on metrics]
+- [Growth area based on metrics]
+
+### Trend Analysis
+[Analysis of performance trends over time]
+
+## Additional Notes
+[Any additional context or notes about the metrics]
+
+## Next Steps
+- [Recommended action based on metrics]
+- [Recommended action based on metrics]
+- [Recommended action based on metrics]
+
+## Email Follow-Up
+□ Send metrics summary to counselor
+Email Template: ○ Standard ○ Development Focus ○ Recognition ○ Performance Improvement
+
+Recorded By: [Name]
+Date Recorded: [Date]
+```
+
+### Coaching Conversation Template
+
+```
+# COACHING CONVERSATION DOCUMENTATION
+
+## Basic Information
+Counselor Name: [Name]
+Date of Conversation: [Date]
+Duration: [Duration]
+Conversation Type: ○ Scheduled ○ Impromptu ○ Follow-up ○ Other
+
+## Conversation Context
+### Triggering Event/Situation
+[Description of what prompted the coaching conversation]
+
+### Immediate Focus
+○ Skill Development
+○ Crisis Response Strategy
+○ Emotional Support
+○ Process Clarification
+○ Boundary Setting
+○ Resource Navigation
+○ Other: [Specify]
+
+## Conversation Documentation
+
+### Current Situation Overview
+[Brief description of the situation/challenge discussed]
+
+### Counselor's Perspective
+[Summary of how the counselor views the situation]
+
+### Key Strengths Demonstrated/Identified
+- [Specific strength observed]
+- [Specific strength observed]
+- [Specific strength observed]
+
+### Growth Areas Discussed
+- [Specific growth area]
+- [Specific growth area]
+- [Specific growth area]
+
+### Coaching Approach Used
+○ Inquiry-Based
+○ Direct Guidance
+○ Collaborative Problem-Solving
+○ Reflective Practice
+○ Skill Demonstration
+○ Resource Connection
+○ Other: [Specify]
+
+### Key Discussion Points
+[Summary of the main points covered in the conversation]
+
+### Insights/Aha Moments
+[Notable realizations or breakthroughs during the conversation]
+
+## Action and Follow-Up
+
+### Immediate Next Steps
+- [Specific action agreed upon]
+- [Specific action agreed upon]
+- [Specific action agreed upon]
+
+### Resources Provided/Recommended
+- [Resource/tool/reference shared]
+- [Resource/tool/reference shared]
+- [Resource/tool/reference shared]
+
+### Follow-Up Plan
+○ One-on-One Meeting (Date: [Date])
+○ Email Check-In (Date: [Date])
+○ Observation (Date: [Date])
+○ Group Training (Date: [Date])
+○ No formal follow-up needed
+○ Other: [Specify]
+
+## Email Follow-Up
+□ Send coaching follow-up email
+Email Template: ○ Standard ○ Detailed ○ Recognition ○ Custom
+
+## Reflections for Team Lead
+
+### What Went Well in This Coaching Conversation
+[Personal reflection on effective aspects of the coaching]
+
+### What Could Be Improved Next Time
+[Personal reflection on areas to enhance in future coaching]
+
+### Patterns or Themes to Address
+[Identification of recurring themes that may need systematic attention]
+
+### Additional Notes
+[Any other relevant information or context]
+
+Documented By: [Name]
+Documentation Date: [Date]
+```
+
+### Team Lead Time Tracker Template
+
+```
+# TEAM LEAD TIME TRACKING
+
+## Session Information
+Date: [Date]
+Team Lead: [Name]
+Total Hours Worked: [Hours]
+
+## Time Allocation by Category
+
+### Direct Counselor Support
+| Activity | Time (hours) | % of Total |
+|----------|--------------|------------|
+| One-on-One Sessions | [Value] | [%] |
+| Coaching Conversations | [Value] | [%] |
+| Quality Reviews | [Value] | [%] |
+| Crisis Response Support | [Value] | [%] |
+| Team Meetings | [Value] | [%] |
+| Subtotal | [Value] | [%] |
+
+### Administrative Tasks
+| Activity | Time (hours) | % of Total |
+|----------|--------------|------------|
+| Schedule Management | [Value] | [%] |
+| Data Analysis | [Value] | [%] |
+| Report Generation | [Value] | [%] |
+| Documentation | [Value] | [%] |
+| Email/Communication | [Value] | [%] |
+| Subtotal | [Value] | [%] |
+
+### Professional Development
+| Activity | Time (hours) | % of Total |
+|----------|--------------|------------|
+| Personal Development | [Value] | [%] |
+| Training Development | [Value] | [%] |
+| Research | [Value] | [%] |
+| Industry Networking | [Value] | [%] |
+| Subtotal | [Value] | [%] |
+
+### Organizational Initiatives
+| Activity | Time (hours) | % of Total |
+|----------|--------------|------------|
+| Cross-Team Collaboration | [Value] | [%] |
+| Process Improvement | [Value] | [%] |
+| Strategic Planning | [Value] | [%] |
+| External Partnership | [Value] | [%] |
+| Subtotal | [Value] | [%] |
+
+## Time Allocation Summary
+| Category | Actual Hours | Target Hours | Variance |
+|----------|--------------|--------------|----------|
+| Direct Counselor Support | [Value] | [Value] | [Value] |
+| Administrative Tasks | [Value] | [Value] | [Value] |
+| Professional Development | [Value] | [Value] | [Value] |
+| Organizational Initiatives | [Value] | [Value] | [Value] |
+| Total | [Value] | [Value] | [Value] |
+
+## Time Allocation Analysis
+### Alignment with Priorities
+[Analysis of how time allocation aligns with current team priorities]
+
+### Efficiency Opportunities
+[Identification of activities that could be streamlined or delegated]
+
+### Adjustment Needed
+[Areas where time allocation should be shifted]
+
+## Action Plan
+- [Specific action to improve time allocation]
+- [Specific action to improve time allocation]
+- [Specific action to improve time allocation]
+
+## Notes
+[Any additional context or notes about time tracking]
+```
+
+## SpreadsheetApp.getUi() Avoidance Strategy
+
+### Key Strategies for Avoiding SpreadsheetApp.getUi()
+
+1. **Client-Side Validation**: Implement comprehensive form validation in JavaScript rather than relying on server-side alerts.
+
+2. **Custom Notification System**: Build your own toast notifications and modal dialogs within your HTML interfaces instead of using native Google dialogs.
+
+3. **Batch Processing**: Reduce server round-trips by collecting and processing multiple items in a single server call.
+
+4. **Progressive UI Feedback**: Provide immediate visual feedback without requiring server communication.
+
+5. **Dynamic Form Generation**: Generate forms on the client side based on configuration data.
+
+6. **Client-Side Data Caching**: Store frequently accessed data (like team members) in client-side cache to avoid unnecessary server calls.
+
+7. **Optimized Sheet Interactions**: Structure your server-side code to minimize processing time.
+
+### Implementation Examples
+
+#### Custom Notification System (Instead of getUi().alert())
+```javascript
+// CLIENT-SIDE NOTIFICATION
+function showCustomAlert(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <div class="toast-icon">
+      <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                        type === 'error' ? 'exclamation-circle' : 
+                        'info-circle'}"></i>
+    </div>
+    <div class="toast-message">${message}</div>
+  `;
+  
+  document.getElementById('toast-container').appendChild(toast);
+  
+  // Animate in
+  setTimeout(() => toast.classList.add('show'), 10);
+  
+  // Auto dismiss
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+```
+
+#### Client-Side Form Validation (Instead of getUi().alert())
+```javascript
+// CLIENT-SIDE VALIDATION
+function validateQualityReviewForm() {
+  const counselorName = document.getElementById('counselorName').value.trim();
+  const interactionDate = document.getElementById('interactionDate').value;
+  const errors = [];
+  
+  // Validate required fields
+  if (!counselorName) {
+    errors.push("Counselor name is required");
+    highlightField('counselorName');
+  }
+  
+  if (!interactionDate) {
+    errors.push("Interaction date is required");
+    highlightField('interactionDate');
+  }
+  
+  // Validate all criteria are rated
+  const criteriaIds = ['opening1', 'opening2', 'risk1', 'risk2', 'comm1', 'comm2', 'comm3', 
+                      'support1', 'support2', 'closure1', 'closure2'];
+  
+  criteriaIds.forEach(id => {
+    if (!document.querySelector(`input[name="${id}"]:checked`)) {
+      errors.push(`Please rate the criterion: ${getCriterionName(id)}`);
+    }
+  });
+  
+  // Display errors
+  if (errors.length > 0) {
+    showErrorToast(errors.join("<br>"));
+    return false;
+  }
+  
+  return true;
+}
+```
+
+### Email Follow-Up Implementation
+
+A key feature of this system is the ability to send follow-up emails after various interactions. Here's how it will be implemented:
+
+#### Email Template System
+```javascript
+// EMAIL TEMPLATE SYSTEM
+function generateEmailContent(templateType, sessionData, customizations = {}) {
+  let template;
+  
+  // Select base template
+  switch (templateType) {
+    case 'oneOnOne':
+      template = getOneOnOneEmailTemplate();
+      break;
+    case 'coaching':
+      template = getCoachingEmailTemplate();
+      break;
+    case 'qualityReview':
+      template = getQualityReviewEmailTemplate();
+      break;
+    case 'custom':
+      template = customizations.customTemplate || getDefaultEmailTemplate();
+      break;
+    default:
+      template = getDefaultEmailTemplate();
+  }
+  
+  // Replace variables with actual data
+  const emailContent = replacePlaceholders(template, sessionData);
+  
+  // Apply custom formatting if needed
+  return applyCustomFormatting(emailContent, customizations);
+}
+
+// Email sending function
+function sendFollowUpEmail(recipientEmail, recipientName, subject, emailContent) {
+  // Show preview to team lead first
+  showEmailPreview(recipientEmail, recipientName, subject, emailContent, () => {
+    // After approval, send the email
+    google.script.run
+      .withSuccessHandler(function(result) {
+        if (result.success) {
+          showSuccessToast("Follow-up email sent successfully");
+        } else {
+          showErrorToast("Failed to send email: " + result.error);
+        }
+      })
+      .withFailureHandler(function(error) {
+        showErrorToast("Error sending email: " + error);
+      })
+      .sendEmail(recipientEmail, subject, emailContent);
+  });
+}
+
+// Email preview modal
+function showEmailPreview(recipientEmail, recipientName, subject, emailContent, onSend) {
+  const modal = document.createElement('div');
+  modal.className = 'email-preview-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Email Preview</h3>
+        <button class="close-button">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="email-header">
+          <div><strong>To:</strong> ${recipientName} (${recipientEmail})</div>
+          <div><strong>Subject:</strong> ${subject}</div>
+        </div>
+        <div class="email-content">${emailContent}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary">Edit</button>
+        <button class="btn btn-primary">Send Email</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Animation and event listeners
+  setTimeout(() => modal.classList.add('show'), 10);
+  
+  modal.querySelector('.close-button').addEventListener('click', () => closeModal(modal));
+  modal.querySelector('.btn-secondary').addEventListener('click', () => {
+    // Open editing interface
+    showEmailEditor(recipientEmail, recipientName, subject, emailContent, onSend);
+    closeModal(modal);
+  });
+  
+  modal.querySelector('.btn-primary').addEventListener('click', () => {
+    closeModal(modal);
+    if (onSend) onSend();
+  });
+}
+```
+
+## Individual vs. Team View Implementation
+
+A critical requirement of this system is the ability to view both individual counselor data and team aggregate data. Here's how this dual-view approach will be implemented:
+
+### View Switching System
+```javascript
+// VIEW SWITCHING SYSTEM
+const viewModes = {
+  INDIVIDUAL: 'individual',
+  TEAM: 'team'
+};
+
+let currentViewMode = viewModes.TEAM;
+let selectedCounselorId = null;
+
+function switchViewMode(mode, counselorId = null) {
+  currentViewMode = mode;
+  selectedCounselorId = counselorId;
+  
+  // Update UI elements to reflect the current view
+  updateViewModeIndicators();
+  
+  // Reload data based on the current view
+  reloadDataForCurrentView();
+}
+
+function updateViewModeIndicators() {
+  // Update view mode selector
+  document.getElementById('viewModeSelector').value = currentViewMode;
+  
+  // Update counselor selector visibility
+  const counselorSelector = document.getElementById('counselorSelector');
+  counselorSelector.style.display = currentViewMode === viewModes.INDIVIDUAL ? 'block' : 'none';
+  
+  if (currentViewMode === viewModes.INDIVIDUAL) {
+    // Update counselor selection if in individual mode
+    document.getElementById('selectedCounselor').value = selectedCounselorId || '';
+    
+    // Update page title to include counselor name
+    if (selectedCounselorId) {
+      const counselorName = getCounselorName(selectedCounselorId);
+      document.getElementById('pageTitle').textContent = `${counselorName}'s Dashboard`;
+    } else {
+      document.getElementById('pageTitle').textContent = 'Individual Dashboard';
+    }
+  } else {
+    // Update page title for team view
+    document.getElementById('pageTitle').textContent = 'Team Dashboard';
+  }
+}
+
+function reloadDataForCurrentView() {
+  showLoading();
+  
+  // Prepare parameters based on current view
+  const params = {
+    viewMode: currentViewMode,
+    counselorId: selectedCounselorId,
+    // Add other necessary parameters
+  };
+  
+  // Load appropriate data
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result.success) {
+        // Update all visualizations
+        updateDashboardData(result.data);
+        hideLoading();
+      } else {
+        showError(result.error);
+        hideLoading();
+      }
+    })
+    .withFailureHandler(function(error) {
+      showError("Failed to load data: " + error);
+      hideLoading();
+    })
+    .getDashboardData(params);
+}
+```
+
+### Data Visualization for Dual Views
+```javascript
+// DATA VISUALIZATION FOR DUAL VIEWS
+function updateDashboardData(data) {
+  // Update metrics cards
+  updateMetricsCards(data.metrics);
+  
+  // Update charts with appropriate data
+  updateCharts(data.chartData);
+  
+  // Update tables
+  updateTables(data.tableData);
+  
+  // Update session information
+  updateSessionInfo(data.sessions);
+}
+
+function updateMetricsCards(metrics) {
+  // Update different metrics based on view mode
+  if (currentViewMode === viewModes.TEAM) {
+    // Team aggregate metrics
+    document.getElementById('totalCalls').textContent = metrics.totalCalls;
+    document.getElementById('answerRate').textContent = `${metrics.answerRate}%`;
+    document.getElementById('avgTalkTime').textContent = formatTime(metrics.avgTalkTime);
+    document.getElementById('teamAvailability').textContent = `${metrics.availability}%`;
+    // More team metrics...
+  } else {
+    // Individual counselor metrics
+    document.getElementById('counselorCalls').textContent = metrics.calls;
+    document.getElementById('counselorAnswerRate').textContent = `${metrics.answerRate}%`;
+    document.getElementById('counselorTalkTime').textContent = formatTime(metrics.talkTime);
+    document.getElementById('counselorAvailability').textContent = `${metrics.availability}%`;
+    // More individual metrics...
+  }
+  
+  // Update comparison to targets
+  updateTargetComparisons(metrics);
+}
+
+function updateCharts(chartData) {
+  // Clear existing charts
+  clearCharts();
+  
+  // Create appropriate charts based on view mode
+  if (currentViewMode === viewModes.TEAM) {
+    // Team charts
+    createTeamVolumeChart(chartData.volumeData);
+    createQualityDistributionChart(chartData.qualityData);
+    createTeamAvailabilityChart(chartData.availabilityData);
+  } else {
+    // Individual charts
+    createIndividualPerformanceChart(chartData.performanceData);
+    createQualityTrendChart(chartData.qualityTrendData);
+    createSkillRadarChart(chartData.skillData);
+  }
+}
+```
+
+## Important Implementation Notes
+
+1. **No Hard-Coded User Information**: This system is designed to be duplicated and used by any team lead. All user information should be stored in Google Sheets, not hard-coded in the application scripts.
+
+2. **Configuration Through Settings**: Team leads should configure the system through a settings interface, connecting to their specific Google Sheets and setting preferences.
+
+3. **Data Privacy Considerations**: Crisis services involve sensitive information. The system should implement appropriate privacy safeguards and data retention policies.
+
+4. **Performance Optimization**: Crisis services operate 24/7, so the system must be optimized for reliability and performance even with large data sets.
+
+5. **Accessibility**: The interface should be designed for accessibility, ensuring that team leads with diverse needs can effectively use the system.
+
+6. **Mobile Compatibility**: Team leads may need to access the system from mobile devices during off-hours crisis situations.
+
+7. **Email Follow-Up Capability**: Every interaction with team members (one-on-ones, quality reviews, coaching conversations) should include the option to send a follow-up email with a customizable template.
+
+8. **Dual View Implementation**: All sections must support both individual counselor views and team aggregate views to provide comprehensive supervision capabilities.
+
+## Conclusion
+
+This enhanced crisis services team management system provides a comprehensive solution for supervising crisis counselors, particularly in LGBTQ+ support contexts. By avoiding SpreadsheetApp.getUi() and implementing client-side processing where possible, the system offers a responsive, efficient interface while maintaining the data integrity and accessibility benefits of Google Sheets.
+
+The structured templates for one-on-ones, quality reviews, metrics tracking, coaching conversations, and time tracking ensure consistent documentation and analysis across all aspects of team leadership, ultimately supporting better crisis intervention services for vulnerable individuals. The inclusion of email follow-up capabilities and dual view modes further enhances the system's ability to support effective team leadership in a 24/7 crisis services environment.
+# Enhanced Crisis Services Team Management System
+## Comprehensive Design & Implementation Guide
+
+## Executive Summary
+
+This document outlines a complete Google Apps Script-based management system specifically designed for crisis services team leaders. The system integrates counselor quality reviews, one-on-one meeting management, metrics tracking, and team coordination within a cohesive platform that supports the unique needs of crisis intervention services, particularly for LGBTQ+ support teams. This solution is designed to be duplicated and used by any team lead, with no hard-coded user information.
+
+## The Critical Role of Google Sheets in This System
+
+The Google Sheet serves as the central database for this entire system, providing several key advantages:
+
+1. **Centralized Data Repository**: All team member information, metrics, quality reviews, and one-on-one notes are stored in a structured, accessible format that can be backed up, shared, and analyzed.
+
+2. **Cross-Platform Accessibility**: Team leads can access data from any device with internet access, ensuring continuity of supervision even in a 24/7 service environment.
+
+3. **Permission-Based Security**: Confidential information about counselor performance and development can be protected through Google's robust permission system.
+
+4. **Integration Capabilities**: The system seamlessly connects with Google Calendar, Gmail, and other G Suite tools to create a comprehensive team management ecosystem.
+
+5. **Scalability**: As teams grow, the sheet-based architecture can scale to accommodate additional team members and expanded data requirements.
+
+6. **No Hard-Coded User Information**: The system is designed to be duplicated and used by any team lead, with all user information stored in the sheet rather than coded into the application.
+
+The overall system relies on a sheet structure with multiple tabs for different data categories, ensuring information is both organized and interconnected.
+
+## Detailed Section Implementations
+
+### 1. Dashboard Overview
+
+**Purpose**: Provide a centralized hub for team leads to monitor key metrics, upcoming sessions, action items, and team performance.
+
+**Key Components**:
+- Team performance summary with comparison to targets
+- One-on-one session calendar with upcoming meetings
+- Action item status overview
+- Quality review trends
+- Team availability visualization
+
+**Implementation Approach**:
+- Client-side data visualization using Chart.js
+- Aggregated metrics pulled from various sheets
+- Interactive calendar integration with Google Calendar
+- Custom notification system for upcoming deadlines
+
+**Importance to Crisis Services**:
+The dashboard enables team leads to quickly identify areas requiring attention in a high-stakes crisis service environment, ensuring supervisory resources are allocated to the most critical needs.
+
+### 2. One-on-One Meeting Management
+
+**Purpose**: Document, track, and analyze biweekly counselor meetings with structured templates designed for crisis services supervision.
+
+**Key Components**:
+- Structured meeting template with pre/during/post sections
+- Action item tracking and follow-up
+- Performance and development documentation
+- Crisis-specific support needs assessment
+- Integration with quality review data
+
+**Implementation Approach**:
+- Client-side form with structured tabs
+- Dual team member selection (dropdown or manual entry)
+- Local storage for session drafts
+- Batch processing for submission
+
+**Importance to Crisis Services**:
+Consistent, structured one-on-one meetings are essential for supporting counselors in emotionally demanding roles and ensuring quality of crisis intervention services.
+
+### 3. Quality Review System
+
+**Purpose**: Evaluate counselor interactions against standardized criteria specific to crisis services and LGBTQ+ support.
+
+**Key Components**:
+- Standardized evaluation criteria
+- Scoring system with detailed notes
+- Trend analysis over time
+- Integration with development planning
+
+**Implementation Approach**:
+- Client-side scoring calculation
+- Real-time validation
+- Comprehensive note templates
+- Visualization of quality trends
+
+**Importance to Crisis Services**:
+Quality assurance in crisis intervention is literally life-saving. This system ensures consistent application of best practices in supporting vulnerable individuals.
+
+### 4. Team Member Management
+
+**Purpose**: Maintain comprehensive profiles of team members, track statuses, and manage team composition.
+
+**Key Components**:
+- Detailed counselor profiles
+- Status tracking (Active, Training, PTO, LOA)
+- Performance history
+- Development pathway tracking
+
+**Implementation Approach**:
+- Client-side filtering and sorting
+- Batch operations for multiple team members
+- Status visualization
+- Integration with Google Contacts
+
+**Importance to Crisis Services**:
+In a 24/7 crisis service, having accurate, up-to-date information about team availability and capabilities is essential for maintaining coverage and service quality.
+
+### 5. Metrics Management
+
+**Purpose**: Track and analyze individual and team performance metrics specifically tailored to crisis services.
+
+**Key Components**:
+- Individual counselor metrics
+- Team-wide performance indicators
+- Comparison to targets
+- Trend analysis
+
+**Implementation Approach**:
+- Flexible reporting periods
+- Client-side chart generation
+- Comparative analysis tools
+- Export functionality
+
+**Importance to Crisis Services**:
+Data-informed leadership is crucial in crisis services to ensure resources are properly allocated and interventions are effective.
+
+### 6. Action Item Management
+
+**Purpose**: Track development tasks, commitments, and follow-up items from one-on-one meetings and quality reviews.
+
+**Key Components**:
+- Task assignment and ownership
+- Due date tracking
+- Status updates
+- Integration with meetings
+
+**Implementation Approach**:
+- Client-side filtering and sorting
+- Status update via drag-and-drop
+- Email reminders
+- Calendar integration
+
+**Importance to Crisis Services**:
+Ensuring follow-through on development commitments directly impacts service quality and counselor growth in a high-stakes environment.
+
+### 7. Coaching Conversation Tracker
+
+**Purpose**: Document coaching moments outside formal one-on-ones to capture development opportunities and growth.
+
+**Key Components**:
+- Quick conversation documentation
+- Strength/growth area categorization
+- Follow-up tracking
+- Integration with one-on-ones
+
+**Implementation Approach**:
+- Lightweight interface for quick entry
+- Categorization system
+- Pattern recognition for development trends
+- Integration with overall development planning
+
+**Importance to Crisis Services**:
+In crisis services, coaching moments often arise from specific intervention scenarios; tracking these creates a more comprehensive development approach.
+
+### 8. Time Tracker for Team Lead
+
+**Purpose**: Enable team leads to monitor time spent on various leadership activities to optimize their impact.
+
+**Key Components**:
+- Activity categorization
+- Time logging
+- Analysis by category
+- Goal setting for time allocation
+
+**Implementation Approach**:
+- Simple start/stop interface
+- Automatic calculation of durations
+- Activity categorization
+- Visualization of time distribution
+
+**Importance to Crisis Services**:
+Team leads in crisis services must balance administrative duties with direct support; time tracking ensures sufficient focus on high-impact activities.
+
+### 9. Schedule Management
+
+**Purpose**: Coordinate team schedules to ensure appropriate coverage for crisis services.
+
+**Key Components**:
+- Shift assignment
+- Coverage visualization
+- Absence management
+- Integration with team member status
+
+**Implementation Approach**:
+- Calendar visualization
+- Conflict detection
+- Coverage analysis
+- Integration with Google Calendar
+
+**Importance to Crisis Services**:
+In a 24/7 crisis service, maintaining appropriate coverage is essential for responding to individuals in crisis.
+
+### 10. System Settings and Configuration
+
+**Purpose**: Allow customization of system behavior, connection to data sources, and user preferences.
+
+**Key Components**:
+- Data source configuration
+- Template customization
+- Notification preferences
+- System validation
+
+**Implementation Approach**:
+- Client-side validation
+- Sheet connection testing
+- Template previews
+- User preference storage
+
+**Importance to Crisis Services**:
+Different crisis services have unique needs; configuration ensures the system supports specific service delivery models.
+
+## Key Template Designs
+
+### One-on-One Meeting Template
+
+```
+# PRE-MEETING PREPARATION
+
+## Preparation Checklist
+- [ ] Review previous meeting notes
+- [ ] Check performance metrics
+- [ ] Gather relevant team/department updates
+- [ ] Prepare preliminary discussion points
+
+## Data Collection
+- [ ] Review recent call quality reports
+- [ ] Check individual performance indicators
+- [ ] Note any team-wide or individual challenges
+- [ ] Identify potential support resources
+
+## Preparation Notes
+[Document key points to address during the meeting...]
+
+# DURING MEETING (30-Minute Precision Communication)
+
+## 1. Quick Status Sync (5 Minutes)
+### What's critical to discuss today?
+[Document the counselor's top priorities for this meeting...]
+
+### Current Workload Status
+Workload Level: ○ Underutilized ○ Balanced ○ Heavy ○ Overwhelming
+
+### Immediate Blockers
+[Document any immediate obstacles preventing effective work...]
+
+### Energy/Motivation Level
+Energy Level: ○ Low ○ Moderate ○ High ○ Very High
+
+## 2. Performance Deep Dive (10 Minutes)
+### Quantitative Metrics Review
+[Document observations about call handling, complex case management, quality indicators, and comparative benchmarks...]
+
+### Qualitative Impact Assessment
+[Document most meaningful interventions, skill demonstration highlights, areas of exceptional contribution, and growth opportunities...]
+
+### Strategic Insight Capture
+[Document strengths to leverage, skill development pathways, and performance trend analysis...]
+
+## 3. Strategic Development Planning (7 Minutes)
+### Skill Mastery Mapping
+[Document current competency levels, target skill acquisitions, and learning resource identification...]
+
+### Career Trajectory Alignment
+[Document individual aspirations, organizational needs, and bridging development gaps...]
+
+### Action Development Tracker
+[Identify 2-3 specific skill development goals matched with organizational requirements and preliminary learning pathway...]
+
+## 4. Support and Resource Optimization (5 Minutes)
+### Obstacle Identification
+[Document systemic challenges, resource constraints, and potential intervention points...]
+
+### Leadership Support Calibration
+[Document immediate support needs, potential mentorship opportunities, and training/resource recommendations...]
+
+## 5. Commitment and Momentum Generation (3 Minutes)
+### Commitments Synthesis
+[Document clearly articulated action items, mutual accountability establishment, and next check-in preparation...]
+
+### Momentum Acceleration Checklist
+- [ ] Confirmed 3 specific action items
+- [ ] Established clear ownership
+- [ ] Set precise follow-up expectations
+
+# POST-MEETING FOLLOW-UP
+
+## Immediate Documentation
+- [ ] Finalize meeting notes
+- [ ] Clarify and expand on key discussion points
+- [ ] Document action items with clear ownership
+- [ ] Note any required follow-up resources
+
+## Action Item Tracking
+[List of action items with owner, due date, and status]
+
+## Continued Support Mechanisms
+- [ ] Schedule follow-up check-in points
+- [ ] Identify potential mentorship or training opportunities
+- [ ] Connect to additional resources if needed
+
+## Reflection and Improvement
+### What support did the counselor most need?
+[Document insights about counselor support needs...]
+
+### How can I better facilitate their growth?
+[Document ways to improve your coaching approach...]
+
+### Are there systemic support mechanisms we can improve?
+[Document potential improvements to systems and processes...]
+
+## Confidential Development Notes
+### Discrete observations about potential growth areas
+[Document private observations about growth areas...]
+
+### Strengths to further develop
+[Document strengths that can be further developed...]
+
+### Long-term career development insights
+[Document insights about long-term career development...]
+
+## Meeting Dates
+Meeting Date: [Date]
+Next Check-In Date: [Date]
+```
+
+### Quality Review Template
+
+```
+# QUALITY REVIEW EVALUATION
+
+## Counselor Information
+Counselor Name: [Name]
+Interaction Date: [Date]
+Interaction ID: [ID]
+
+## Evaluation Criteria
+Rate each area: 2 points (Fully Met), 1 point (Partially Met), 0 points (Not Met), or N/A
+
+### Call Opening
+#### Answered interaction in less than 20 seconds of joining
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Opening message completed with tact
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+### Risk Assessment
+#### SASS/Screener questions attempted at least twice (unless contact requested otherwise)
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Used creative non-judgmental empathy and built rapport
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+### Communication Skills
+#### Demonstrated active listening through reflective responses
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Used appropriate LGBTQ+ inclusive language
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Responded to emotional content with appropriate empathy
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+### Support Effectiveness
+#### Provided appropriate resources relevant to the contact's needs
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Helped identify coping strategies or action steps
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+### Call Closure
+#### Summarized key points of the interaction
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+#### Completed closure process appropriately
+Rating: ○ Fully Met (2) ○ Partially Met (1) ○ Not Met (0) ○ N/A
+Notes: [Notes on performance for this criterion]
+
+## Overall Feedback
+[Provide comprehensive feedback about the interaction, including specific strengths and growth opportunities]
+
+## Score Calculation
+Total Points: [X] out of [Y] possible points
+Percentage Score: [Z]%
+
+## Quality Status
+○ Excellent (90-100%)
+○ Good (75-89%)
+○ Needs Improvement (<75%)
+
+## Follow-Up Actions
+- [Action item 1]
+- [Action item 2]
+- [Action item 3]
+
+Reviewer: [Name]
+Review Date: [Date]
+```
+
+### Metrics Tracking Template with Targets
+
+```
+# PERFORMANCE METRICS TRACKING
+
+## Reporting Information
+Reporting Period: ○ Daily ○ Weekly ○ Monthly
+Period Start Date: [Date]
+Period End Date: [Date]
+Counselor Name: [Name]
+
+## Call Handling Metrics
+
+### Volume Metrics
+| Metric | Actual | Target | % of Target |
+|--------|--------|--------|------------|
+| Total Calls/Chats Handled | [Value] | 75 | [%] |
+| Average Interaction Duration (minutes) | [Value] | 18-25 | [%] |
+| Crisis Interventions | [Value] | 15 | [%] |
+| After-hours Responses | [Value] | 10 | [%] |
+
+### Quality Indicators
+| Metric | Actual | Target | % of Target |
+|--------|--------|--------|------------|
+| Risk Assessment Completion Rate (%) | [Value] | 95% | [%] |
+| Documentation Completeness Score (1-10) | [Value] | 8 | [%] |
+| Resource Connection Rate (%) | [Value] | 90% | [%] |
+| LGBTQ+ Affirming Language Score (1-10) | [Value] | 9 | [%] |
+| De-escalation Success Rate (%) | [Value] | 85% | [%] |
+
+### Development Metrics
+| Metric | Actual | Target | % of Target |
+|--------|--------|--------|------------|
+| Training Hours Completed | [Value] | 8 | [%] |
+| Peer Support Sessions Attended | [Value] | 2 | [%] |
+| New Skills Demonstrated | [Value] | 1 | [%] |
+| Knowledge Assessment Score (%) | [Value] | 85% | [%] |
+
+## Caller Demographics (Aggregate Data)
+| Demographic Category | Count | Percentage |
+|----------------------|-------|------------|
+| LGBTQ+ Youth (13-17) | [Value] | [%] |
+| LGBTQ+ Young Adults (18-24) | [Value] | [%] |
+| LGBTQ+ Adults (25+) | [Value] | [%] |
+| Allies/Family Members | [Value] | [%] |
+| Other/Not Specified | [Value] | [%] |
+
+## Key Performance Indicators Analysis
+### Strengths
+- [Identified strength based on metrics]
+- [Identified strength based on metrics]
+- [Identified strength based on metrics]
+
+### Growth Opportunities
+- [Growth area based on metrics]
+- [Growth area based on metrics]
+- [Growth area based on metrics]
+
+### Trend Analysis
+[Analysis of performance trends over time]
+
+## Additional Notes
+[Any additional context or notes about the metrics]
+
+## Next Steps
+- [Recommended action based on metrics]
+- [Recommended action based on metrics]
+- [Recommended action based on metrics]
+
+Recorded By: [Name]
+Date Recorded: [Date]
+```
+
+### Coaching Conversation Template
+
+```
+# COACHING CONVERSATION DOCUMENTATION
+
+## Basic Information
+Counselor Name: [Name]
+Date of Conversation: [Date]
+Duration: [Duration]
+Conversation Type: ○ Scheduled ○ Impromptu ○ Follow-up ○ Other
+
+## Conversation Context
+### Triggering Event/Situation
+[Description of what prompted the coaching conversation]
+
+### Immediate Focus
+○ Skill Development
+○ Crisis Response Strategy
+○ Emotional Support
+○ Process Clarification
+○ Boundary Setting
+○ Resource Navigation
+○ Other: [Specify]
+
+## Conversation Documentation
+
+### Current Situation Overview
+[Brief description of the situation/challenge discussed]
+
+### Counselor's Perspective
+[Summary of how the counselor views the situation]
+
+### Key Strengths Demonstrated/Identified
+- [Specific strength observed]
+- [Specific strength observed]
+- [Specific strength observed]
+
+### Growth Areas Discussed
+- [Specific growth area]
+- [Specific growth area]
+- [Specific growth area]
+
+### Coaching Approach Used
+○ Inquiry-Based
+○ Direct Guidance
+○ Collaborative Problem-Solving
+○ Reflective Practice
+○ Skill Demonstration
+○ Resource Connection
+○ Other: [Specify]
+
+### Key Discussion Points
+[Summary of the main points covered in the conversation]
+
+### Insights/Aha Moments
+[Notable realizations or breakthroughs during the conversation]
+
+## Action and Follow-Up
+
+### Immediate Next Steps
+- [Specific action agreed upon]
+- [Specific action agreed upon]
+- [Specific action agreed upon]
+
+### Resources Provided/Recommended
+- [Resource/tool/reference shared]
+- [Resource/tool/reference shared]
+- [Resource/tool/reference shared]
+
+### Follow-Up Plan
+○ One-on-One Meeting (Date: [Date])
+○ Email Check-In (Date: [Date])
+○ Observation (Date: [Date])
+○ Group Training (Date: [Date])
+○ No formal follow-up needed
+○ Other: [Specify]
+
+## Reflections for Team Lead
+
+### What Went Well in This Coaching Conversation
+[Personal reflection on effective aspects of the coaching]
+
+### What Could Be Improved Next Time
+[Personal reflection on areas to enhance in future coaching]
+
+### Patterns or Themes to Address
+[Identification of recurring themes that may need systematic attention]
+
+### Additional Notes
+[Any other relevant information or context]
+
+Documented By: [Name]
+Documentation Date: [Date]
+```
+
+### Team Lead Time Tracker Template
+
+```
+# TEAM LEAD TIME TRACKING
+
+## Session Information
+Date: [Date]
+Team Lead: [Name]
+Total Hours Worked: [Hours]
+
+## Time Allocation by Category
+
+### Direct Counselor Support
+| Activity | Time (hours) | % of Total |
+|----------|--------------|------------|
+| One-on-One Sessions | [Value] | [%] |
+| Coaching Conversations | [Value] | [%] |
+| Quality Reviews | [Value] | [%] |
+| Crisis Response Support | [Value] | [%] |
+| Team Meetings | [Value] | [%] |
+| Subtotal | [Value] | [%] |
+
+### Administrative Tasks
+| Activity | Time (hours) | % of Total |
+|----------|--------------|------------|
+| Schedule Management | [Value] | [%] |
+| Data Analysis | [Value] | [%] |
+| Report Generation | [Value] | [%] |
+| Documentation | [Value] | [%] |
+| Email/Communication | [Value] | [%] |
+| Subtotal | [Value] | [%] |
+
+### Professional Development
+| Activity | Time (hours) | % of Total |
+|----------|--------------|------------|
+| Personal Development | [Value] | [%] |
+| Training Development | [Value] | [%] |
+| Research | [Value] | [%] |
+| Industry Networking | [Value] | [%] |
+| Subtotal | [Value] | [%] |
+
+### Organizational Initiatives
+| Activity | Time (hours) | % of Total |
+|----------|--------------|------------|
+| Cross-Team Collaboration | [Value] | [%] |
+| Process Improvement | [Value] | [%] |
+| Strategic Planning | [Value] | [%] |
+| External Partnership | [Value] | [%] |
+| Subtotal | [Value] | [%] |
+
+## Time Allocation Summary
+| Category | Actual Hours | Target Hours | Variance |
+|----------|--------------|--------------|----------|
+| Direct Counselor Support | [Value] | [Value] | [Value] |
+| Administrative Tasks | [Value] | [Value] | [Value] |
+| Professional Development | [Value] | [Value] | [Value] |
+| Organizational Initiatives | [Value] | [Value] | [Value] |
+| Total | [Value] | [Value] | [Value] |
+
+## Time Allocation Analysis
+### Alignment with Priorities
+[Analysis of how time allocation aligns with current team priorities]
+
+### Efficiency Opportunities
+[Identification of activities that could be streamlined or delegated]
+
+### Adjustment Needed
+[Areas where time allocation should be shifted]
+
+## Action Plan
+- [Specific action to improve time allocation]
+- [Specific action to improve time allocation]
+- [Specific action to improve time allocation]
+
+## Notes
+[Any additional context or notes about time tracking]
+```
+
+## SpreadsheetApp.getUi() Avoidance Strategy
+
+### Key Strategies for Avoiding SpreadsheetApp.getUi()
+
+1. **Client-Side Validation**: Implement comprehensive form validation in JavaScript rather than relying on server-side alerts.
+
+2. **Custom Notification System**: Build your own toast notifications and modal dialogs within your HTML interfaces instead of using native Google dialogs.
+
+3. **Batch Processing**: Reduce server round-trips by collecting and processing multiple items in a single server call.
+
+4. **Progressive UI Feedback**: Provide immediate visual feedback without requiring server communication.
+
+5. **Dynamic Form Generation**: Generate forms on the client side based on configuration data.
+
+6. **Client-Side Data Caching**: Store frequently accessed data (like team members) in client-side cache to avoid unnecessary server calls.
+
+7. **Optimized Sheet Interactions**: Structure your server-side code to minimize processing time.
+
+### Implementation Examples
+
+#### Custom Notification System (Instead of getUi().alert())
+```javascript
+// CLIENT-SIDE NOTIFICATION
+function showCustomAlert(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <div class="toast-icon">
+      <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                        type === 'error' ? 'exclamation-circle' : 
+                        'info-circle'}"></i>
+    </div>
+    <div class="toast-message">${message}</div>
+  `;
+  
+  document.getElementById('toast-container').appendChild(toast);
+  
+  // Animate in
+  setTimeout(() => toast.classList.add('show'), 10);
+  
+  // Auto dismiss
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+```
+
+#### Client-Side Form Validation (Instead of getUi().alert())
+```javascript
+// CLIENT-SIDE VALIDATION
+function validateQualityReviewForm() {
+  const counselorName = document.getElementById('counselorName').value.trim();
+  const interactionDate = document.getElementById('interactionDate').value;
+  const errors = [];
+  
+  // Validate required fields
+  if (!counselorName) {
+    errors.push("Counselor name is required");
+    highlightField('counselorName');
+  }
+  
+  if (!interactionDate) {
+    errors.push("Interaction date is required");
+    highlightField('interactionDate');
+  }
+  
+  // Validate all criteria are rated
+  const criteriaIds = ['opening1', 'opening2', 'risk1', 'risk2', 'comm1', 'comm2', 'comm3', 
+                      'support1', 'support2', 'closure1', 'closure2'];
+  
+  criteriaIds.forEach(id => {
+    if (!document.querySelector(`input[name="${id}"]:checked`)) {
+      errors.push(`Please rate the criterion: ${getCriterionName(id)}`);
+    }
+  });
+  
+  // Display errors
+  if (errors.length > 0) {
+    showErrorToast(errors.join("<br>"));
+    return false;
+  }
+  
+  return true;
+}
+```
+
+## Important Implementation Notes
+
+1. **No Hard-Coded User Information**: This system is designed to be duplicated and used by any team lead. All user information should be stored in Google Sheets, not hard-coded in the application scripts.
+
+2. **Configuration Through Settings**: Team leads should configure the system through a settings interface, connecting to their specific Google Sheets and setting preferences.
+
+3. **Data Privacy Considerations**: Crisis services involve sensitive information. The system should implement appropriate privacy safeguards and data retention policies.
+
+4. **Performance Optimization**: Crisis services operate 24/7, so the system must be optimized for reliability and performance even with large data sets.
+
+5. **Accessibility**: The interface should be designed for accessibility, ensuring that team leads with diverse needs can effectively use the system.
+
+6. **Mobile Compatibility**: Team leads may need to access the system from mobile devices during off-hours crisis situations.
+
+## Conclusion
+
+This enhanced crisis services team management system provides a comprehensive solution for supervising crisis counselors, particularly in LGBTQ+ support contexts. By avoiding SpreadsheetApp.getUi() and implementing client-side processing where possible, the system offers a responsive, efficient interface while maintaining the data integrity and accessibility benefits of Google Sheets.
+
+The structured templates for one-on-ones, quality reviews, metrics tracking, coaching conversations, and time tracking ensure consistent documentation and analysis across all aspects of team leadership, ultimately supporting better crisis intervention services for vulnerable individuals.
