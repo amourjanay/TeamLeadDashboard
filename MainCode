@@ -1,0 +1,2834 @@
+/**
+ * TeamLeadDashboard - Crisis Services Team Management System
+ * Entry point, menu creation, and navigation with emojis
+ */
+
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('📊 Team Lead Dashboard')
+    .addItem('🏠 Open Dashboard', 'openDashboard')
+    .addSeparator()
+    .addSubMenu(ui.createMenu('👥 One-on-One')
+      .addItem('📝 Create Session', 'createOneOnOneSession')
+      .addItem('👁️ View Sessions', 'viewOneOnOneSessions')
+      .addItem('📤 Export Notes', 'exportOneOnOneNotes'))
+    .addSubMenu(ui.createMenu('👪 Team Management')
+      .addItem('➕ Add Team Member', 'addTeamMember')
+      .addItem('👥 View Team', 'viewTeam')
+      .addItem('🔄 Update Status', 'updateTeamMemberStatus'))
+    .addSubMenu(ui.createMenu('👤 Manager One-on-One')
+      .addItem('📝 Create Session', 'createManagerOneOnOneForm')
+      .addItem('👁️ View Notes', 'viewManagerOneOnOneNotes')
+      .addItem('📊 Dashboard', 'viewManagerOneOnOneDashboard'))
+    .addSubMenu(ui.createMenu('📝 General Notes')
+      .addItem('📝 Create Note', 'createGeneralNote')
+      .addItem('👁️ View Notes', 'viewGeneralNotes')
+      .addItem('📊 Dashboard', 'viewGeneralNotesDashboard'))
+    .addSubMenu(ui.createMenu('📈 Metrics')
+      .addItem('📝 Enter Data', 'enterMetricsData')
+      .addItem('📊 View Reports', 'viewMetricsReports')
+      .addItem('📈 Dashboard', 'viewMetricsDashboard')
+      .addItem('📤 Export Data', 'exportMetricsData')
+      .addItem('📧 Email Config', 'configureMetricsEmail'))
+    .addSubMenu(ui.createMenu('🔍 QA Reports')
+      .addItem('✅ Create Review', 'createQAReview')
+      .addItem('📋 View Reports', 'viewQAReports')
+      .addItem('📊 Dashboard', 'viewQADashboard')
+      .addItem('📤 Export Data', 'exportQAData'))
+    .addSubMenu(ui.createMenu('⏱️ Time & Schedule')
+      .addItem('⏱️ Time Tracker', 'openTimeTracker')
+      .addItem('📊 Time Reports', 'viewTimeReports')
+      .addItem('📅 Manage Schedule', 'manageSchedule')
+      .addItem('🔄 Initialize Week', 'initializeWeek')
+      .addItem('📋 Schedule Reports', 'viewScheduleReports'))
+    .addSubMenu(ui.createMenu('✅ Tasks')
+      .addItem('📝 Create Task', 'createTask')
+      .addItem('🔗 Asana Task', 'createAsanaTask')
+      .addItem('📋 View Tasks', 'viewTasks'))
+    .addSubMenu(ui.createMenu('📌 Action Items')
+      .addItem('📝 Manage Items', 'manageActionItems')
+      .addItem('👁️ View Items', 'viewActionItems')
+      .addItem('🔔 Set Reminders', 'setActionItemReminders'))
+    .addSubMenu(ui.createMenu('⚙️ Settings')
+      .addItem('🔧 System Settings', 'openSystemSettings')
+      .addItem('❓ Help', 'openHelp')
+      .addItem('📊 Error Log Viewer', 'openErrorLogViewer')
+      .addItem('👤 User Preferences', 'openUserPreferences')
+      .addItem('🐞 Debug Tool', 'openDebugTool')) // Added debug tool menu item
+    .addToUi();
+}
+
+/**
+ * Opens the dashboard HTML interface
+ */
+function openDashboard() {
+  var html = HtmlService.createTemplateFromFile('HTML/Dashboard/dashboard')
+    .evaluate()
+    .setWidth(1200)
+    .setHeight(800)
+    .setTitle('📊 Team Lead Dashboard');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📊 Team Lead Dashboard');
+}
+
+/**
+ * Include HTML templates within other HTML files
+ * @param {string} filename - Name of the HTML file to include
+ * @return {string} - Content of the HTML file
+ */
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+/**
+ * Gets the active user's email address
+ * No hard-coding of user information
+ * @return {string} - User's email
+ */
+function getUserEmail() {
+  return Session.getActiveUser().getEmail();
+}
+
+/**
+ * One-on-One Session functions
+ */
+function createOneOnOneSession() {
+  // Clear any cached session ID
+  CacheService.getUserCache().remove('currentOneOnOneSession');
+  
+  var html = HtmlService.createTemplateFromFile('HTML/OneOnOne/one-on-one-form')
+    .evaluate()
+    .setWidth(900)
+    .setHeight(700)
+    .setTitle('📝 Create One-on-One Session');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📝 Create One-on-One Session');
+}
+
+function viewOneOnOneSessions() {
+  var html = HtmlService.createTemplateFromFile('HTML/OneOnOne/one-on-one-list')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('👁️ View One-on-One Sessions');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '👁️ View One-on-One Sessions');
+}
+
+function exportOneOnOneNotes() {
+  var html = HtmlService.createTemplateFromFile('HTML/OneOnOne/one-on-one-export')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('📤 Export One-on-One Notes');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📤 Export One-on-One Notes');
+}
+
+/**
+ * Team Management functions
+ */
+function addTeamMember() {
+  var html = HtmlService.createTemplateFromFile('HTML/Team/add-team-member-form')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(500)
+    .setTitle('➕ Add Team Member');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '➕ Add Team Member');
+}
+
+function viewTeam() {
+  var html = HtmlService.createTemplateFromFile('HTML/Team/team-view')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('👥 View Team');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '👥 View Team');
+}
+
+function updateTeamMemberStatus() {
+  var html = HtmlService.createTemplateFromFile('HTML/Team/update-status-form')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('🔄 Update Team Member Status');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '🔄 Update Team Member Status');
+}
+
+/**
+ * Manager One-on-One functions
+ */
+function createManagerOneOnOneForm() {
+  var html = HtmlService.createTemplateFromFile('HTML/ManagerOneOnOne/manager-one-on-one-form')
+    .evaluate()
+    .setWidth(900)
+    .setHeight(700)
+    .setTitle('📝 Create Manager One-on-One Session');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📝 Create Manager One-on-One Session');
+}
+
+function viewManagerOneOnOneNotes() {
+  var html = HtmlService.createTemplateFromFile('HTML/ManagerOneOnOne/manager-one-on-one-notes')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('👁️ View Manager One-on-One Notes');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '👁️ View Manager One-on-One Notes');
+}
+
+function viewManagerOneOnOneDashboard() {
+  var html = HtmlService.createTemplateFromFile('HTML/ManagerOneOnOne/manager-one-on-one-dashboard')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📊 Manager One-on-One Dashboard');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📊 Manager One-on-One Dashboard');
+}
+
+/**
+ * General Notes functions
+ */
+function createGeneralNote() {
+  var html = HtmlService.createTemplateFromFile('HTML/Notes/general-note-form')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('📝 Create General Note');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📝 Create General Note');
+}
+
+function viewGeneralNotes() {
+  var html = HtmlService.createTemplateFromFile('HTML/Notes/general-notes')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('👁️ View General Notes');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '👁️ View General Notes');
+}
+
+function viewGeneralNotesDashboard() {
+  var html = HtmlService.createTemplateFromFile('HTML/Notes/general-notes-dashboard')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📊 General Notes Dashboard');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📊 General Notes Dashboard');
+}
+
+/**
+ * Metrics functions
+ */
+function enterMetricsData() {
+  var html = HtmlService.createTemplateFromFile('HTML/Metrics/metrics-form')
+    .evaluate()
+    .setWidth(900)
+    .setHeight(700)
+    .setTitle('📝 Enter Metrics Data');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📝 Enter Metrics Data');
+}
+
+function viewMetricsReports() {
+  var html = HtmlService.createTemplateFromFile('HTML/Metrics/metrics-reports')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📊 View Metrics Reports');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📊 View Metrics Reports');
+}
+
+function viewMetricsDashboard() {
+  var html = HtmlService.createTemplateFromFile('HTML/Metrics/metrics-dashboard')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📈 Metrics Dashboard');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📈 Metrics Dashboard');
+}
+
+function exportMetricsData() {
+  var html = HtmlService.createTemplateFromFile('HTML/Metrics/metrics-export')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('📤 Export Metrics Data');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📤 Export Metrics Data');
+}
+
+function configureMetricsEmail() {
+  var html = HtmlService.createTemplateFromFile('HTML/Metrics/metrics-email-config')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('📧 Configure Metrics Email');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📧 Configure Metrics Email');
+}
+
+/**
+ * QA Reports functions
+ */
+function createQAReview() {
+  var html = HtmlService.createTemplateFromFile('HTML/QA/qa-review-form')
+    .evaluate()
+    .setWidth(900)
+    .setHeight(700)
+    .setTitle('✅ Create QA Review');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '✅ Create QA Review');
+}
+
+function viewQAReports() {
+  var html = HtmlService.createTemplateFromFile('HTML/QA/qa-reports')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📋 View QA Reports');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📋 View QA Reports');
+}
+
+function viewQADashboard() {
+  var html = HtmlService.createTemplateFromFile('HTML/QA/qa-dashboard')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📊 QA Dashboard');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📊 QA Dashboard');
+}
+
+function exportQAData() {
+  var html = HtmlService.createTemplateFromFile('HTML/QA/qa-export')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('📤 Export QA Data');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📤 Export QA Data');
+}
+
+/**
+ * Time & Schedule functions
+ */
+function openTimeTracker() {
+  var html = HtmlService.createTemplateFromFile('HTML/TimeSchedule/time-tracker')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('⏱️ Time Tracker');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '⏱️ Time Tracker');
+}
+
+function viewTimeReports() {
+  var html = HtmlService.createTemplateFromFile('HTML/TimeSchedule/time-reports')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📊 Time Reports');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📊 Time Reports');
+}
+
+function manageSchedule() {
+  var html = HtmlService.createTemplateFromFile('HTML/TimeSchedule/schedule-manager')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📅 Manage Schedule');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📅 Manage Schedule');
+}
+
+function initializeWeek() {
+  var html = HtmlService.createTemplateFromFile('HTML/TimeSchedule/initialize-week-form')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('🔄 Initialize Week');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '🔄 Initialize Week');
+}
+
+function viewScheduleReports() {
+  var html = HtmlService.createTemplateFromFile('HTML/TimeSchedule/schedule-reports')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📋 Schedule Reports');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📋 Schedule Reports');
+}
+
+/**
+ * Task functions
+ */
+function createTask() {
+  var html = HtmlService.createTemplateFromFile('HTML/Tasks/task-form')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('📝 Create Task');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📝 Create Task');
+}
+
+function createAsanaTask() {
+  var html = HtmlService.createTemplateFromFile('HTML/Tasks/asana-task-form')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('🔗 Create Asana Task');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '🔗 Create Asana Task');
+}
+
+function viewTasks() {
+  var html = HtmlService.createTemplateFromFile('HTML/Tasks/tasks-list')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('📋 View Tasks');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📋 View Tasks');
+}
+
+/**
+ * Action Items functions
+ */
+function manageActionItems() {
+  var html = HtmlService.createTemplateFromFile('HTML/ActionItems/action-items-form')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('📝 Manage Action Items');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '📝 Manage Action Items');
+}
+
+function viewActionItems() {
+  var html = HtmlService.createTemplateFromFile('HTML/ActionItems/action-items-view')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(700)
+    .setTitle('👁️ View Action Items');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '👁️ View Action Items');
+}
+
+function setActionItemReminders() {
+  var html = HtmlService.createTemplateFromFile('HTML/ActionItems/action-items-reminders')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('🔔 Set Action Item Reminders');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '🔔 Set Action Item Reminders');
+}
+
+/**
+ * Settings functions
+ */
+function openSystemSettings() {
+  var html = HtmlService.createTemplateFromFile('HTML/Settings/settings')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('🔧 System Settings');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '🔧 System Settings');
+}
+
+function openHelp() {
+  var html = HtmlService.createTemplateFromFile('HTML/Settings/help')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('❓ Help');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '❓ Help');
+}
+
+function openUserPreferences() {
+  var html = HtmlService.createTemplateFromFile('HTML/Settings/user-preferences')
+    .evaluate()
+    .setWidth(600)
+    .setHeight(400)
+    .setTitle('👤 User Preferences');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, '👤 User Preferences');
+}
+
+/**
+ * Returns data for the dashboard
+ * @return {Object} - Dashboard data
+ */
+function getDashboardData() {
+  var dashboardService = getDashboardService();
+  return {
+    summary: dashboardService.getDashboardSummary(),
+    oneOnOneChartData: dashboardService.getOneOnOneChartData(),
+    teamCompositionData: dashboardService.getTeamCompositionChartData(),
+    qaChartData: dashboardService.getQualityReviewChartData(),
+    metricsChartData: dashboardService.getMetricsChartData(),
+    // Add these new properties needed by the enhanced dashboard:
+    performanceMetrics: dashboardService.getPerformanceMetrics('week'),
+    upcomingSessions: dashboardService.getUpcomingSessions(10)
+  };
+}
+
+/**
+ * Opens a page to edit an existing one-on-one session
+ * @param {String} sessionId - ID of the session to edit
+ */
+function editOneOnOneSession(sessionId) {
+  // Store the current session ID in cache for the form to retrieve
+  OneOnOneService.cacheOneOnOneSessionId(sessionId);
+  
+  var html = HtmlService.createTemplateFromFile('HTML/OneOnOne/one-on-one-form')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(800)
+    .setTitle('Edit One-on-One Session');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Edit One-on-One Session');
+}
+
+/**
+ * Opens a page to view one-on-one session details
+ * @param {String} sessionId - ID of the session to view
+ */
+function viewOneOnOneSession(sessionId) {
+  // Store the current session ID in cache for the detail page to retrieve
+  OneOnOneService.cacheOneOnOneSessionId(sessionId);
+  
+  var html = HtmlService.createTemplateFromFile('HTML/OneOnOne/one-on-one-detail')
+    .evaluate()
+    .setWidth(1000)
+    .setHeight(800)
+    .setTitle('One-on-One Session Details');
+  SpreadsheetApp.getUi().showModalDialog(html, 'One-on-One Session Details');
+}
+
+// One-on-One Service Interface Functions
+// These delegate to OneOnOneService.gs
+
+/**
+ * Gets the current user's information and formatted date
+ * @return {Object} User and date information
+ */
+function getCurrentUserAndDate() {
+  return OneOnOneService.getCurrentUserAndDate();
+}
+
+/**
+ * Gets the cached session ID
+ * @return {String} The cached session ID
+ */
+function getCachedOneOnOneSessionId() {
+  return OneOnOneService.getCachedOneOnOneSessionId();
+}
+
+/**
+ * Cache a session ID for editing
+ * @param {String} sessionId - The ID to cache
+ * @return {Boolean} Success status
+ */
+function cacheOneOnOneSessionId(sessionId) {
+  return OneOnOneService.cacheOneOnOneSessionId(sessionId);
+}
+
+/**
+ * Gets a session by ID
+ * @param {String} sessionId - The ID of the session
+ * @return {Object} The session data or null if not found
+ */
+function getOneOnOneSessionById(sessionId) {
+  return OneOnOneService.getOneOnOneSessionById(sessionId);
+}
+
+/**
+ * Creates or updates a one-on-one session record from form data
+ * @param {Object} formData - The data from the one-on-one form
+ * @return {Object} - Result with success status and message
+ */
+function createOneOnOneSessionRecord(formData) {
+  try {
+    // Your existing code to process team member and save record
+    // ...
+    
+    // IMPORTANT UPDATE: Email sending code
+    // If email should be sent
+    if (formData.sendFollowUpEmail) {
+      // Create the session data structure that EmailService requires
+      const sessionData = {
+        teamMember: formData.teamMember.email,
+        date: new Date(formData.date),
+        statusNotes: formData.statusNotes || '',
+        performanceNotes: formData.performanceNotes || '',
+        developmentNotes: formData.developmentNotes || '',
+        supportNotes: formData.supportNotes || '',
+        followUpDate: formData.followUpDate ? new Date(formData.followUpDate) : null,
+        actionItems: formData.actionItems || []
+      };
+      
+      // If email should be scheduled
+      if (formData.scheduleEmail && formData.scheduledTime) {
+        // Get the EmailService and schedule the email
+        const scheduledTime = new Date(formData.scheduledTime);
+        const emailId = scheduleOneOnOneEmail(sessionData, scheduledTime);
+        
+        Logger.log('Email scheduled with ID: ' + emailId);
+      } else {
+        // Get the EmailService and send immediately 
+        const emailService = getEmailService();
+        const result = emailService.sendOneOnOneFollowUp(sessionData);
+        
+        Logger.log('Email sent: ' + result);
+      }
+    }
+    
+    return { success: true, message: 'Session saved successfully' };
+  } catch(e) {
+    Logger.log('Error in createOneOnOneSessionRecord: ' + e.toString());
+    return { success: false, message: e.toString() };
+  }
+}
+
+/**
+ * Gets all one-on-one sessions
+ * @param {Object} options - Optional filter options
+ * @return {Array} List of sessions
+ */
+function getOneOnOneSessions(options = {}) {
+  return OneOnOneService.getOneOnOneSessions(options);
+}
+
+/**
+ * Gets the list of team members
+ * @param {Boolean} activeOnly - If true, only return active members
+ * @return {Array} List of team members
+ */
+function getTeamMembers(activeOnly = true) {
+  return OneOnOneService.getTeamMembers(activeOnly);
+}
+
+/**
+ * Creates a new team member
+ * @param {Object} memberData - The team member data
+ * @return {Boolean} Success status
+ */
+function createTeamMember(memberData) {
+  return OneOnOneService.createTeamMember(memberData);
+}
+
+/**
+ * Gets team member name from email
+ * @param {String} email - The team member's email
+ * @return {String} The team member's name or email username if not found
+ */
+function getTeamMemberNameFromEmail(email) {
+  return OneOnOneService.getTeamMemberNameFromEmail(email);
+}
+
+/**
+ * Deletes a one-on-one session
+ * @param {String} sessionId - The ID of the session to delete
+ * @return {Object} Result info
+ */
+function deleteOneOnOneSession(sessionId) {
+  return OneOnOneService.deleteOneOnOneSession(sessionId);
+}
+
+/**
+ * Sends a follow-up email for a one-on-one session
+ * @param {Object} sessionData - The session data with email info
+ * @param {String} recipientEmail - The email to send to
+ * @param {String} recipientName - The recipient's name
+ * @return {Boolean} Success status
+ */
+function sendOneOnOneFollowupEmail(sessionData, recipientEmail, recipientName) {
+  return OneOnOneService.sendOneOnOneFollowupEmail(sessionData, recipientEmail, recipientName);
+}
+
+/**
+ * Gets statistics about one-on-one sessions
+ * @param {Object} options - Optional filter options
+ * @return {Object} Statistics data
+ */
+function getOneOnOneStats(options = {}) {
+  return OneOnOneService.getOneOnOneStats(options);
+}
+
+/**
+ * Exports one-on-one sessions to a spreadsheet
+ * @param {Object} filters - Optional filter criteria
+ * @return {String} - URL of the exported spreadsheet
+ */
+function exportOneOnOneSessions(filters) {
+  return OneOnOneService.exportOneOnOneSessions(filters);
+}
+
+/**
+ * Opens the debug tool to help diagnose issues
+ */
+function openDebugTool() {
+  var html = HtmlService.createHtmlOutput(`
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <base target="_top">
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      h1 { color: #333; }
+      pre { background-color: #f5f5f5; padding: 8px; border-radius: 4px; overflow: auto; max-height: 300px; }
+      button { padding: 8px 12px; margin: 5px; background-color: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; }
+      .success { background-color: #0f9d58; }
+      .warning { background-color: #f4b400; }
+      .error { background-color: #db4437; }
+      .box { border: 1px solid #ddd; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>Debug Tool</h1>
+    
+    <div class="box">
+      <h3>Team Members</h3>
+      <button onclick="testTeamMembers()">Test getTeamMembers()</button>
+      <button onclick="addTestTeamMember()" class="success">Add Test Team Member</button>
+      <div id="teamResults"></div>
+    </div>
+    
+    <div class="box">
+      <h3>One-on-One Sessions</h3>
+      <button onclick="testSessions()">Test getOneOnOneSessions()</button>
+      <button onclick="addTestSession()" class="success">Add Test Session</button>
+      <div id="sessionResults"></div>
+    </div>
+    
+    <div class="box">
+      <h3>Spreadsheet Data</h3>
+      <button onclick="checkSheets()" class="warning">Check Sheets</button>
+      <div id="sheetResults"></div>
+    </div>
+    
+    <script>
+      function testTeamMembers() {
+        document.getElementById('teamResults').innerHTML = 'Loading...';
+        
+        google.script.run
+          .withSuccessHandler(function(members) {
+            let html = '<p>Found ' + members.length + ' team members</p>';
+            html += '<pre>' + JSON.stringify(members, null, 2) + '</pre>';
+            document.getElementById('teamResults').innerHTML = html;
+          })
+          .withFailureHandler(function(error) {
+            document.getElementById('teamResults').innerHTML = '<p style="color:red">Error: ' + error + '</p>';
+          })
+          .getTeamMembers();
+      }
+      
+      function addTestTeamMember() {
+        document.getElementById('teamResults').innerHTML = 'Adding test member...';
+        
+        const testMember = {
+          email: 'test_' + new Date().getTime() + '@example.com',
+          firstName: 'Test',
+          lastName: 'User' + Math.floor(Math.random() * 100),
+          role: 'Test Member',
+          status: 'Active'
+        };
+        
+        google.script.run
+          .withSuccessHandler(function(result) {
+            document.getElementById('teamResults').innerHTML = '<p style="color:green">Test member added successfully!</p>';
+            setTimeout(testTeamMembers, 1000);
+          })
+          .withFailureHandler(function(error) {
+            document.getElementById('teamResults').innerHTML = '<p style="color:red">Error: ' + error + '</p>';
+          })
+          .createTeamMember(testMember);
+      }
+      
+      function testSessions() {
+        document.getElementById('sessionResults').innerHTML = 'Loading...';
+        
+        google.script.run
+          .withSuccessHandler(function(sessions) {
+            let html = '<p>Found ' + sessions.length + ' one-on-one sessions</p>';
+            html += '<pre>' + JSON.stringify(sessions, null, 2) + '</pre>';
+            document.getElementById('sessionResults').innerHTML = html;
+          })
+          .withFailureHandler(function(error) {
+            document.getElementById('sessionResults').innerHTML = '<p style="color:red">Error: ' + error + '</p>';
+          })
+          .getOneOnOneSessions();
+      }
+      
+      function addTestSession() {
+        document.getElementById('sessionResults').innerHTML = 'Creating test session...';
+        
+        // First get a team member email to use
+        google.script.run
+          .withSuccessHandler(function(members) {
+            if (members.length === 0) {
+              // No members, let's add one first
+              addTestTeamMember();
+              document.getElementById('sessionResults').innerHTML = '<p>No team members found. Adding a test member first. Please try again in a moment.</p>';
+              return;
+            }
+            
+            // Create session with first team member
+            const testSession = {
+              teamMember: { email: members[0].email },
+              date: new Date().toISOString(),
+              location: 'Test Location',
+              prepNotes: 'Test preparation notes',
+              actionItems: ['Test action item 1', 'Test action item 2']
+            };
+            
+            google.script.run
+              .withSuccessHandler(function(result) {
+                document.getElementById('sessionResults').innerHTML = '<p style="color:green">Test session created successfully!</p>';
+                setTimeout(testSessions, 1000);
+              })
+              .withFailureHandler(function(error) {
+                document.getElementById('sessionResults').innerHTML = '<p style="color:red">Error: ' + error + '</p>';
+              })
+              .createOneOnOneSessionRecord(testSession);
+          })
+          .withFailureHandler(function(error) {
+            document.getElementById('sessionResults').innerHTML = '<p style="color:red">Error getting team members: ' + error + '</p>';
+          })
+          .getTeamMembers();
+      }
+      
+      function checkSheets() {
+        document.getElementById('sheetResults').innerHTML = 'Checking spreadsheet...';
+        
+        google.script.run
+          .withSuccessHandler(function(results) {
+            let html = '<h4>Sheet Information:</h4>';
+            html += '<pre>' + JSON.stringify(results, null, 2) + '</pre>';
+            document.getElementById('sheetResults').innerHTML = html;
+          })
+          .withFailureHandler(function(error) {
+            document.getElementById('sheetResults').innerHTML = '<p style="color:red">Error: ' + error + '</p>';
+          })
+          .getSpreadsheetInfo();
+      }
+    </script>
+  </body>
+  </html>
+  `)
+  .setWidth(800)
+  .setHeight(600)
+  .setTitle('Debug Tool');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, 'Debug Tool');
+}
+
+/**
+ * Gets spreadsheet information for debugging
+ */
+function getSpreadsheetInfo() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheets = ss.getSheets();
+    
+    var result = {
+      spreadsheetName: ss.getName(),
+      spreadsheetUrl: ss.getUrl(),
+      sheets: []
+    };
+    
+    for (var i = 0; i < sheets.length; i++) {
+      var sheet = sheets[i];
+      result.sheets.push({
+        name: sheet.getName(),
+        rows: sheet.getLastRow(),
+        columns: sheet.getLastColumn(),
+        hasData: sheet.getLastRow() > 0
+      });
+    }
+    
+    return result;
+  } catch(e) {
+    return { error: e.toString() };
+  }
+}
+
+/**
+ * Gets system information including version and last updated date
+ * @return {Object} - System information
+ */
+function getSystemInfo() {
+  // Get the current date/time dynamically
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+  const day = now.getUTCDate().toString().padStart(2, '0');
+  const hours = now.getUTCHours().toString().padStart(2, '0');
+  const minutes = now.getUTCMinutes().toString().padStart(2, '0');
+  const seconds = now.getUTCSeconds().toString().padStart(2, '0');
+
+  return {
+    version: '1.0.0',
+    lastUpdated: `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`,
+    currentUser: Session.getActiveUser().getEmail() || '',
+    timeZone: Session.getScriptTimeZone()
+  };
+}
+
+/**
+ * Formats a date based on user preferences or defaults to ISO format
+ * @param {Date|String} date - The date to format
+ * @param {String} formatType - Type of format to apply (default, short, long, etc.)
+ * @return {String} - Formatted date string
+ */
+function formatDate(date, formatType = 'default') {
+  if (!date) return '';
+  
+  try {
+    const dateObj = new Date(date);
+    
+    switch(formatType) {
+      case 'short':
+        return Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'MM/dd/yyyy');
+      case 'long':
+        return Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'MMMM d, yyyy');
+      case 'time':
+        return Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'h:mm a');
+      case 'datetime':
+        return Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'MM/dd/yyyy h:mm a');
+      case 'iso':
+        return dateObj.toISOString();
+      case 'utc':
+        const year = dateObj.getUTCFullYear();
+        const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
+        const day = dateObj.getUTCDate().toString().padStart(2, '0');
+        const hours = dateObj.getUTCHours().toString().padStart(2, '0');
+        const minutes = dateObj.getUTCMinutes().toString().padStart(2, '0');
+        const seconds = dateObj.getUTCSeconds().toString().padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      default:
+        return Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+    }
+  } catch(e) {
+    Logger.log('Error formatting date: ' + e.toString());
+    return date.toString();
+  }
+}
+
+/**
+ * Helper function to check if two dates are the same day
+ * @param {Date|String} date1 - First date
+ * @param {Date|String} date2 - Second date
+ * @return {Boolean} - True if dates are on the same day
+ */
+function isSameDay(date1, date2) {
+  if (!date1 || !date2) return false;
+  date1 = new Date(date1);
+  date2 = new Date(date2);
+  return date1.getFullYear() === date2.getFullYear() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getDate() === date2.getDate();
+}
+
+/**
+ * Extracts data from a sheet and returns it as an array of objects
+ * @param {String} sheetName - Name of the sheet to get data from
+ * @param {Boolean} includeHeaders - Whether to include headers in the result
+ * @return {Array} Array of objects with property names matching sheet headers
+ */
+function getSheetDataAsObjects(sheetName, includeHeaders = false) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(sheetName);
+    
+    if (!sheet) {
+      throw new Error(`Sheet "${sheetName}" not found`);
+    }
+    
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) { // Only headers or empty
+      return includeHeaders ? [data[0]] : [];
+    }
+    
+    const headers = data[0];
+    const result = [];
+    
+    // Add headers if requested
+    if (includeHeaders) {
+      result.push(headers);
+    }
+    
+    // Create objects from rows
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const obj = {};
+      
+      for (let j = 0; j < headers.length; j++) {
+        obj[headers[j]] = row[j];
+      }
+      
+      result.push(obj);
+    }
+    
+    return result;
+  } catch(e) {
+    Logger.log('Error getting sheet data: ' + e.toString());
+    return [];
+  }
+}
+
+/**
+ * Sends reminder emails for upcoming one-on-one sessions
+ * Can be configured as a time-based trigger
+ * @param {Number} daysAhead - Number of days ahead to check for sessions
+ * @return {Object} Result with count of reminders sent
+ */
+function sendOneOnOneReminders(daysAhead = 2) {
+  return OneOnOneService.sendOneOnOneReminders(daysAhead);
+}
+
+/**
+ * Creates a time-based trigger to send one-on-one reminders
+ * @param {Number} hour - Hour of the day to run (0-23)
+ * @param {Number} minute - Minute of the hour to run (0-59)
+ * @param {Number} daysAhead - Number of days ahead to check for sessions 
+ * @return {Object} Result with trigger ID
+ */
+function createOneOnOneReminderTrigger(hour = 9, minute = 0, daysAhead = 2) {
+  return OneOnOneService.createOneOnOneReminderTrigger(hour, minute, daysAhead);
+}
+
+/**
+ * Deletes existing one-on-one reminder triggers
+ * @return {Object} Result with count of triggers deleted
+ */
+function deleteOneOnOneReminderTrigger() {
+  return OneOnOneService.deleteOneOnOneReminderTrigger();
+}
+/**
+ * Completes a one-on-one session
+ * @param {String} sessionId - ID of session to mark as completed
+ * @return {Object} Result with success status
+ */
+function completeOneOnOneSession(sessionId) {
+  return OneOnOneService.completeOneOnOneSession(sessionId);
+}
+
+
+/**
+ * Gets metrics for one-on-one sessions
+ * @return {Object} Metrics data
+ */
+function getOneOnOneMetrics() {
+  return OneOnOneService.getOneOnOneMetrics();
+}
+
+/**
+ * Retrieves a one-on-one note by ID
+ * @param {string} noteId - The ID of the note to retrieve
+ * @param {boolean} showLoadingIndicator - Whether to show loading indicator
+ * @returns {Promise} Promise that resolves with the note data or rejects with error
+ */
+function getOneOnOneNote(noteId, showLoadingIndicator = true) {
+  return new Promise((resolve, reject) => {
+    if (!noteId) {
+      reject(new Error('Note ID is required'));
+      return;
+    }
+    
+    // Show loading indicator
+    if (showLoadingIndicator) {
+      // Try different methods to show loading based on which view we're in
+      if (typeof showLoading === 'function') {
+        showLoading(true);
+      } else if (document.getElementById('loading-overlay')) {
+        document.getElementById('loading-overlay').style.display = 'flex';
+      }
+    }
+    
+    // Call server-side function
+    google.script.run
+      .withSuccessHandler(function(result) {
+        // Hide loading indicator
+        if (showLoadingIndicator) {
+          if (typeof showLoading === 'function') {
+            showLoading(false);
+          } else if (document.getElementById('loading-overlay')) {
+            document.getElementById('loading-overlay').style.display = 'none';
+          }
+        }
+        
+        if (result.success && result.note) {
+          resolve(result.note);
+        } else {
+          reject(new Error(result.message || 'Failed to retrieve note'));
+        }
+      })
+      .withFailureHandler(function(error) {
+        // Hide loading indicator
+        if (showLoadingIndicator) {
+          if (typeof showLoading === 'function') {
+            showLoading(false);
+          } else if (document.getElementById('loading-overlay')) {
+            document.getElementById('loading-overlay').style.display = 'none';
+          }
+        }
+        
+        reject(new Error(error.toString()));
+      })
+      .getOneOnOneNoteById(noteId);
+  });
+}
+
+/**
+ * Tests the getOneOnOneNotes function
+ * Run this function to test if note retrieval works
+ */
+function testGetOneOnOneNotes() {
+  // Replace with a valid email from your system
+  const testEmail = "test@example.com";
+  const result = getOneOnOneNotes(testEmail);
+  
+  Logger.log("Test results for " + testEmail + ":");
+  Logger.log(JSON.stringify(result, null, 2));
+  
+  return result;
+}
+/**
+ * Gets the weekly schedule data in the proper format for UI display
+ * @param {String} weekStartStr - Week start date in YYYY-MM-DD format
+ * @return {Object} - Formatted schedule data
+ */
+function getWeeklySchedule(weekStartStr) {
+  try {
+    return getTeamService().getWeeklySchedule(weekStartStr);
+  } catch (e) {
+    Logger.log('Error getting weekly schedule: ' + e.toString());
+    return {};
+  }
+}
+
+/**
+ * Saves weekly focus data
+ * @param {Object} focusData - Weekly focus data to save
+ * @return {Object} - Result with success status
+ */
+function saveWeeklyFocus(focusData) {
+  try {
+    return getTeamService().getWeeklyFocus(focusData);
+  } catch (e) {
+    Logger.log('Error saving weekly focus: ' + e.toString());
+    return {
+      success: false,
+      message: 'Error saving weekly focus: ' + e.toString()
+    };
+  }
+}
+
+/**
+ * Gets the team status data for the dashboard display
+ * @return {Array} - Team status data
+ */
+function getTeamStatusData() {
+  try {
+    return getTeamService().getTeamStatusData();
+  } catch (e) {
+    Logger.log('Error getting team status data: ' + e.toString());
+    return [];
+  }
+}
+
+/**
+ * Gets metrics summary for the dashboard based on selected time period
+ * @param {String} period - Time period (today, week, month, quarter, year)
+ * @return {Object} - Metrics summary data
+ */
+function getMetricsSummary(period) {
+  try {
+    return getTeamService().getMetricsSummary(period);
+  } catch (e) {
+    Logger.log('Error getting metrics summary: ' + e.toString());
+    return {
+      totalSessions: "0",
+      completionRate: "0%",
+      actionItems: "0",
+      teamCoverage: "0%",
+      period: period || "week",
+      totalSessionsTrend: 0,
+      completionRateTrend: 0,
+      actionItemsTrend: 0,
+      teamCoverageTrend: 0
+    };
+  }
+}
+
+/**
+ * Gets filtered dashboard data for team view
+ * @param {String} startDate - Start date for filtering (YYYY-MM-DD)
+ * @param {String} endDate - End date for filtering (YYYY-MM-DD)
+ * @return {Object} - Filtered dashboard data
+ */
+function getFilteredDashboardData(startDate, endDate) {
+  try {
+    // Get team status with date range filter
+    var teamStatus = getTeamService().getTeamStatusData();
+    
+    // Get metrics summary with date range
+    var metrics = getTeamService().getMetricsSummary('custom');
+    
+    // Return filtered data
+    return {
+      summary: {
+        team: {
+          total: teamStatus.length,
+          active: teamStatus.filter(m => m.status === 'Active').length,
+          training: teamStatus.filter(m => m.status === 'Training').length,
+          other: teamStatus.filter(m => m.status !== 'Active' && m.status !== 'Training').length
+        }
+      },
+      teamStatus: teamStatus,
+      metrics: metrics
+    };
+  } catch (e) {
+    Logger.log('Error getting filtered dashboard data: ' + e.toString());
+    return {
+      error: e.message
+    };
+  }
+}
+
+/**
+ * Gets detailed information about a team member for profile view
+ * @param {String} email - Team member email
+ * @return {Object} - Team member details with additional information
+ */
+function getTeamMemberDetails(email) {
+  try {
+    if (!email) {
+      throw new Error('Email is required');
+    }
+    
+    // Get basic member info
+    var member = getTeamService().getTeamMemberByEmail(email);
+    if (!member) {
+      throw new Error('Team member not found');
+    }
+    
+    // Get one-on-one info
+    var oneOnOneInfo = getTeamService().getTeamMemberOneOnOneInfo(email);
+    
+    // Get status history
+    var statusHistory = getTeamService().getTeamMemberStatusHistory(email);
+    
+    // Get metrics
+    var metrics = getTeamService().getTeamMemberMetrics(email);
+    
+    // Combine all information
+    return {
+      member: member,
+      oneOnOneInfo: oneOnOneInfo,
+      statusHistory: statusHistory,
+      metrics: metrics
+    };
+  } catch (e) {
+    Logger.log('Error getting team member details: ' + e.toString());
+    return {
+      error: e.message
+    };
+  }
+}
+
+/**
+ * View team member history
+ * @param {String} email - Team member email
+ */
+function viewTeamMemberHistory(email) {
+  try {
+    if (!email) {
+      throw new Error('Email is required to view history');
+    }
+    
+    // Store the email in cache for the history view to use
+    CacheService.getUserCache().put('historyTeamMember', email, 600); // Cache for 10 minutes
+    
+    var html = HtmlService.createTemplateFromFile('HTML/Team/team-member-history')
+        .evaluate()
+        .setWidth(900)
+        .setHeight(700)
+        .setTitle('Team Member History');
+    
+    SpreadsheetApp.getUi().showModalDialog(html, 'Team Member History');
+  } catch (e) {
+    Logger.log('Error opening team member history: ' + e.toString());
+    SpreadsheetApp.getUi().alert('Error viewing history: ' + e.message);
+  }
+}
+
+/**
+ * Wrapper function to export team roster
+ * @return {Object} - Result with URL of the exported spreadsheet
+ */
+function exportTeamRoster() {
+  var result = getTeamService().exportTeamRoster();
+  
+  if (result.success) {
+    SpreadsheetApp.getUi().alert('Team roster exported successfully.\n\nClick OK to open the export.');
+    // Open the URL
+    var html = HtmlService.createHtmlOutput(
+      '<script>window.open("' + result.url + '", "_blank"); google.script.host.close();</script>'
+    );
+    SpreadsheetApp.getUi().showModalDialog(html, 'Opening Export...');
+  } else {
+    SpreadsheetApp.getUi().alert('Error exporting team roster: ' + result.message);
+  }
+  
+  return result;
+}
+
+/**
+ * Gets team member status history
+ * @param {String} email - Team member email
+ * @return {Array} - Array of status history entries
+ */
+function getTeamMemberStatusHistory(email) {
+  return getTeamService().getTeamMemberStatusHistory(email);
+}
+
+/**
+ * Gets one-on-one information for a team member
+ * @param {String} email - Team member email
+ * @return {Object} - One-on-one information
+ */
+function getTeamMemberOneOnOneInfo(email) {
+  return getTeamService().getTeamMemberOneOnOneInfo(email);
+}
+
+/**
+ * Gets metrics for a team member
+ * @param {String} email - Team member email
+ * @return {Object} - Team member metrics
+ */
+function getTeamMemberMetrics(email) {
+  return getTeamService().getTeamMemberMetrics(email);
+}
+function openErrorLogViewer() {
+  var html = HtmlService.createHtmlOutputFromFile('error-log-viewer')
+      .setWidth(1000)
+      .setHeight(800)
+      .setTitle('Error & Event Log Viewer');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, 'Error & Event Log Viewer');
+}
+/**
+ * Gets error logs with optional filtering for the UI
+ * @param {Object} filters - Filter criteria
+ * @return {Array} Filtered error logs
+ */
+function getErrorLogs(filters = {}) {
+  // Process date range filter
+  if (filters.dateRange) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    switch (filters.dateRange) {
+      case 'today':
+        filters.startDate = today;
+        break;
+      case 'yesterday':
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        filters.startDate = yesterday;
+        filters.endDate = today;
+        break;
+      case 'week':
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        filters.startDate = weekStart;
+        break;
+      case 'month':
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        filters.startDate = monthStart;
+        break;
+    }
+    
+    // Remove the dateRange property as it's now converted to startDate/endDate
+    delete filters.dateRange;
+  }
+  
+  return getErrorLogService().getErrorLogs(filters);
+}
+
+/**
+ * Updates the status of an error log entry
+ * @param {Number} rowIndex - Row index in the sheet
+ * @param {String} status - New status value
+ * @return {Boolean} Success status
+ */
+function updateErrorLogStatus(rowIndex, status) {
+  return getErrorLogService().updateErrorLogStatus(rowIndex, status);
+}
+
+/**
+ * Clears old error logs
+ * @param {Boolean} keepRecent - Whether to keep recent logs
+ * @return {Object} Result with counts
+ */
+function clearErrorLogs(keepRecent = true) {
+  return getErrorLogService().clearErrorLogs(keepRecent);
+}
+
+/**
+ * Controls debug logging
+ * @param {Boolean} enable - Whether to enable debug logging
+ * @return {Boolean} Success status
+ */
+function setDebugLogging(enable) {
+  return getErrorLogService().setDebugLogging(enable);
+}
+
+/**
+ * Checks if debug logging is enabled
+ * @return {Boolean} Debug logging status
+ */
+function isDebugLoggingEnabled() {
+  return getErrorLogService().isDebugLoggingEnabled();
+}
+/**
+ * Error handling wrapper for functions
+ * @param {Function} fn - The function to wrap
+ * @param {String} functionName - Name of the function (for logging)
+ * @param {Object} context - Additional context information
+ * @return {Function} Wrapped function with error handling
+ */
+function withErrorHandling(fn, functionName, context = {}) {
+  return function() {
+    try {
+      return fn.apply(this, arguments);
+    } catch (error) {
+      // Log the error
+      const errorLogService = getErrorLogService();
+      
+      // Add arguments to context
+      const fullContext = Object.assign({}, context, {
+        arguments: Array.from(arguments).map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+        )
+      });
+      
+      const result = errorLogService.logError(error, functionName, fullContext);
+      
+      // Show error to user
+      const ui = SpreadsheetApp.getUi();
+      ui.alert(
+        'Error',
+        `An error occurred in ${functionName}. Error ID: ${result.errorId}\n` +
+        `Please try again or contact support with this error ID.`,
+        ui.ButtonSet.OK
+      );
+      
+      // Rethrow or return error object
+      throw new Error(`Error in ${functionName}: ${error.message} (Error ID: ${result.errorId})`);
+    }
+  };
+}
+/**
+ * ManagerOneOnOneService.gs
+ * Service for managing one-on-one sessions with your manager
+ */
+
+var ManagerOneOnOneService = (function() {
+  // Constants
+  const SESSIONS_SHEET_NAME = 'ManagerOneOnOneSessions';
+  const SESSION_CACHE_KEY = 'currentManagerOneOnOneSession';
+  
+  /**
+   * Gets or creates the sheet for storing manager one-on-one sessions
+   * @return {Sheet} The sheet object
+   */
+  function getOrCreateSessionsSheet_() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(SESSIONS_SHEET_NAME);
+    
+    if (!sheet) {
+      // Create new sheet
+      sheet = ss.insertSheet(SESSIONS_SHEET_NAME);
+      
+      // Add headers
+      var headers = [
+        'ID', 'Date', 'ManagerName', 'Location', 'Duration', 'Rating',
+        'Complete', 'Agenda', 'CareerNotes', 'FeedbackNotes', 'AdditionalNotes',
+        'FocusAreas', 'FeedbackTypes', 'ActionItems', 'FollowUpDate',
+        'EmailReminder', 'CreatedDate', 'UpdatedDate', 'CreatedBy'
+      ];
+      
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers])
+           .setFontWeight('bold')
+           .setBackground('#f3f3f6');
+      
+      sheet.setFrozenRows(1);
+      sheet.autoResizeColumns(1, headers.length);
+    }
+    
+    return sheet;
+  }
+  
+  /**
+   * Generate a unique ID for sessions
+   * @return {String} Unique ID
+   */
+  function generateUniqueId_() {
+    return 'mgr1on1_' + Utilities.getUuid().substring(0, 8);
+  }
+  
+  /**
+   * Converts session data to row data for the sheet
+   * @param {Object} session - The session data to convert
+   * @return {Array} Row data for the sheet
+   */
+  function sessionToRowData_(session) {
+    // Convert focus areas and feedback types to JSON strings
+    const focusAreas = session.focusAreas ? 
+      (Array.isArray(session.focusAreas) ? JSON.stringify(session.focusAreas) : session.focusAreas) : '';
+    
+    const feedbackTypes = session.feedbackTypes ? 
+      (Array.isArray(session.feedbackTypes) ? JSON.stringify(session.feedbackTypes) : session.feedbackTypes) : '';
+    
+    // Convert action items to JSON string
+    const actionItems = session.actionItems ? 
+      (Array.isArray(session.actionItems) ? JSON.stringify(session.actionItems) : session.actionItems) : '';
+    
+    // Add current user email as creator if not present
+    const createdBy = session.createdBy || Session.getActiveUser().getEmail();
+    
+    // Convert dates to ISO strings if they are Date objects
+    const convertDate = function(dateVal) {
+      if (!dateVal) return '';
+      if (dateVal instanceof Date) return dateVal.toISOString();
+      return dateVal;
+    };
+    
+    // Return row data as array
+    return [
+      session.id || '',
+      convertDate(session.date),
+      session.managerName || '',
+      session.location || '',
+      session.duration || '',
+      session.rating || '',
+      session.complete ? 'TRUE' : 'FALSE',
+      session.agenda || '',
+      session.careerNotes || '',
+      session.feedbackNotes || '',
+      session.additionalNotes || '',
+      focusAreas,
+      feedbackTypes,
+      actionItems,
+      convertDate(session.followUpDate),
+      session.emailReminder || '',
+      convertDate(session.createdDate),
+      convertDate(session.updatedDate),
+      createdBy
+    ];
+  }
+  
+  /**
+   * Converts a row from the sheet to a session object
+   * @param {Array} row - The row data
+   * @param {Array} headers - The header row data
+   * @return {Object} Session object
+   */
+  function rowToSession_(row, headers) {
+    var session = {};
+    
+    // Map each column to the corresponding property
+    headers.forEach(function(header, index) {
+      // Skip empty columns
+      if (index >= row.length) return;
+      
+      const value = row[index];
+      
+      // Handle special properties
+      if (header === 'FocusAreas' || header === 'FeedbackTypes' || header === 'ActionItems') {
+        try {
+          session[toCamelCase_(header)] = value ? JSON.parse(value) : [];
+        } catch (e) {
+          session[toCamelCase_(header)] = value ? [value] : [];
+        }
+      } else if (header === 'Complete') {
+        session.complete = value === 'TRUE';
+      } else {
+        session[toCamelCase_(header)] = value;
+      }
+    });
+    
+    return session;
+  }
+  
+  /**
+   * Converts a header name to camelCase
+   * @param {String} header - The header name
+   * @return {String} camelCase property name
+   */
+  function toCamelCase_(header) {
+    const parts = header.split(/(?=[A-Z])/);
+    const first = parts[0].toLowerCase();
+    const rest = parts.slice(1).join('');
+    return first + rest;
+  }
+  
+  /**
+   * Gets a date range for filtering based on the period
+   * @param {String} period - The period (e.g., "30", "90", "180", "365", "all")
+   * @return {Object} Object containing start and end dates
+   */
+  function getDateRangeForPeriod_(period) {
+    const endDate = new Date();
+    let startDate = new Date();
+    
+    if (period === 'all') {
+      startDate = new Date(0); // January 1, 1970
+    } else {
+      const days = parseInt(period, 10);
+      if (!isNaN(days)) {
+        startDate.setDate(startDate.getDate() - days);
+      } else {
+        startDate.setDate(startDate.getDate() - 30); // Default to 30 days
+      }
+    }
+    
+    return { startDate, endDate };
+  }
+  
+  /**
+   * Gets months or quarters between two dates
+   * @param {Date} startDate - The start date
+   * @param {Date} endDate - The end date
+   * @param {String} timeFrame - The time frame ('monthly' or 'quarterly')
+   * @return {Array} Array of label strings
+   */
+  function getTimeLabels_(startDate, endDate, timeFrame) {
+    const labels = [];
+    const current = new Date(startDate);
+    
+    if (timeFrame === 'quarterly') {
+      // Get quarters between dates
+      while (current <= endDate) {
+        const quarter = Math.floor(current.getMonth() / 3) + 1;
+        const year = current.getFullYear();
+        labels.push(`Q${quarter} ${year}`);
+        
+        // Move to next quarter
+        current.setMonth(current.getMonth() + 3);
+      }
+    } else {
+      // Get months between dates
+      while (current <= endDate) {
+        const monthName = current.toLocaleString('default', { month: 'short' });
+        const year = current.getFullYear();
+        labels.push(`${monthName} ${year}`);
+        
+        // Move to next month
+        current.setMonth(current.getMonth() + 1);
+      }
+    }
+    
+    return [...new Set(labels)]; // Remove duplicates
+  }
+  
+  /**
+   * Extract text content from HTML
+   * @param {String} html - The HTML string
+   * @return {String} Extracted text
+   */
+  function extractTextFromHtml_(html) {
+    if (!html) return '';
+    
+    // Simple regex-based approach to remove HTML tags
+    return html.replace(/<[^>]*>/g, ' ')
+               .replace(/\s+/g, ' ')
+               .trim();
+  }
+  
+  /**
+   * Count word frequencies in text
+   * @param {String} text - The text to analyze
+   * @return {Object} Word frequencies map
+   */
+  function countWordFrequencies_(text) {
+    if (!text) return {};
+    
+    // Remove special characters and convert to lowercase
+    const words = text.toLowerCase()
+                       .replace(/[^\w\s]/g, ' ')
+                       .split(/\s+/)
+                       .filter(word => word.length > 3); // Only words with 4+ characters
+    
+    // Count frequencies
+    const frequencies = {};
+    words.forEach(word => {
+      if (!commonWords_.includes(word)) {
+        frequencies[word] = (frequencies[word] || 0) + 1;
+      }
+    });
+    
+    return frequencies;
+  }
+  
+  /**
+   * Common words to exclude from word cloud
+   */
+  const commonWords_ = [
+    'this', 'that', 'these', 'those', 'with', 'from', 'have', 'will',
+    'would', 'could', 'should', 'than', 'then', 'they', 'them', 'their',
+    'there', 'here', 'where', 'when', 'what', 'which', 'while', 'some',
+    'about', 'after', 'before', 'above', 'below', 'between', 'through'
+  ];
+  
+  // Public API
+  return {
+    /**
+     * Gets all manager one-on-one sessions, optionally filtered
+     * @param {Object} filters - Optional filters to apply
+     * @return {Array} Array of session objects
+     */
+    getManagerOneOnOneSessions: function(filters = {}) {
+      try {
+        const sheet = getOrCreateSessionsSheet_();
+        const data = sheet.getDataRange().getValues();
+        
+        if (data.length <= 1) {
+          return []; // No sessions yet
+        }
+        
+        const headers = data[0];
+        let sessions = [];
+        
+        // Convert each row to a session object
+        for (let i = 1; i < data.length; i++) {
+          const session = rowToSession_(data[i], headers);
+          sessions.push(session);
+        }
+        
+        // Apply filters
+        if (filters.manager) {
+          sessions = sessions.filter(session => session.managerName === filters.manager);
+        }
+        
+        if (filters.dateRange && filters.dateRange !== 'all') {
+          const daysToSubtract = parseInt(filters.dateRange);
+          if (!isNaN(daysToSubtract)) {
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - daysToSubtract);
+            
+            sessions = sessions.filter(session => new Date(session.date) >= cutoffDate);
+          }
+        }
+        
+        if (filters.status) {
+          const isComplete = filters.status === 'complete';
+          sessions = sessions.filter(session => session.complete === isComplete);
+        }
+        
+        if (filters.searchTerm) {
+          const searchTerm = filters.searchTerm.toLowerCase();
+          sessions = sessions.filter(session => {
+            return (
+              (session.managerName && session.managerName.toLowerCase().includes(searchTerm)) ||
+              (session.agenda && session.agenda.toLowerCase().includes(searchTerm)) ||
+              (session.careerNotes && session.careerNotes.toLowerCase().includes(searchTerm)) ||
+              (session.feedbackNotes && session.feedbackNotes.toLowerCase().includes(searchTerm)) ||
+              (session.additionalNotes && session.additionalNotes.toLowerCase().includes(searchTerm))
+            );
+          });
+        }
+        
+        return sessions;
+      } catch (e) {
+        Logger.log('Error in getManagerOneOnOneSessions: ' + e.toString());
+        return [];
+      }
+    },
+    
+    /**
+     * Gets a specific manager one-on-one session by ID
+     * @param {String} sessionId - The ID of the session
+     * @return {Object} Session object or null if not found
+     */
+    getManagerOneOnOneSessionById: function(sessionId) {
+      try {
+        if (!sessionId) {
+          return null;
+        }
+        
+        const sheet = getOrCreateSessionsSheet_();
+        const data = sheet.getDataRange().getValues();
+        
+        if (data.length <= 1) {
+          return null; // No sessions yet
+        }
+        
+        const headers = data[0];
+        const idIndex = headers.indexOf('ID');
+        
+        if (idIndex === -1) {
+          throw new Error('ID column not found in sessions sheet');
+        }
+        
+        // Find row with matching ID
+        for (let i = 1; i < data.length; i++) {
+          if (data[i][idIndex] === sessionId) {
+            return rowToSession_(data[i], headers);
+          }
+        }
+        
+        return null; // Not found
+      } catch (e) {
+        Logger.log('Error in getManagerOneOnOneSessionById: ' + e.toString());
+        return null;
+      }
+    },
+    
+    /**
+     * Saves a manager one-on-one session
+     * @param {Object} sessionData - The session data to save
+     * @return {Object} Result object with success status and message
+     */
+    saveManagerOneOnOneSession: function(sessionData) {
+      try {
+        const sheet = getOrCreateSessionsSheet_();
+        const data = sheet.getDataRange().getValues();
+        const headers = data[0];
+        const idIndex = headers.indexOf('ID');
+        
+        if (idIndex === -1) {
+          throw new Error('ID column not found in sessions sheet');
+        }
+        
+        const isNewSession = !sessionData.id;
+        
+        // Generate ID for new sessions
+        if (isNewSession) {
+          sessionData.id = generateUniqueId_();
+          sessionData.createdDate = new Date().toISOString();
+          sessionData.createdBy = Session.getActiveUser().getEmail();
+        }
+        
+        // Always update the updated date
+        sessionData.updatedDate = new Date().toISOString();
+        
+        // Convert to row data
+        const rowData = sessionToRowData_(sessionData);
+        
+        if (isNewSession) {
+          // Append new session
+          sheet.appendRow(rowData);
+          sheet.getLastRow().activate();
+        } else {
+          // Update existing session
+          let rowIndex = -1;
+          
+          // Find the row with the matching ID
+          for (let i = 1; i < data.length; i++) {
+            if (data[i][idIndex] === sessionData.id) {
+              rowIndex = i + 1; // +1 because rows are 1-indexed
+              break;
+            }
+          }
+          
+          if (rowIndex === -1) {
+            throw new Error('Session not found with ID: ' + sessionData.id);
+          }
+          
+          // Update the row
+          sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
+        }
+        
+        // Cache the session ID for potential further edits
+        this.cacheManagerOneOnOneSessionId(sessionData.id);
+        
+        return {
+          success: true,
+          id: sessionData.id,
+          message: isNewSession ? 'Session created successfully' : 'Session updated successfully'
+        };
+      } catch (e) {
+        Logger.log('Error in saveManagerOneOnOneSession: ' + e.toString());
+        return {
+          success: false,
+          message: 'Error saving session: ' + e.toString()
+        };
+      }
+    },
+    
+    /**
+     * Deletes a manager one-on-one session
+     * @param {String} sessionId - The ID of the session to delete
+     * @return {Object} Result object with success status and message
+     */
+    deleteManagerOneOnOneSession: function(sessionId) {
+      try {
+        if (!sessionId) {
+          throw new Error('Session ID is required');
+        }
+        
+        const sheet = getOrCreateSessionsSheet_();
+        const data = sheet.getDataRange().getValues();
+        const headers = data[0];
+        const idIndex = headers.indexOf('ID');
+        
+        if (idIndex === -1) {
+          throw new Error('ID column not found in sessions sheet');
+        }
+        
+        // Find the row with the matching ID
+        let rowIndex = -1;
+        for (let i = 1; i < data.length; i++) {
+          if (data[i][idIndex] === sessionId) {
+            rowIndex = i + 1; // +1 because rows are 1-indexed
+            break;
+          }
+        }
+        
+        if (rowIndex === -1) {
+          throw new Error('Session not found with ID: ' + sessionId);
+        }
+        
+        // Delete the row
+        sheet.deleteRow(rowIndex);
+        
+        // Clear the cached session ID
+        this.cacheManagerOneOnOneSessionId(null);
+        
+        return {
+          success: true,
+          message: 'Session deleted successfully'
+        };
+      } catch (e) {
+        Logger.log('Error in deleteManagerOneOnOneSession: ' + e.toString());
+        return {
+          success: false,
+          message: 'Error deleting session: ' + e.toString()
+        };
+      }
+    },
+    
+    /**
+     * Caches a manager one-on-one session ID for editing
+     * @param {String} sessionId - The ID to cache (or null to clear)
+     * @return {Boolean} Success status
+     */
+    cacheManagerOneOnOneSessionId: function(sessionId) {
+      try {
+        const cache = CacheService.getUserCache();
+        
+        if (sessionId) {
+          cache.put(SESSION_CACHE_KEY, sessionId, 3600); // Cache for 1 hour
+        } else {
+          cache.remove(SESSION_CACHE_KEY);
+        }
+        
+        return true;
+      } catch (e) {
+        Logger.log('Error in cacheManagerOneOnOneSessionId: ' + e.toString());
+        return false;
+      }
+    },
+    
+    /**
+     * Gets the cached manager one-on-one session ID
+     * @return {String} The cached session ID or null if not found
+     */
+    getCachedManagerOneOnOneSessionId: function() {
+      try {
+        const cache = CacheService.getUserCache();
+        const sessionId = cache.get(SESSION_CACHE_KEY);
+        
+        if (!sessionId) {
+          return null;
+        }
+        
+        // Get the session data
+        const session = this.getManagerOneOnOneSessionById(sessionId);
+        return session;
+      } catch (e) {
+        Logger.log('Error in getCachedManagerOneOnOneSessionId: ' + e.toString());
+        return null;
+      }
+    },
+    
+    /**
+     * Gets data for the manager one-on-one dashboard
+     * @param {Object} filters - Optional filters to apply
+     * @return {Object} Dashboard data
+     */
+    getManagerOneOnOneDashboardData: function(filters = {}) {
+      try {
+        // Get sessions with filters
+        const sessions = this.getManagerOneOnOneSessions(filters);
+        
+        if (!sessions.length) {
+          return {
+            sessions: [],
+            metrics: {
+              totalSessions: 0,
+              avgFrequency: 0,
+              avgRating: 0,
+              sessionsTrend: 0,
+              frequencyTrend: 0,
+              ratingTrend: 0,
+              actionItemsCount: 0,
+              actionItemsCompletionRate: 0,
+              ratingCounts: {}
+            },
+            sessionsChartData: { labels: [], sessions: [], actionItems: [] },
+            ratingsData: {},
+            focusAreasData: [],
+            feedbackTypesData: [],
+            actionItemsData: { completed: 0, inProgress: 0, notStarted: 0 },
+            topicData: [],
+            feedbackHighlights: [],
+            timeline: [],
+            upcomingSessions: [],
+            recentSessions: []
+          };
+        }
+        
+        // Sort by date (most recent first)
+        sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // Calculate metrics
+        const metrics = calculateMetrics_(sessions);
+        
+        // Generate chart data
+        const timePeriod = filters.timePeriod || '365';
+        const timeFrame = filters.timeFrame || 'monthly';
+        const { startDate, endDate } = getDateRangeForPeriod_(timePeriod);
+        
+        const sessionsChartData = generateSessionsChartData_(sessions, startDate, endDate, timeFrame);
+        
+        // Generate ratings data
+        const ratingsData = {};
+        sessions.forEach(session => {
+          if (session.rating) {
+            ratingsData[session.rating] = (ratingsData[session.rating] || 0) + 1;
+          }
+        });
+        
+        // Generate focus areas data
+        const focusAreasData = generateTagData_(sessions, 'focusAreas');
+        
+        // Generate feedback types data
+        const feedbackTypesData = generateTagData_(sessions, 'feedbackTypes');
+        
+        // Generate action items data
+        const actionItemsData = {
+          completed: 0,
+          inProgress: 0,
+          notStarted: 0
+        };
+        
+        sessions.forEach(session => {
+          if (session.actionItems && session.actionItems.length) {
+            session.actionItems.forEach(item => {
+              if (item.completed) {
+                actionItemsData.completed++;
+              } else if (item.inProgress) {
+                actionItemsData.inProgress++;
+              } else {
+                actionItemsData.notStarted++;
+              }
+            });
+          }
+        });
+        
+        // Generate word cloud data
+        const topicData = generateTopicData_(sessions);
+        
+        // Generate feedback highlights
+        const feedbackHighlights = generateFeedbackHighlights_(sessions);
+        
+        // Generate timeline
+        const timeline = generateTimeline_(sessions);
+        
+        // Get upcoming sessions (sessions with dates in the future)
+        const now = new Date();
+        const upcomingSessions = sessions
+          .filter(session => new Date(session.date) > now)
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
+          .slice(0, 5);
+        
+        // Get recent sessions (completed sessions)
+        const recentSessions = sessions
+          .filter(session => session.complete && new Date(session.date) <= now)
+          .slice(0, 5);
+        
+        return {
+          sessions,
+          metrics,
+          sessionsChartData,
+          ratingsData,
+          focusAreasData,
+          feedbackTypesData,
+          actionItemsData,
+          topicData,
+          feedbackHighlights,
+          timeline,
+          upcomingSessions,
+          recentSessions
+        };
+      } catch (e) {
+        Logger.log('Error in getManagerOneOnOneDashboardData: ' + e.toString());
+        return {
+          error: e.toString()
+        };
+      }
+    },
+    
+    /**
+     * Exports manager one-on-one notes to a spreadsheet
+     * @param {Object} filters - Optional filters to apply
+     * @return {Object} Result object with success status and URL
+     */
+    exportManagerOneOnOneNotes: function(filters = {}) {
+      try {
+        // Get sessions with filters
+        const sessions = this.getManagerOneOnOneSessions(filters);
+        
+        if (!sessions.length) {
+          return {
+            success: false,
+            message: 'No sessions to export'
+          };
+        }
+        
+        // Create a new spreadsheet
+        const ss = SpreadsheetApp.create('Manager One-on-One Notes Export - ' + new Date().toISOString().split('T')[0]);
+        const sheet = ss.getActiveSheet();
+        sheet.setName('Sessions');
+        
+        // Add headers
+        const headers = [
+          'Date', 'Manager', 'Location', 'Duration', 'Rating',
+          'Status', 'Agenda', 'Career Notes', 'Feedback Notes',
+          'Additional Notes', 'Focus Areas', 'Feedback Types',
+          'Action Items', 'Follow-up Date'
+        ];
+        
+        sheet.getRange(1, 1, 1, headers.length).setValues([headers])
+             .setFontWeight('bold')
+             .setBackground('#f3f3f6');
+        
+        // Add session data
+        const rows = sessions.map(session => {
+          const focusAreas = session.focusAreas && session.focusAreas.length ? 
+            session.focusAreas.join(', ') : '';
+          
+          const feedbackTypes = session.feedbackTypes && session.feedbackTypes.length ? 
+            session.feedbackTypes.join(', ') : '';
+          
+          const actionItems = session.actionItems && session.actionItems.length ? 
+            session.actionItems.map(item => 
+              `${item.description} (${item.owner || 'unassigned'}${item.dueDate ? ', due: ' + item.dueDate : ''})`
+            ).join('\n') : '';
+          
+          return [
+            session.date ? new Date(session.date) : '',
+            session.managerName || '',
+            session.location || '',
+            session.duration || '',
+            session.rating || '',
+            session.complete ? 'Complete' : 'Draft',
+            extractTextFromHtml_(session.agenda) || '',
+            extractTextFromHtml_(session.careerNotes) || '',
+            extractTextFromHtml_(session.feedbackNotes) || '',
+            extractTextFromHtml_(session.additionalNotes) || '',
+            focusAreas,
+            feedbackTypes,
+            actionItems,
+            session.followUpDate ? new Date(session.followUpDate) : ''
+          ];
+        });
+        
+        // Write data
+        if (rows.length > 0) {
+          sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+        }
+        
+        // Auto-resize columns
+        sheet.autoResizeColumns(1, headers.length);
+        
+        // Create summary sheet
+        const summarySheet = ss.insertSheet('Summary');
+        
+        // Add summary data
+        const managerNames = [...new Set(sessions.map(s => s.managerName).filter(Boolean))];
+        const totalSessions = sessions.length;
+        const completedSessions = sessions.filter(s => s.complete).length;
+        const averageRating = sessions.reduce((sum, s) => sum + (s.rating || 0), 0) / 
+          sessions.filter(s => s.rating).length || 0;
+        
+        const summaryData = [
+          ['Manager One-on-One Notes Export'],
+          ['Generated on', new Date()],
+          ['Generated by', Session.getActiveUser().getEmail()],
+          [''],
+          ['Total Sessions', totalSessions],
+          ['Completed Sessions', completedSessions],
+          ['Completion Rate', completedSessions > 0 ? (completedSessions / totalSessions * 100).toFixed(1) + '%' : '0%'],
+          ['Average Rating', averageRating.toFixed(1) + ' / 5'],
+          ['Managers', managerNames.join(', ')]
+        ];
+        
+        summarySheet.getRange(1, 1, summaryData.length, 2).setValues(summaryData);
+        summarySheet.getRange(1, 1).setFontWeight('bold').setFontSize(14);
+        summarySheet.autoResizeColumns(1, 2);
+        
+        // Set summary as active sheet
+        ss.setActiveSheet(summarySheet);
+        
+        return {
+          success: true,
+          message: 'Notes exported successfully',
+          url: ss.getUrl(),
+          sessionCount: sessions.length
+        };
+      } catch (e) {
+        Logger.log('Error in exportManagerOneOnOneNotes: ' + e.toString());
+        return {
+          success: false,
+          message: 'Error exporting notes: ' + e.toString()
+        };
+      }
+    },
+    
+    /**
+     * Exports the manager one-on-one dashboard data
+     * @param {Object} filters - Optional filters to apply
+     * @return {Object} Result object with success status and URL
+     */
+    exportManagerOneOnOneDashboard: function(filters = {}) {
+      try {
+        // Get dashboard data
+        const dashboardData = this.getManagerOneOnOneDashboardData(filters);
+        
+        if (!dashboardData.sessions || !dashboardData.sessions.length) {
+          return {
+            success: false,
+            message: 'No data to export'
+          };
+        }
+        
+        // Create a new spreadsheet
+        const ss = SpreadsheetApp.create('Manager One-on-One Dashboard Export - ' + new Date().toISOString().split('T')[0]);
+        const metricsSheet = ss.getActiveSheet();
+        metricsSheet.setName('Metrics');
+        
+        // Add metrics data
+        const metrics = dashboardData.metrics;
+        const metricsData = [
+          ['Manager One-on-One Dashboard Metrics'],
+          ['Generated on', new Date()],
+          ['Generated by', Session.getActiveUser().getEmail()],
+          [''],
+          ['Metric', 'Value', 'Trend'],
+          ['Total Sessions', metrics.totalSessions, metrics.sessionsTrend + '%'],
+          ['Average Frequency (days)', metrics.avgFrequency, metrics.frequencyTrend + '%'],
+          ['Average Rating', metrics.avgRating.toFixed(1), metrics.ratingTrend + '%'],
+          ['Action Items', metrics.actionItemsCount, metrics.actionItemsCompletionRate + '% completed']
+        ];
+        
+        metricsSheet.getRange(1, 1, metricsData.length, 3).setValues(metricsData);
+        metricsSheet.getRange(1, 1).setFontWeight('bold').setFontSize(14);
+        metricsSheet.getRange(5, 1, 1, 3).setFontWeight('bold').setBackground('#f3f3f6');
+        metricsSheet.autoResizeColumns(1, 3);
+        
+        // Add ratings distribution
+        const ratingsData = [
+          ['', ''],
+          ['Ratings Distribution', ''],
+          ['Rating', 'Count'],
+          ['Not Helpful (1)', metrics.ratingCounts[1] || 0],
+          ['Neutral (2)', metrics.ratingCounts[2] || 0],
+          ['Good (3)', metrics.ratingCounts[3] || 0],
+          ['Great (4)', metrics.ratingCounts[4] || 0],
+          ['Excellent (5)', metrics.ratingCounts[5] || 0]
+        ];
+        
+        metricsSheet.getRange(metricsData.length + 2, 1, ratingsData.length, 2).setValues(ratingsData);
+        metricsSheet.getRange(metricsData.length + 3, 1, 1, 2).setFontWeight('bold').setBackground('#f3f3f6');
+        metricsSheet.getRange(metricsData.length + 2, 1).setFontWeight('bold').setFontSize(12);
+        
+        // Add focus areas
+        if (dashboardData.focusAreasData && dashboardData.focusAreasData.length) {
+          const focusAreasStartRow = metricsData.length + ratingsData.length + 4;
+          const focusAreasData = [
+            ['Focus Areas', ''],
+            ['Area', 'Count']
+          ];
+          
+          dashboardData.focusAreasData.forEach(area => {
+            focusAreasData.push([area.label, area.value]);
+          });
+          
+          metricsSheet.getRange(focusAreasStartRow, 1, focusAreasData.length, 2).setValues(focusAreasData);
+          metricsSheet.getRange(focusAreasStartRow, 1).setFontWeight('bold').setFontSize(12);
+          metricsSheet.getRange(focusAreasStartRow + 1, 1, 1, 2).setFontWeight('bold').setBackground('#f3f3f6');
+        }
+        
+        // Add sessions sheet
+        const sessionsSheet = ss.insertSheet('Sessions');
+        const headers = [
+          'Date', 'Manager', 'Location', 'Duration', 'Rating',
+          'Status', 'Focus Areas', 'Feedback Types', 'Action Items'
+        ];
+        
+        sessionsSheet.getRange(1, 1, 1, headers.length).setValues([headers])
+                    .setFontWeight('bold')
+                    .setBackground('#f3f3f6');
+        
+        // Add session data
+        const rows = dashboardData.sessions.map(session => {
+          const focusAreas = session.focusAreas && session.focusAreas.length ? 
+            session.focusAreas.join(', ') : '';
+          
+          const feedbackTypes = session.feedbackTypes && session.feedbackTypes.length ? 
+            session.feedbackTypes.join(', ') : '';
+          
+          const actionItemsCount = session.actionItems && session.actionItems.length ? 
+            session.actionItems.length : 0;
+          
+          return [
+            session.date ? new Date(session.date) : '',
+            session.managerName || '',
+            session.location || '',
+            session.duration || '',
+            session.rating || '',
+            session.complete ? 'Complete' : 'Draft',
+            focusAreas,
+            feedbackTypes,
+            actionItemsCount + ' items'
+          ];
+        });
+        
+        // Write data
+        if (rows.length > 0) {
+          sessionsSheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+        }
+        
+        // Auto-resize columns
+        sessionsSheet.autoResizeColumns(1, headers.length);
+        
+        // Set metrics as active sheet
+        ss.setActiveSheet(metricsSheet);
+        
+        return {
+          success: true,
+          message: 'Dashboard exported successfully',
+          url: ss.getUrl()
+        };
+      } catch (e) {
+        Logger.log('Error in exportManagerOneOnOneDashboard: ' + e.toString());
+        return {
+          success: false,
+          message: 'Error exporting dashboard: ' + e.toString()
+        };
+      }
+    }
+  };
+  
+  /**
+   * Calculate metrics for the dashboard
+   * @param {Array} sessions - Array of session objects
+   * @return {Object} Metrics object
+   */
+  function calculateMetrics_(sessions) {
+    const now = new Date();
+    const totalSessions = sessions.length;
+    
+    // Calculate average rating
+    let totalRating = 0;
+    let ratedSessions = 0;
+    const ratingCounts = {};
+    
+    sessions.forEach(session => {
+      if (session.rating) {
+        totalRating += parseInt(session.rating);
+        ratedSessions++;
+        ratingCounts[session.rating] = (ratingCounts[session.rating] || 0) + 1;
+      }
+    });
+    
+    const avgRating = ratedSessions > 0 ? totalRating / ratedSessions : 0;
+    
+    // Calculate sessions trend
+    // Compare current period to previous period
+    const thirtyDaysAgo = new Date(now);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const sixtyDaysAgo = new Date(now);
+    sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+    
+    const currentPeriodSessions = sessions.filter(session => {
+      const sessionDate = new Date(session.date);
+      return sessionDate >= thirtyDaysAgo && sessionDate <= now;
+    }).length;
+    
+    const previousPeriodSessions = sessions.filter(session => {
+      const sessionDate = new Date(session.date);
+      return sessionDate >= sixtyDaysAgo && sessionDate < thirtyDaysAgo;
+    }).length;
+    
+    let sessionsTrend = 0;
+    if (previousPeriodSessions > 0) {
+      sessionsTrend = Math.round((currentPeriodSessions - previousPeriodSessions) / previousPeriodSessions * 100);
+    } else if (currentPeriodSessions > 0) {
+      sessionsTrend = 100; // If there were no previous sessions but there are now, that's a 100% increase
+    }
+    
+    // Calculate average frequency
+    let totalInterval = 0;
+    let intervalCount = 0;
+    
+    if (sessions.length >= 2) {
+      // Sort by date (oldest first)
+      const sortedSessions = [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      for (let i = 1; i < sortedSessions.length; i++) {
+        const prev = new Date(sortedSessions[i-1].date);
+        const curr = new Date(sortedSessions[i].date);
+        const interval = Math.floor((curr - prev) / (1000 * 60 * 60 * 24)); // days
+        
+        if (interval > 0 && interval < 180) { // Ignore outliers
+          totalInterval += interval;
+          intervalCount++;
+        }
+      }
+    }
+    
+    const avgFrequency = intervalCount > 0 ? Math.round(totalInterval / intervalCount) : 0;
+    
+    // Calculate frequency trend
+    let frequencyTrend = 0;
+    
+    if (sessions.length >= 4) {
+      // Sort by date (oldest first)
+      const sortedSessions = [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      // Calculate average interval for first half and second half
+      const halfIndex = Math.floor(sortedSessions.length / 2);
+      
+      let firstHalfTotal = 0;
+      let firstHalfCount = 0;
+      
+      for (let i = 1; i < halfIndex; i++) {
+        const prev = new Date(sortedSessions[i-1].date);
+        const curr = new Date(sortedSessions[i].date);
+        const interval = Math.floor((curr - prev) / (1000 * 60 * 60 * 24)); // days
+        
+        if (interval > 0 && interval < 180) {
+          firstHalfTotal += interval;
+          firstHalfCount++;
+        }
+      }
+      
+      let secondHalfTotal = 0;
+      let secondHalfCount = 0;
+      
+      for (let i = halfIndex + 1; i < sortedSessions.length; i++) {
+        const prev = new Date(sortedSessions[i-1].date);
+        const curr = new Date(sortedSessions[i].date);
+        const interval = Math.floor((curr - prev) / (1000 * 60 * 60 * 24)); // days
+        
+        if (interval > 0 && interval < 180) {
+          secondHalfTotal += interval;
+          secondHalfCount++;
+        }
+      }
+      
+      const firstHalfAvg = firstHalfCount > 0 ? firstHalfTotal / firstHalfCount : 0;
+      const secondHalfAvg = secondHalfCount > 0 ? secondHalfTotal / secondHalfCount : 0;
+      
+      if (firstHalfAvg > 0) {
+        frequencyTrend = Math.round((secondHalfAvg - firstHalfAvg) / firstHalfAvg * 100);
+      }
+    }
+    
+    // Calculate rating trend
+    let ratingTrend = 0;
+    
+    if (sessions.length >= 4) {
+      // Sort by date (oldest first)
+      const sortedSessions = [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      // Calculate average rating for first half and second half
+      const halfIndex = Math.floor(sortedSessions.length / 2);
+      
+      let firstHalfTotal = 0;
+      let firstHalfCount = 0;
+      
+      for (let i = 0; i < halfIndex; i++) {
+        if (sortedSessions[i].rating) {
+          firstHalfTotal += parseInt(sortedSessions[i].rating);
+          firstHalfCount++;
+        }
+      }
+      
+      let secondHalfTotal = 0;
+      let secondHalfCount = 0;
+      
+      for (let i = halfIndex; i < sortedSessions.length; i++) {
+        if (sortedSessions[i].rating) {
+          secondHalfTotal += parseInt(sortedSessions[i].rating);
+          secondHalfCount++;
+        }
+      }
+      
+      const firstHalfAvg = firstHalfCount > 0 ? firstHalfTotal / firstHalfCount : 0;
+      const secondHalfAvg = secondHalfCount > 0 ? secondHalfTotal / secondHalfCount : 0;
+      
+      if (firstHalfAvg > 0) {
+        ratingTrend = Math.round((secondHalfAvg - firstHalfAvg) / firstHalfAvg * 100);
+      }
+    }
+    
+    // Count action items
+    let actionItemsCount = 0;
+    let completedActionItems = 0;
+    
+    sessions.forEach(session => {
+      if (session.actionItems && session.actionItems.length) {
+        actionItemsCount += session.actionItems.length;
+        
+        session.actionItems.forEach(item => {
+          if (item.completed) {
+            completedActionItems++;
+          }
+        });
+      }
+    });
+    
+    const actionItemsCompletionRate = actionItemsCount > 0 ? 
+      Math.round((completedActionItems / actionItemsCount) * 100) : 0;
+    
+    return {
+      totalSessions,
+      avgFrequency,
+      avgRating,
+      sessionsTrend,
+      frequencyTrend,
+      ratingTrend,
+      actionItemsCount,
+      actionItemsCompletionRate,
+      ratingCounts
+    };
+  }
+  
+  /**
+   * Generate sessions chart data
+   * @param {Array} sessions - Array of session objects
+   * @param {Date} startDate - Start date for chart
+   * @param {Date} endDate - End date for chart
+   * @param {String} timeFrame - Time frame ('monthly' or 'quarterly')
+   * @return {Object} Chart data object
+   */
+  function generateSessionsChartData_(sessions, startDate, endDate, timeFrame) {
+    // Get time labels
+    const labels = getTimeLabels_(startDate, endDate, timeFrame);
+    
+    // Initialize data arrays
+    const sessionsData = new Array(labels.length).fill(0);
+    const actionItemsData = new Array(labels.length).fill(0);
+    
+    // Count sessions and action items per period
+    sessions.forEach(session => {
+      const sessionDate = new Date(session.date);
+      
+      if (sessionDate >= startDate && sessionDate <= endDate) {
+        let label;
+        
+        if (timeFrame === 'quarterly') {
+          const quarter = Math.floor(sessionDate.getMonth() / 3) + 1;
+          const year = sessionDate.getFullYear();
+          label = `Q${quarter} ${year}`;
+        } else {
+          const monthName = sessionDate.toLocaleString('default', { month: 'short' });
+          const year = sessionDate.getFullYear();
+          label = `${monthName} ${year}`;
+        }
+        
+        const index = labels.indexOf(label);
+        if (index !== -1) {
+          sessionsData[index]++;
+          
+          if (session.actionItems && session.actionItems.length) {
+            actionItemsData[index] += session.actionItems.length;
+          }
+        }
+      }
+    });
+    
+    return {
+      labels,
+      sessions: sessionsData,
+      actionItems: actionItemsData
+    };
+  }
+  
+  /**
+   * Generate tag data for charts
+   * @param {Array} sessions - Array of session objects
+   * @param {String} tagField - Field name for tags
+   * @return {Array} Array of tag data objects
+   */
+  function generateTagData_(sessions, tagField) {
+    const tagCounts = {};
+    
+    sessions.forEach(session => {
+      if (session[tagField] && session[tagField].length) {
+        session[tagField].forEach(tag => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+      }
+    });
+    
+    // Convert to array of objects
+    const tagData = Object.keys(tagCounts).map(tag => ({
+      label: tag,
+      value: tagCounts[tag]
+    }));
+    
+    // Sort by count (descending)
+    tagData.sort((a, b) => b.value - a.value);
+    
+    return tagData;
+  }
+  
+  /**
+   * Generate topic data for word cloud
+   * @param {Array} sessions - Array of session objects
+   * @return {Array} Array of word frequency objects
+   */
+  function generateTopicData_(sessions) {
+    const allText = sessions.map(session => {
+      return [
+        extractTextFromHtml_(session.agenda),
+        extractTextFromHtml_(session.careerNotes),
+        extractTextFromHtml_(session.feedbackNotes),
+        extractTextFromHtml_(session.additionalNotes)
+      ].filter(Boolean).join(' ');
+    }).join(' ');
+    
+    const frequencies = countWordFrequencies_(allText);
+    
+    // Convert to array and sort by frequency
+    const topicData = Object.keys(frequencies).map(word => ({
+      word,
+      count: frequencies[word]
+    }));
+    
+    topicData.sort((a, b) => b.count - a.count);
+    
+    // Return top 50 words
+    return topicData.slice(0, 50);
+  }
+  
+  /**
+   * Generate feedback highlights
+   * @param {Array} sessions - Array of session objects
+   * @return {Array} Array of feedback highlight objects
+   */
+  function generateFeedbackHighlights_(sessions) {
+    const highlights = [];
+    
+    sessions.forEach(session => {
+      if (!session.feedbackNotes) return;
+      
+      // Extract sentences from feedback notes
+      const text = extractTextFromHtml_(session.feedbackNotes);
+      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 30 && s.trim().length < 150);
+      
+      if (sentences.length) {
+        // Get a random sentence as highlight
+        const sentence = sentences[Math.floor(Math.random() * sentences.length)].trim();
+        
+        // Determine feedback type
+        let type = 'general';
+        if (session.feedbackTypes && session.feedbackTypes.length) {
+          type = session.feedbackTypes[0].toLowerCase();
+        }
+        
+        highlights.push({
+          text: sentence,
+          type: type,
+          date: session.date,
+          managerName: session.managerName
+        });
+      }
+    });
+    
+    // Shuffle highlights and return at most 5
+    return shuffleArray_(highlights).slice(0, 5);
+  }
+  
+  /**
+   * Shuffle array (Fisher-Yates algorithm)
+   * @param {Array} array - Array to shuffle
+   * @return {Array} Shuffled array
+   */
+  function shuffleArray_(array) {
+    const result = [...array];
+    
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Generate timeline data
+   * @param {Array} sessions - Array of session objects
+   * @return {Array} Array of timeline item objects
+   */
+  function generateTimeline_(sessions) {
+    // Sort by date (newest first)
+    const sortedSessions = [...sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    // Get most recent 5 sessions
+    const recentSessions = sortedSessions.slice(0, 5);
+    
+    return recentSessions.map(session => {
+      const tags = [];
+      
+      if (session.focusAreas && session.focusAreas.length) {
+        tags.push(...session.focusAreas);
+      }
+      
+      if (session.feedbackTypes && session.feedbackTypes.length) {
+        tags.push(...session.feedbackTypes);
+      }
+      
+      let text = '';
+      if (session.agenda) {
+        const agendaText = extractTextFromHtml_(session.agenda);
+        text = agendaText.substring(0, 150) + (agendaText.length > 150 ? '...' : '');
+      }
+      
+      return {
+        date: session.date,
+        title: `One-on-One with ${session.managerName || 'Manager'}`,
+        text: text,
+        tags: tags.slice(0, 5) // Limit to 5 tags
+      };
+    });
+  }
+})();
+
+/**
+ * Get the ManagerOneOnOneService instance
+ * @return {Object} ManagerOneOnOneService instance
+ */
+function getManagerOneOnOneService() {
+  return ManagerOneOnOneService;
+}
+
+// Functions to be called from HTML or main code
+
+/**
+ * Gets all manager one-on-one sessions
+ * @param {Object} filters - Optional filters
+ * @return {Array} Sessions array
+ */
+function getManagerOneOnOneSessions(filters) {
+  return getManagerOneOnOneService().getManagerOneOnOneSessions(filters);
+}
+
+/**
+ * Gets a specific manager one-on-one session
+ * @param {String} sessionId - Session ID
+ * @return {Object} Session object
+ */
+function getManagerOneOnOneSessionById(sessionId) {
+  return getManagerOneOnOneService().getManagerOneOnOneSessionById(sessionId);
+}
+
+/**
+ * Saves a manager one-on-one session
+ * @param {Object} sessionData - Session data
+ * @return {Object} Result object
+ */
+function saveManagerOneOnOneSession(sessionData) {
+  return getManagerOneOnOneService().saveManagerOneOnOneSession(sessionData);
+}
+
+/**
+ * Deletes a manager one-on-one session
+ * @param {String} sessionId - Session ID
+ * @return {Object} Result object
+ */
+function deleteManagerOneOnOneSession(sessionId) {
+  return getManagerOneOnOneService().deleteManagerOneOnOneSession(sessionId);
+}
+
+/**
+ * Caches a manager one-on-one session ID
+ * @param {String} sessionId - Session ID
+ * @return {Boolean} Success status
+ */
+function cacheManagerOneOnOneSessionId(sessionId) {
+  return getManagerOneOnOneService().cacheManagerOneOnOneSessionId(sessionId);
+}
+
+/**
+ * Gets the cached manager one-on-one session
+ * @return {Object} Session object
+ */
+function getCachedManagerOneOnOneSessionId() {
+  return getManagerOneOnOneService().getCachedManagerOneOnOneSessionId();
+}
+
+/**
+ * Gets dashboard data for manager one-on-ones
+ * @param {Object} filters - Optional filters
+ * @return {Object} Dashboard data
+ */
+function getManagerOneOnOneDashboardData(filters) {
+  return getManagerOneOnOneService().getManagerOneOnOneDashboardData(filters);
+}
+
+/**
+ * Exports manager one-on-one notes
+ * @param {Object} filters - Optional filters
+ * @return {Object} Result object
+ */
+function exportManagerOneOnOneNotes(filters) {
+  return getManagerOneOnOneService().exportManagerOneOnOneNotes(filters);
+}
+
+/**
+ * Exports manager one-on-one dashboard
+ * @param {Object} filters - Optional filters
+ * @return {Object} Result object
+ */
+function exportManagerOneOnOneDashboard(filters) {
+  return getManagerOneOnOneService().exportManagerOneOnOneDashboard(filters);
+}
+
