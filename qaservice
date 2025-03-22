@@ -1,0 +1,2138 @@
+/**
+ * QAService.gs - Services for quality assessment reviews
+ */
+
+var QAService = (function() {
+  // Private variables and methods
+  var QA_SHEET_NAME = 'QAReviews';
+  
+  /**
+   * Gets the QA reviews sheet, creates if it doesn't exist
+   * @return {Sheet} - Google Sheet for QA reviews
+   */
+  function getQASheet_() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(QA_SHEET_NAME);
+    
+    if (!sheet) {
+      sheet = ss.insertSheet(QA_SHEET_NAME);
+      
+      // Create the headers
+      var headers = [
+        'ID', 'Date', 'Team Member', 'Interaction ID', 'Type', 
+        'Criteria JSON', 'Total Score', 'Feedback', 
+        'Created By', 'Created Date', 'Last Updated'
+      ];
+      
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
+      
+      // Format date columns
+      var dateColumns = [2, 10, 11]; // Date, Created Date, Last Updated
+      dateColumns.forEach(function(col) {
+        sheet.getRange(2, col, 999, 1).setNumberFormat('yyyy-mm-dd');
+      });
+    }
+    
+    return sheet;
+  }
+  
+  return {
+    /**
+     * Creates a new QA review
+     * @param {Object} reviewData - QA review data
+     * @return {String} - ID of the created review
+     */
+    createReview: function(reviewData) {
+      // Input validation
+      if (!reviewData.teamMember || !reviewData.criteria) {
+        throw new Error('Team member and criteria are required for QA reviews');
+      }
+      
+      var sheet = getQASheet_();
+      var reviewId = Utilities.getUuid();
+      var currentUser = Session.getActiveUser().getEmail();
+      var now = new Date();
+      
+      // Calculate total score
+      var totalScore = 0;
+      var maxScore = 0;
+      
+      Object.keys(reviewData.criteria).forEach(function(key) {
+        totalScore += reviewData.criteria[key].score || 0;
+        maxScore += reviewData.criteria[key].maxScore || 0;
+      });
+      
+      var finalScore = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
+      
+      var rowData = [
+        reviewId,
+        reviewData.date ? new Date(reviewData.date) : now,
+        reviewData.teamMember,
+        reviewData.interactionId || '',
+        reviewData.type || 'Call',
+        JSON.stringify(reviewData.criteria),
+        finalScore.toFixed(2),
+        reviewData.feedback || '',
+        currentUser,
+        now,
+        now
+      ];
+      
+      var lastRow = Math.max(sheet.getLastRow(), 1);
+      sheet.getRange(lastRow + 1, 1, 1, rowData.length).setValues([rowData]);
+      
+      return reviewId;
+    },
+    
+    /**
+     * Gets QA reviews with optional filters
+     * @param {Object} filters - Filter criteria
+     * @return {Array} - Array of review objects
+     */
+    getReviews: function(filters) {
+      var sheet = getQASheet_();
+      var data = sheet.getDataRange().getValues();
+      var reviews = [];
+      
+      // Skip header row
+      for (var i = 1; i < data.length; i++) {
+        var row = data[i];
+        
+        try {
+          var criteria = JSON.parse(row[5]);
+          
+          var review = {
+            id: row[0],
+            date: row[1],
+            teamMember: row[2],
+            interactionId: row[3],
+            type: row[4],
+            criteria: criteria,
+            totalScore: parseFloat(row[6]),
+            feedback: row[7],
+            createdBy: row[8],
+            createdDate: row[9],
+            lastUpdated: row[10]
+          };
+          
+          // Apply filters if provided
+          if (filters) {
+            if (filters.id && review.id !== filters.id) continue;
+            if (filters.teamMember && review.teamMember !== filters.teamMember) continue;
+            if (filters.type && review.type !== filters.type) continue;
+            if (filters.minScore && review.totalScore < filters.minScore) continue;
+            if (filters.maxScore && review.totalScore > filters.maxScore) continue;
+            if (filters.startDate && review.date < filters.startDate) continue;
+            if (filters.endDate && review.date > filters.endDate) continue;
+            if (filters.createdBy && review.createdBy !== filters.createdBy) continue;
+          }
+          
+          reviews.push(review);
+        } catch (e) {
+          // Skip malformed rows
+          Logger.log('Error parsing row ' + (i+1) + ': ' + e.toString());
+        }
+      }
+      
+      return reviews;
+    },
+    
+    /**
+     * Gets a specific review by ID
+     * @param {String} reviewId - ID of the review to retrieve
+     * @return {Object} - Review object or null if not found
+     */
+    getReview: function(reviewId) {
+      var reviews = this.getReviews({id: reviewId});
+      return reviews.length > 0 ? reviews[0] : null;
+    },
+    
+    /**
+     * Updates an existing review
+     * @param {String} reviewId - ID of the review to update
+     * @param {Object} reviewData - Updated review data
+     * @return {Boolean} - True if successful
+     */
+    updateReview: function(reviewId, reviewData) {
+      var sheet = getQASheet_();
+      var data = sheet.getDataRange().getValues();
+      var rowIndex = -1;
+      
+      // Find the review by ID
+      for (var i = 1; i < data.length; i++) {
+        if (data[i][0] === reviewId) {
+          rowIndex = i + 1; // +1 because i is 0-based and row indices are 1-based
+          break;
+        }
+      }
+      
+      if (rowIndex === -1) {
+        throw new Error('Review not found');
+      }
+      
+      // Update the fields that are provided
+      var row = data[rowIndex-1];
+      
+      if (reviewData.date !== undefined) row[1] = new Date(reviewData.date);
+      if (reviewData.teamMember !== undefined) row[2] = reviewData.teamMember;
+      if (reviewData.interactionId !== undefined) row[3] = reviewData.interactionId;
+      if (reviewData.type !== undefined) row[4] = reviewData.type;
+      
+      if (reviewData.criteria !== undefined) {
+        // Recalculate total score
+        var totalScore = 0;
+        var maxScore = 0;
+        
+        Object.keys(reviewData.criteria).forEach(function(key) {
+          totalScore += reviewData.criteria[key].score || 0;
+          maxScore += reviewData.criteria[key].maxScore || 0;
+        });
+        
+        var finalScore = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
+        
+        row[5] = JSON.stringify(reviewData.criteria);
+        row[6] = finalScore.toFixed(2);
+      }
+      
+      if (reviewData.feedback !== undefined) row[7] = reviewData.feedback;
+      row[10] = new Date(); // Last updated
+      
+      sheet.getRange(rowIndex, 1, 1, row.length).setValues([row]);
+      
+      return true;
+    },
+    
+    /**
+     * Deletes a review
+     * @param {String} reviewId - ID of the review to delete
+     * @return {Boolean} - True if successful
+     */
+    deleteReview: function(reviewId) {
+      var sheet = getQASheet_();
+      var data = sheet.getDataRange().getValues();
+      
+      // Find the review by ID
+      for (var i = 1; i < data.length; i++) {
+        if (data[i][0] === reviewId) {
+          sheet.deleteRow(i + 1); // +1 because i is 0-based and row indices are 1-based
+          return true;
+        }
+      }
+      
+      return false; // Review not found
+    },
+    
+    /**
+     * Gets review summary statistics
+     * @param {Object} filters - Filter criteria
+     * @return {Object} - Summary statistics
+     */
+    getReviewSummary: function(filters) {
+      var reviews = this.getReviews(filters);
+      
+      if (reviews.length === 0) {
+        return {
+          count: 0,
+          averageScore: 0,
+          typeBreakdown: {},
+          criteriaBreakdown: {}
+        };
+      }
+      
+      var summary = {
+        count: reviews.length,
+        averageScore: 0,
+        typeBreakdown: {},
+        criteriaBreakdown: {}
+      };
+      
+      var totalScore = 0;
+      var criteriaScores = {};
+      var criteriaCounts = {};
+      
+      reviews.forEach(function(review) {
+        // Calculate average score
+        totalScore += review.totalScore;
+        
+        // Count by type
+        if (!summary.typeBreakdown[review.type]) {
+          summary.typeBreakdown[review.type] = {
+            count: 0,
+            averageScore: 0
+          };
+        }
+        summary.typeBreakdown[review.type].count++;
+        summary.typeBreakdown[review.type].averageScore += review.totalScore;
+        
+        // Track criteria scores
+        Object.keys(review.criteria).forEach(function(criteriaName) {
+          var criteria = review.criteria[criteriaName];
+          
+          if (!criteriaScores[criteriaName]) {
+            criteriaScores[criteriaName] = 0;
+            criteriaCounts[criteriaName] = 0;
+          }
+          
+          criteriaScores[criteriaName] += (criteria.score / criteria.maxScore) * 100;
+          criteriaCounts[criteriaName]++;
+        });
+      });
+      
+      // Calculate averages
+      summary.averageScore = totalScore / reviews.length;
+      
+      // Calculate type breakdown averages
+      Object.keys(summary.typeBreakdown).forEach(function(type) {
+        var typeData = summary.typeBreakdown[type];
+        typeData.averageScore = typeData.averageScore / typeData.count;
+      });
+      
+      // Calculate criteria breakdown
+      Object.keys(criteriaScores).forEach(function(criteriaName) {
+        summary.criteriaBreakdown[criteriaName] = criteriaScores[criteriaName] / criteriaCounts[criteriaName];
+      });
+      
+      return summary;
+    },
+    
+    /**
+     * Gets team member QA comparison data
+     * @param {Date} startDate - Start date
+     * @param {Date} endDate - End date
+     * @return {Object} - Team member comparison data
+     */
+    getTeamQAComparison: function(startDate, endDate) {
+      var filters = {};
+      if (startDate) filters.startDate = startDate;
+      if (endDate) filters.endDate = endDate;
+      
+      var reviews = this.getReviews(filters);
+      var teamScores = {};
+      
+      reviews.forEach(function(review) {
+        var teamMember = review.teamMember;
+        
+        if (!teamScores[teamMember]) {
+          teamScores[teamMember] = {
+            totalScore: 0,
+            count: 0,
+            averageScore: 0,
+            byType: {},
+            byCriteria: {}
+          };
+        }
+        
+        // Add to total score
+        teamScores[teamMember].totalScore += review.totalScore;
+        teamScores[teamMember].count++;
+        
+        // Track by type
+        var type = review.type;
+        if (!teamScores[teamMember].byType[type]) {
+          teamScores[teamMember].byType[type] = {
+            totalScore: 0,
+            count: 0
+          };
+        }
+        teamScores[teamMember].byType[type].totalScore += review.totalScore;
+        teamScores[teamMember].byType[type].count++;
+        
+        // Track by criteria
+        Object.keys(review.criteria).forEach(function(criteriaName) {
+          var criteria = review.criteria[criteriaName];
+          
+          if (!teamScores[teamMember].byCriteria[criteriaName]) {
+            teamScores[teamMember].byCriteria[criteriaName] = {
+              totalScore: 0,
+              totalMaxScore: 0,
+              count: 0
+            };
+          }
+          
+          teamScores[teamMember].byCriteria[criteriaName].totalScore += criteria.score;
+          teamScores[teamMember].byCriteria[criteriaName].totalMaxScore += criteria.maxScore;
+          teamScores[teamMember].byCriteria[criteriaName].count++;
+        });
+      });
+      
+      // Calculate averages
+      Object.keys(teamScores).forEach(function(teamMember) {
+        var memberData = teamScores[teamMember];
+        
+        // Overall average
+        memberData.averageScore = memberData.totalScore / memberData.count;
+        
+        // Averages by type
+        Object.keys(memberData.byType).forEach(function(type) {
+          var typeData = memberData.byType[type];
+          typeData.averageScore = typeData.totalScore / typeData.count;
+        });
+        
+        // Averages by criteria
+        Object.keys(memberData.byCriteria).forEach(function(criteria) {
+          var criteriaData = memberData.byCriteria[criteria];
+          criteriaData.averageScore = (criteriaData.totalScore / criteriaData.totalMaxScore) * 100;
+        });
+      });
+      
+      return teamScores;
+    },
+    
+    /**
+     * Exports QA data to a spreadsheet
+     * @param {Object} filters - Filter criteria
+     * @return {String} - URL of the created spreadsheet
+     */
+    exportQAData: function(filters) {
+      var reviews = this.getReviews(filters);
+      
+      if (reviews.length === 0) {
+        throw new Error('No QA reviews found matching the criteria');
+      }
+      
+      var ss = SpreadsheetApp.create('QA Reviews Export - ' + 
+                                   Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd'));
+      var sheet = ss.getActiveSheet().setName('QA Reviews');
+      
+      // Create headers
+      var headers = [
+        'Date', 'Team Member', 'Interaction ID', 'Type',
+        'Total Score', 'Feedback'
+      ];
+      
+      // Add criteria headers - get all unique criteria from reviews
+      var allCriteria = {};
+      reviews.forEach(function(review) {
+        Object.keys(review.criteria).forEach(function(criteriaName) {
+                    allCriteria[criteriaName] = true;
+        });
+      });
+      
+      var criteriaHeaders = Object.keys(allCriteria);
+      headers = headers.concat(criteriaHeaders);
+      
+      // Add creator and date columns
+      headers.push('Created By', 'Created Date');
+      
+      // Set headers
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
+      
+      // Add data
+      var data = reviews.map(function(review) {
+        var row = [
+          Utilities.formatDate(review.date, Session.getScriptTimeZone(), 'yyyy-MM-dd'),
+          review.teamMember,
+          review.interactionId,
+          review.type,
+          review.totalScore,
+          review.feedback
+        ];
+        
+        // Add criteria scores
+        criteriaHeaders.forEach(function(criteriaName) {
+          var criteria = review.criteria[criteriaName];
+          if (criteria) {
+            var scoreFormatted = criteria.score + '/' + criteria.maxScore;
+            row.push(scoreFormatted);
+          } else {
+            row.push('N/A');
+          }
+        });
+        
+        // Add creator and date
+        row.push(review.createdBy);
+        row.push(Utilities.formatDate(review.createdDate, Session.getScriptTimeZone(), 'yyyy-MM-dd'));
+        
+        return row;
+      });
+      
+      if (data.length > 0) {
+        sheet.getRange(2, 1, data.length, headers.length).setValues(data);
+      }
+      
+      // Auto-size columns and apply formatting
+      for (var i = 1; i <= headers.length; i++) {
+        sheet.autoResizeColumn(i);
+      }
+      
+      // Add summary sheet
+      var summarySheet = ss.insertSheet('Summary');
+      var summary = this.getReviewSummary(filters);
+      
+      // Add overall summary
+      summarySheet.getRange('A1').setValue('QA Reviews Summary').setFontWeight('bold');
+      summarySheet.getRange('A3').setValue('Total Reviews:');
+      summarySheet.getRange('B3').setValue(summary.count);
+      summarySheet.getRange('A4').setValue('Average Score:');
+      summarySheet.getRange('B4').setValue(summary.averageScore.toFixed(2) + '%');
+      
+      // Add type breakdown
+      var row = 6;
+      summarySheet.getRange('A' + row).setValue('Type Breakdown').setFontWeight('bold');
+      row++;
+      summarySheet.getRange('A' + row).setValue('Type');
+      summarySheet.getRange('B' + row).setValue('Count');
+      summarySheet.getRange('C' + row).setValue('Average Score');
+      
+      Object.keys(summary.typeBreakdown).forEach(function(type) {
+        row++;
+        var typeData = summary.typeBreakdown[type];
+        summarySheet.getRange('A' + row).setValue(type);
+        summarySheet.getRange('B' + row).setValue(typeData.count);
+        summarySheet.getRange('C' + row).setValue(typeData.averageScore.toFixed(2) + '%');
+      });
+      
+      // Add criteria breakdown
+      row += 2;
+      summarySheet.getRange('A' + row).setValue('Criteria Breakdown').setFontWeight('bold');
+      row++;
+      summarySheet.getRange('A' + row).setValue('Criteria');
+      summarySheet.getRange('B' + row).setValue('Average Score');
+      
+      Object.keys(summary.criteriaBreakdown).forEach(function(criteria) {
+        row++;
+        summarySheet.getRange('A' + row).setValue(criteria);
+        summarySheet.getRange('B' + row).setValue(summary.criteriaBreakdown[criteria].toFixed(2) + '%');
+      });
+      
+      // Auto-size columns
+      for (var i = 1; i <= 3; i++) {
+        summarySheet.autoResizeColumn(i);
+      }
+      
+      return ss.getUrl();
+    },
+    
+    /**
+     * Gets default criteria for QA reviews
+     * @return {Object} - Default criteria
+     */
+    getDefaultCriteria: function() {
+      var configService = getConfigService();
+      var defaultCriteriaString = configService.getSetting('default_qa_criteria');
+      var criteriaNames = defaultCriteriaString.split(',');
+      var criteria = {};
+      
+      criteriaNames.forEach(function(name) {
+        criteria[name.trim()] = {
+          score: 0,
+          maxScore: 10,
+          notes: ''
+        };
+      });
+      
+      return criteria;
+    }
+  };
+})();
+
+/**
+ * Get the QAService instance
+ * @return {Object} - QAService instance
+ */
+function getQAService() {
+  return QAService;
+}
+  
+  /**
+   * Initialize the QA sheets
+   * @return {Object} Result with success flag
+   */
+  function initializeSheet() {
+    try {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let sheet = ss.getSheetByName(QA_SHEET_NAME);
+      
+      if (!sheet) {
+        sheet = ss.insertSheet(QA_SHEET_NAME);
+        
+        // Add headers
+        const headers = [
+          'id', 'counselorEmail', 'counselorName', 'reviewer', 'interactionDate', 
+          'interactionId', 'interactionType', 'interactionLength', 'shadowSession', 
+          'interactionSummary', 'evaluation', 'totalPoints', 'totalPossible', 
+          'scorePercentage', 'callOpeningPoints', 'callOpeningPossible',
+          'riskAssessmentPoints', 'riskAssessmentPossible', 'communicationSkillsPoints',
+          'communicationSkillsPossible', 'supportEffectivenessPoints', 'supportEffectivenessPossible',
+          'callClosurePoints', 'callClosurePossible', 'overallFeedback', 'actionItems',
+          'qualityStatus', 'status', 'sendEmail', 'emailTemplate', 'lastEmailed',
+          'createdDate', 'lastUpdated', 'createdBy'
+        ];
+        
+        sheet.appendRow(headers);
+        sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#E8EAED');
+        sheet.setFrozenRows(1);
+      }
+      
+      // Initialize export history sheet if needed
+      let historySheet = ss.getSheetByName(QA_HISTORY_SHEET_NAME);
+      if (!historySheet) {
+        historySheet = ss.insertSheet(QA_HISTORY_SHEET_NAME);
+        historySheet.appendRow(['name', 'date', 'format', 'url', 'exportedBy', 'recordCount']);
+        historySheet.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#E8EAED');
+      }
+      
+      return {
+        success: true,
+        message: 'QA sheets initialized successfully'
+      };
+    } catch (e) {
+      Logger.log('Error initializing QA sheet: ' + e.toString());
+      return {
+        success: false,
+        message: 'Error: ' + e.toString()
+      };
+    }
+  }
+  
+  /**
+   * Save a QA review
+   * @param {Object} review - The review data to save
+   * @return {Object} Result with success flag and the review ID
+   */
+  function saveQAReview(review) {
+    try {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheet = ss.getSheetByName(QA_SHEET_NAME);
+      
+      if (!sheet) {
+        return {
+          success: false,
+          message: 'QA sheet not found. Please initialize it first.'
+        };
+      }
+      
+      // Check if evaluation and action items are objects to convert to JSON
+      if (review.evaluation && typeof review.evaluation !== 'string') {
+        review.evaluation = JSON.stringify(review.evaluation);
+      }
+      
+      if (review.actionItems && typeof review.actionItems !== 'string') {
+        review.actionItems = JSON.stringify(review.actionItems);
+      }
+      
+      // Generate a unique ID if this is a new review
+      if (!review.id) {
+        review.id = Utilities.getUuid();
+        review.createdDate = new Date();
+        review.createdBy = Session.getActiveUser().getEmail();
+      }
+      
+      // Set last updated
+      review.lastUpdated = new Date();
+      
+      // Find the review if it exists by ID
+      const data = sheet.getDataRange().getValues();
+      const headers = data[0];
+      let rowIndex = -1;
+      
+      for (let i = 1; i < data.length; i++) {
+        if (data[i][0] === review.id) {
+          rowIndex = i + 1; // Sheet rows are 1-indexed but data array is 0-indexed
+          break;
+        }
+      }
+      
+      // Create row array to write to sheet
+      const rowData = [];
+      headers.forEach(header => {
+        rowData.push(review[header] !== undefined ? review[header] : '');
+      });
+      
+      if (rowIndex > 0) {
+        // Update existing review
+        sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
+      } else {
+        // Add new review
+        sheet.appendRow(rowData);
+      }
+      
+      return {
+        success: true,
+        message: 'QA review saved successfully',
+        reviewId: review.id
+      };
+    } catch (e) {
+      Logger.log('Error saving QA review: ' + e.toString());
+      return {
+        success: false,
+        message: 'Error: ' + e.toString()
+      };
+    }
+  }
+  
+  /**
+   * Get a QA review by ID
+   * @param {string} id - The ID of the review to get
+   * @return {Object} The review data or null if not found
+   */
+  function getQAReviewById(id) {
+    try {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheet = ss.getSheetByName(QA_SHEET_NAME);
+      
+      if (!sheet) {
+        return null;
+      }
+      
+      const data = sheet.getDataRange().getValues();
+      const headers = data[0];
+      
+      for (let i = 1; i < data.length; i++) {
+        if (data[i][0] === id) {
+          const review = {};
+          
+          headers.forEach((header, index) => {
+            review[header] = data[i][index];
+          });
+          
+          // Parse JSON fields
+          if (review.evaluation && typeof review.evaluation === 'string') {
+            try {
+              review.evaluation = JSON.parse(review.evaluation);
+            } catch (e) {
+              Logger.log('Error parsing evaluation JSON: ' + e.toString());
+            }
+          }
+          
+          if (review.actionItems && typeof review.actionItems === 'string') {
+            try {
+              review.actionItems = JSON.parse(review.actionItems);
+            } catch (e) {
+              Logger.log('Error parsing actionItems JSON: ' + e.toString());
+            }
+          }
+          
+          return review;
+        }
+      }
+      
+      return null;
+    } catch (e) {
+      Logger.log('Error getting QA review: ' + e.toString());
+      return null;
+    }
+  }
+  
+  /**
+   * Get all QA reviews with optional filtering
+   * @param {Object} options - Filter options
+   * @return {Array} Array of QA reviews
+   */
+  function getQAReviews(options = {}) {
+    try {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheet = ss.getSheetByName(QA_SHEET_NAME);
+      
+      if (!sheet) {
+        return [];
+      }
+      
+      const data = sheet.getDataRange().getValues();
+      const headers = data[0];
+      const reviews = [];
+      
+      // Default values if not provided
+      const startDate = options.startDate || new Date(0); // Beginning of time
+      const endDate = options.endDate || new Date(); // Now
+      
+      for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        const review = {};
+        
+        headers.forEach((header, index) => {
+          review[header] = row[index];
+        });
+        
+        // Apply filters
+        
+        // Date filter - Using interaction date
+        const reviewDate = new Date(review.interactionDate);
+        if (reviewDate < startDate || reviewDate > endDate) {
+          continue;
+        }
+        
+        // Counselor filter
+        if (options.counselorEmail && review.counselorEmail !== options.counselorEmail) {
+          continue;
+        }
+        
+        // Status filter
+        if (options.status && review.status !== options.status) {
+          continue;
+        }
+        
+        // Quality status filter (only apply to Complete reviews)
+        if (options.qualityStatus && review.status === 'Complete' && review.qualityStatus !== options.qualityStatus) {
+          continue;
+        }
+        
+        // Parse JSON fields if needed
+        if (options.includeDetails) {
+          if (review.evaluation && typeof review.evaluation === 'string') {
+            try {
+              review.evaluation = JSON.parse(review.evaluation);
+            } catch (e) {
+              Logger.log('Error parsing evaluation JSON: ' + e.toString());
+            }
+          }
+          
+          if (review.actionItems && typeof review.actionItems === 'string') {
+            try {
+              review.actionItems = JSON.parse(review.actionItems);
+            } catch (e) {
+              Logger.log('Error parsing actionItems JSON: ' + e.toString());
+            }
+          }
+        }
+        
+        reviews.push(review);
+      }
+      
+      return reviews;
+    } catch (e) {
+      Logger.log('Error getting QA reviews: ' + e.toString());
+      return [];
+    }
+  }
+  
+  /**
+   * Get QA dashboard data with analytics
+   * @param {Object} options - Filter options
+   * @return {Object} Dashboard data and analytics
+   */
+  function getQADashboardData(options = {}) {
+    try {
+      // Get filtered reviews
+      const reviews = getQAReviews({
+        ...options,
+        includeDetails: true
+      });
+      
+      if (reviews.length === 0) {
+        return {
+          totalReviews: 0,
+          excellentCount: 0,
+          goodCount: 0,
+          needsImprovementCount: 0,
+          averageScore: 0,
+          recentReviews: [],
+          topPerformers: [],
+          weeklyScoreTrend: {},
+          monthlyScoreTrend: {},
+          sectionScores: {
+            callOpeningPercentage: 0,
+            riskAssessmentPercentage: 0,
+            communicationSkillsPercentage: 0,
+            supportEffectivenessPercentage: 0,
+            callClosurePercentage: 0
+          }
+        };
+      }
+      
+      // Calculate summary stats
+      const completedReviews = reviews.filter(r => r.status === 'Complete');
+      const excellentCount = completedReviews.filter(r => r.qualityStatus === 'Excellent').length;
+      const goodCount = completedReviews.filter(r => r.qualityStatus === 'Good').length;
+      const needsImprovementCount = completedReviews.filter(r => r.qualityStatus === 'Needs Improvement').length;
+      
+      // Calculate average score
+      let totalScore = 0;
+      completedReviews.forEach(r => {
+        totalScore += r.scorePercentage || 0;
+      });
+      const averageScore = completedReviews.length > 0 ? totalScore / completedReviews.length : 0;
+      
+      // Get recent reviews (latest 10)
+      const recentReviews = [...reviews].sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)).slice(0, 10);
+      
+      // Calculate weekly score trends
+      const weeklyScoreTrend = calculateWeeklyTrends(completedReviews);
+      
+      // Calculate monthly score trends
+      const monthlyScoreTrend = calculateMonthlyTrends(completedReviews);
+      
+      // Calculate section scores
+      const sectionScores = calculateSectionScores(completedReviews);
+      
+      // Get top performers (counselors with highest average scores)
+      const topPerformers = getTopPerformers(completedReviews);
+      
+      return {
+        totalReviews: reviews.length,
+        excellentCount: excellentCount,
+        goodCount: goodCount,
+        needsImprovementCount: needsImprovementCount,
+        averageScore: averageScore,
+        recentReviews: recentReviews,
+        topPerformers: topPerformers,
+        weeklyScoreTrend: weeklyScoreTrend,
+        monthlyScoreTrend: monthlyScoreTrend,
+        sectionScores: sectionScores
+      };
+    } catch (e) {
+      Logger.log('Error getting QA dashboard data: ' + e.toString());
+      return null;
+    }
+  }
+  
+  /**
+   * Calculate weekly trends from review data
+   * @param {Array} reviews - Array of completed reviews
+   * @return {Object} Weekly trend data
+   */
+  function calculateWeeklyTrends(reviews) {
+    const weeks = {};
+    
+    reviews.forEach(review => {
+      const date = new Date(review.interactionDate);
+      const year = date.getFullYear();
+      const weekNumber = getWeekNumber(date);
+      const weekKey = `${year}-W${weekNumber.toString().padStart(2, '0')}`;
+      
+      if (!weeks[weekKey]) {
+        weeks[weekKey] = {
+          totalScore: 0,
+          reviewCount: 0,
+          averageScore: 0
+        };
+      }
+      
+      weeks[weekKey].totalScore += review.scorePercentage || 0;
+      weeks[weekKey].reviewCount++;
+    });
+    
+    // Calculate averages
+    Object.keys(weeks).forEach(week => {
+      weeks[week].averageScore = weeks[week].totalScore / weeks[week].reviewCount;
+    });
+    
+    return weeks;
+  }
+  
+  /**
+   * Calculate monthly trends from review data
+   * @param {Array} reviews - Array of completed reviews
+   * @return {Object} Monthly trend data
+   */
+  function calculateMonthlyTrends(reviews) {
+    const months = {};
+    
+    reviews.forEach(review => {
+      const date = new Date(review.interactionDate);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1; // 1-12
+      const monthKey = `${year}-${month.toString().padStart(2, '0')}`;
+      
+      if (!months[monthKey]) {
+        months[monthKey] = {
+          totalScore: 0,
+          reviewCount: 0,
+          averageScore: 0
+        };
+      }
+      
+      months[monthKey].totalScore += review.scorePercentage || 0;
+      months[monthKey].reviewCount++;
+    });
+    
+    // Calculate averages
+    Object.keys(months).forEach(month => {
+      months[month].averageScore = months[month].totalScore / months[month].reviewCount;
+    });
+    
+    return months;
+  }
+  
+  /**
+   * Calculate section scores from completed reviews
+   * @param {Array} reviews - Array of completed reviews
+   * @return {Object} Section score percentages
+   */
+  function calculateSectionScores(reviews) {
+    let totalCallOpeningPoints = 0;
+    let totalCallOpeningPossible = 0;
+    let totalRiskAssessmentPoints = 0;
+    let totalRiskAssessmentPossible = 0;
+    let totalCommunicationSkillsPoints = 0;
+    let totalCommunicationSkillsPossible = 0;
+    let totalSupportEffectivenessPoints = 0;
+    let totalSupportEffectivenessPossible = 0;
+    let totalCallClosurePoints = 0;
+    let totalCallClosurePossible = 0;
+    
+    reviews.forEach(review => {
+      totalCallOpeningPoints += review.callOpeningPoints || 0;
+      totalCallOpeningPossible += review.callOpeningPossible || 0;
+      totalRiskAssessmentPoints += review.riskAssessmentPoints || 0;
+      totalRiskAssessmentPossible += review.riskAssessmentPossible || 0;
+      totalCommunicationSkillsPoints += review.communicationSkillsPoints || 0;
+      totalCommunicationSkillsPossible += review.communicationSkillsPossible || 0;
+      totalSupportEffectivenessPoints += review.supportEffectivenessPoints || 0;
+      totalSupportEffectivenessPossible += review.supportEffectivenessPossible || 0;
+      totalCallClosurePoints += review.callClosurePoints || 0;
+      totalCallClosurePossible += review.callClosurePossible || 0;
+    });
+    
+    const calculatePercentage = (points, possible) => {
+      return possible > 0 ? (points / possible) * 100 : 0;
+    };
+    
+    return {
+      callOpeningPercentage: calculatePercentage(totalCallOpeningPoints, totalCallOpeningPossible),
+      riskAssessmentPercentage: calculatePercentage(totalRiskAssessmentPoints, totalRiskAssessmentPossible),
+      communicationSkillsPercentage: calculatePercentage(totalCommunicationSkillsPoints, totalCommunicationSkillsPossible),
+      supportEffectivenessPercentage: calculatePercentage(totalSupportEffectivenessPoints, totalSupportEffectivenessPossible),
+      callClosurePercentage: calculatePercentage(totalCallClosurePoints, totalCallClosurePossible)
+    };
+  }
+  
+  /**
+   * Get top performers based on average scores
+   * @param {Array} reviews - Array of completed reviews
+   * @return {Array} Top 5 performing counselors
+   */
+  function getTopPerformers(reviews) {
+    const counselors = {};
+    
+    reviews.forEach(review => {
+      const email = review.counselorEmail;
+      
+      if (!counselors[email]) {
+        counselors[email] = {
+          email: email,
+          name: review.counselorName,
+          totalScore: 0,
+          reviewCount: 0
+        };
+      }
+      
+      counselors[email].totalScore += review.scorePercentage || 0;
+      counselors[email].reviewCount++;
+    });
+    
+    // Calculate average scores
+    Object.values(counselors).forEach(counselor => {
+      counselor.averageScore = counselor.totalScore / counselor.reviewCount;
+    });
+    
+    // Get top 5 by average score
+    return Object.values(counselors)
+      .sort((a, b) => b.averageScore - a.averageScore)
+      .slice(0, 5);
+  }
+  
+  /**
+   * Send QA review email to counselor
+   * @param {string} reviewId - The ID of the review to email
+   * @return {Object} Result with success flag
+   */
+  function sendQAReviewEmail(reviewId) {
+    try {
+      const review = getQAReviewById(reviewId);
+      
+      if (!review) {
+        return {
+          success: false,
+          message: 'Review not found'
+        };
+      }
+      
+      if (review.status !== 'Complete') {
+        return {
+          success: false,
+          message: 'Cannot send email for incomplete review'
+        };
+      }
+      
+      // Get counselor email
+      const recipientEmail = review.counselorEmail;
+      
+      if (!recipientEmail) {
+        return {
+          success: false,
+          message: 'Recipient email not found'
+        };
+      }
+      
+      // Determine email template to use
+      let template = review.emailTemplate || 'standard';
+      
+      // Create email subject
+      const subject = `QA Review Feedback - ${new Date(review.interactionDate).toLocaleDateString()}`;
+      
+      // Create email body
+      let body = createEmailBody(review, template);
+      
+      // Send the email
+      GmailApp.sendEmail(recipientEmail, subject, "", {
+        htmlBody: body,
+        name: "QA Feedback System",
+        replyTo: Session.getActiveUser().getEmail()
+      });
+      
+      // Update the review with email sent date
+      review.lastEmailed = new Date();
+      saveQAReview(review);
+      
+      return {
+        success: true,
+        message: 'Email sent successfully'
+      };
+    } catch (e) {
+      Logger.log('Error sending QA review email: ' + e.toString());
+      return {
+        success: false,
+        message: 'Error: ' + e.toString()
+      };
+    }
+  }
+  
+  /**
+   * Create HTML email body based on review and template
+   * @param {Object} review - QA review data
+   * @param {string} template - Email template to use
+   * @return {string} HTML email body
+   */
+  function createEmailBody(review, template) {
+    // Common header and footer
+    const header = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #4e73df; color: white; padding: 20px; text-align: center;">
+          <h1 style="margin: 0;">QA Review Feedback</h1>
+          <p style="margin: 10px 0 0;">Interaction Date: ${new Date(review.interactionDate).toLocaleDateString()}</p>
+        </div>
+        <div style="padding: 20px; background-color: #f8f9fc;">
+    `;
+    
+    const footer = `
+        </div>
+        <div style="background-color: #f1f1f1; padding: 15px; text-align: center; font-size: 12px; color: #666;">
+          <p>This is an automated message from the QA Review System.</p>
+        </div>
+      </div>
+    `;
+    
+    // Determine status color
+    let statusColor = '#e74a3b'; // Default to red for Needs Improvement
+    if (review.qualityStatus === 'Excellent') {
+      statusColor = '#1cc88a'; // Green
+    } else if (review.qualityStatus === 'Good') {
+      statusColor = '#36b9cc'; // Blue
+    }
+    
+    // Status badge
+    const statusBadge = `
+      <div style="margin: 20px 0; text-align: center;">
+        <div style="display: inline-block; background-color: ${statusColor}; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold;">
+          ${review.qualityStatus} - ${review.scorePercentage.toFixed(1)}%
+        </div>
+      </div>
+    `;
+    
+    // Score breakdown
+    const scoreBreakdown = `
+      <div style="margin-bottom: 20px; background-color: white; padding: 15px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h3 style="margin-top: 0; color: #4e73df; border-bottom: 1px solid #eaecf4; padding-bottom: 10px;">Score Breakdown</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;"><strong>Call Opening:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;">${review.callOpeningPoints || 0} / ${review.callOpeningPossible || 0} points</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;"><strong>Risk Assessment:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;">${review.riskAssessmentPoints || 0} / ${review.riskAssessmentPossible || 0} points</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;"><strong>Communication Skills:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;">${review.communicationSkillsPoints || 0} / ${review.communicationSkillsPossible || 0} points</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;"><strong>Support Effectiveness:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;">${review.supportEffectivenessPoints || 0} / ${review.supportEffectivenessPossible || 0} points</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;"><strong>Call Closure:</strong></td>
+            <td style="padding: 8px; border-bottom: 1px solid #eaecf4;">${review.callClosurePoints || 0} / ${review.callClosurePossible || 0} points</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; font-weight: bold;"><strong>Total Score:</strong></td>
+            <td style="padding: 8px; font-weight: bold;">${review.totalPoints || 0} / ${review.totalPossible || 0} points (${review.scorePercentage.toFixed(1)}%)</td>
+          </tr>
+        </table>
+      </div>
+    `;
+    
+    // Feedback section
+    const feedbackSection = `
+      <div style="margin-bottom: 20px; background-color: white; padding: 15px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h3 style="margin-top: 0; color: #4e73df; border-bottom: 1px solid #eaecf4; padding-bottom: 10px;">Feedback</h3>
+        <p>${review.overallFeedback || 'No feedback provided.'}</p>
+      </div>
+    `;
+    
+    // Action items section (if any)
+    let actionItemsSection = '';
+    if (review.actionItems && review.actionItems.length > 0) {
+      let actionItems;
+      
+      if (typeof review.actionItems === 'string') {
+        try {
+          actionItems = JSON.parse(review.actionItems);
+        } catch (e) {
+          actionItems = [];
+        }
+      } else {
+        actionItems = review.actionItems;
+      }
+      
+      if (actionItems.length > 0) {
+        let actionItemsHtml = '';
+        actionItems.forEach(item => {
+          actionItemsHtml += `
+            <li style="margin-bottom: 8px;">
+              ${item.text}
+              ${item.completed ? '<span style="color: #1cc88a;">(Completed)</span>' : ''}
+            </li>
+          `;
+        });
+        
+        actionItemsSection = `
+          <div style="margin-bottom: 20px; background-color: white; padding: 15px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0; color: #4e73df; border-bottom: 1px solid #eaecf4; padding-bottom: 10px;">Action Items</h3>
+            <ul style="padding-left: 20px;">
+              ${actionItemsHtml}
+            </ul>
+          </div>
+        `;
+      }
+    }
+    
+    // Create template-specific content
+    let templateContent = '';
+    
+    if (template === 'development') {
+      // Development focus template - emphasizes areas for improvement
+      templateContent = `
+        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+          Dear ${review.counselorName},
+        </p>
+        <p style="line-height: 1.5; margin-bottom: 15px;">
+          Thank you for your hard work and dedication. This QA review has identified some areas where we believe
+          focused development would help enhance your interactions with contacts and improve overall service quality.
+        </p>
+        ${statusBadge}
+        ${scoreBreakdown}
+        <div style="margin-bottom: 20px; background-color: white; padding: 15px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <h3 style="margin-top: 0; color: #4e73df; border-bottom: 1px solid #eaecf4; padding-bottom: 10px;">Development Opportunities</h3>
+          <p>${review.overallFeedback || 'No feedback provided.'}</p>
+        </div>
+        ${actionItemsSection}
+        <p style="line-height: 1.5; margin-top: 30px;">
+          We're here to support your growth. If you'd like to discuss these observations or need any additional resources,
+          please don't hesitate to reach out to your supervisor.
+        </p>
+      `;
+    } else if (template === 'recognition') {
+      // Recognition template - emphasizes strengths and positive feedback
+      templateContent = `
+        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+          Dear ${review.counselorName},
+        </p>
+        <p style="line-height: 1.5; margin-bottom: 15px;">
+          Congratulations on your excellent performance! This QA review highlights the outstanding work you're doing
+          and the positive impact you're making with our contacts.
+        </p>
+        ${statusBadge}
+        ${scoreBreakdown}
+        <div style="margin-bottom: 20px; background-color: white; padding: 15px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <h3 style="margin-top: 0; color: #4e73df; border-bottom: 1px solid #eaecf4; padding-bottom: 10px;">Strengths & Recognition</h3>
+          <p>${review.overallFeedback || 'No feedback provided.'}</p>
+        </div>
+        ${actionItemsSection}
+        <p style="line-height: 1.5; margin-top: 30px;">
+          Thank you for your commitment to excellence. Your dedication and skills are making a real difference in the lives
+          of those we serve. Keep up the amazing work!
+        </p>
+      `;
+    } else {
+      // Standard template
+      templateContent = `
+        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+          Dear ${review.counselorName},
+        </p>
+        <p style="line-height: 1.5; margin-bottom: 15px;">
+          Below is your Quality Assurance review for the interaction on ${new Date(review.interactionDate).toLocaleDateString()}.
+          This feedback is provided to help support your development and recognize your strengths.
+        </p>
+        ${statusBadge}
+        ${scoreBreakdown}
+        ${feedbackSection}
+        ${actionItemsSection}
+        <p style="line-height: 1.5; margin-top: 30px;">
+          If you have any questions about this review or would like to discuss it further, please contact your supervisor.
+        </p>
+      `;
+    }
+    
+    // Combine all sections
+    return header + templateContent + footer;
+  }
+  
+  /**
+   * Export QA data with various options
+   * @param {Object} options - Export options
+   * @return {Object} Result with success flag and url
+   */
+  function exportQAData(options) {
+    try {
+      const exportName = options.exportName || 'QA Export';
+      const format = options.format || 'excel';
+      
+      // Get the data based on filters
+      const reviews = getQAReviews({
+        ...options,
+        includeDetails: true
+      });
+      
+      if (reviews.length === 0) {
+        return {
+          success: false,
+          message: 'No QA data found matching the specified criteria'
+        };
+      }
+      
+      // Export based on format
+      if (format === 'csv') {
+        return exportToCSV(reviews, exportName, options);
+      } else if (format === 'pdf') {
+        return exportToPDF(reviews, exportName, options);
+      } else if (format === 'gsheet') {
+        return exportToGoogleSheet(reviews, exportName, options);
+      } else {
+        // Default to Excel
+        return exportToExcel(reviews, exportName, options);
+      }
+    } catch (e) {
+      Logger.log('Error exporting QA data: ' + e.toString());
+      return {
+        success: false,
+        message: 'Error: ' + e.toString()
+      };
+    }
+  }
+  
+  /**
+   * Export QA data to Excel format
+   * @param {Array} reviews - Array of QA reviews
+   * @param {string} exportName - Name for the export file
+   * @param {Object} options - Export options
+   * @return {Object} Result object with success flag and url
+   */
+  function exportToExcel(reviews, exportName, options) {
+    try {
+      // Create a new spreadsheet
+      const ss = SpreadsheetApp.create(exportName);
+      
+      // Create main data sheet
+      const mainSheet = ss.getActiveSheet();
+      mainSheet.setName('QA Reviews');
+      
+      // Define columns for main sheet
+      const columns = [
+        'ID', 'Interaction Date', 'Counselor Name', 'Interaction Type',
+        'Interaction ID', 'Reviewer', 'Score', 'Status', 'Quality Status'
+      ];
+      
+      // Add headers
+      mainSheet.appendRow(columns);
+      
+      // Add data rows
+      reviews.forEach(review => {
+        const interactionDate = review.interactionDate instanceof Date ? 
+          review.interactionDate : new Date(review.interactionDate);
+        
+        mainSheet.appendRow([
+          review.id,
+          interactionDate,
+          review.counselorName,
+          review.interactionType,
+          review.interactionId,
+          review.reviewer,
+          review.scorePercentage || 0,
+          review.status,
+          review.qualityStatus || ''
+        ]);
+      });
+      
+      // Format header row
+      mainSheet.getRange(1, 1, 1, columns.length).setFontWeight('bold').setBackground('#E8EAED');
+      
+      // Auto-resize columns
+      for (let i = 1; i <= columns.length; i++) {
+        mainSheet.autoResizeColumn(i);
+      }
+      
+      // If includeSummary is true, add a summary sheet
+      if (options.includeSummary) {
+        createSummarySheet(ss, reviews);
+      }
+      
+      // If includeDetails is true, add a details sheet
+      if (options.includeDetails) {
+        createDetailsSheet(ss, reviews);
+      }
+      
+      // If includeCharts is true, add a charts sheet
+      if (options.includeCharts) {
+        createChartsSheet(ss, reviews);
+      }
+      
+      // Record export in history
+      recordExport({
+        name: exportName,
+        format: 'excel',
+        url: ss.getUrl(),
+        recordCount: reviews.length
+      });
+      
+      return {
+        success: true,
+        message: 'Exported ' + reviews.length + ' reviews to Excel format',
+        url: ss.getUrl()
+      };
+    } catch (e) {
+      Logger.log('Error exporting to Excel: ' + e.toString());
+      return {
+        success: false,
+        message: 'Error exporting to Excel: ' + e.toString()
+      };
+    }
+  }
+  
+  /**
+   * Create a summary sheet in the exported spreadsheet
+   * @param {Spreadsheet} ss - The spreadsheet to add summary to
+   * @param {Array} reviews - The review data
+   */
+  function createSummarySheet(ss, reviews) {
+    try {
+      // Create a new sheet for summary
+      const summarySheet = ss.insertSheet('Summary');
+      
+      // Add title
+      summarySheet.getRange(1, 1).setValue('QA Reviews Summary');
+      summarySheet.getRange(1, 1).setFontWeight('bold').setFontSize(14);
+      
+      // Get completed reviews
+      const completedReviews = reviews.filter(r => r.status === 'Complete');
+      const totalReviews = reviews.length;
+      const completedCount = completedReviews.length;
+      const excellentCount = completedReviews.filter(r => r.qualityStatus === 'Excellent').length;
+      const goodCount = completedReviews.filter(r => r.qualityStatus === 'Good').length;
+      const needsImprovementCount = completedReviews.filter(r => r.qualityStatus === 'Needs Improvement').length;
+      
+      // Calculate average score
+      let totalScore = 0;
+      completedReviews.forEach(r => {
+        totalScore += r.scorePercentage || 0;
+      });
+      const averageScore = completedReviews.length > 0 ? totalScore / completedReviews.length : 0;
+      
+      // Add summary data
+      summarySheet.getRange(3, 1).setValue('Total Reviews:');
+      summarySheet.getRange(3, 2).setValue(totalReviews);
+      
+      summarySheet.getRange(4, 1).setValue('Completed Reviews:');
+      summarySheet.getRange(4, 2).setValue(completedCount);
+      
+      summarySheet.getRange(5, 1).setValue('Excellent:');
+      summarySheet.getRange(5, 2).setValue(excellentCount);
+      
+      summarySheet.getRange(6, 1).setValue('Good:');
+      summarySheet.getRange(6, 2).setValue(goodCount);
+      
+      summarySheet.getRange(7, 1).setValue('Needs Improvement:');
+      summarySheet.getRange(7, 2).setValue(needsImprovementCount);
+      
+      summarySheet.getRange(8, 1).setValue('Average Score:');
+      summarySheet.getRange(8, 2).setValue(averageScore + '%');
+      
+      // Add counselor breakdown
+      summarySheet.getRange(10, 1).setValue('Counselor Performance');
+      summarySheet.getRange(10, 1).setFontWeight('bold');
+      
+      summarySheet.getRange(11, 1).setValue('Counselor');
+      summarySheet.getRange(11, 2).setValue('Reviews');
+      summarySheet.getRange(11, 3).setValue('Average Score');
+      summarySheet.getRange(11, 1, 1, 3).setFontWeight('bold').setBackground('#E8EAED');
+      
+      // Get counselor stats
+      const counselors = {};
+      
+      completedReviews.forEach(review => {
+        const email = review.counselorEmail;
+        
+        if (!counselors[email]) {
+          counselors[email] = {
+            name: review.counselorName,
+            totalScore: 0,
+            reviewCount: 0
+          };
+        }
+        
+        counselors[email].totalScore += review.scorePercentage || 0;
+        counselors[email].reviewCount++;
+      });
+      
+      // Sort counselors by average score (highest first)
+      const sortedCounselors = Object.values(counselors)
+        .map(c => ({
+          ...c,
+          averageScore: c.totalScore / c.reviewCount
+        }))
+        .sort((a, b) => b.averageScore - a.averageScore);
+      
+      // Add counselor rows
+      sortedCounselors.forEach((counselor, index) => {
+        summarySheet.getRange(12 + index, 1).setValue(counselor.name);
+        summarySheet.getRange(12 + index, 2).setValue(counselor.reviewCount);
+        summarySheet.getRange(12 + index, 3).setValue(counselor.averageScore.toFixed(1) + '%');
+      });
+      
+      // Format and auto-size columns
+      for (let i = 1; i <= 3; i++) {
+        summarySheet.autoResizeColumn(i);
+      }
+      
+      // Activate summary sheet
+      ss.setActiveSheet(summarySheet);
+    } catch (e) {
+      Logger.log('Error creating summary sheet: ' + e.toString());
+    }
+  }
+  
+  /**
+   * Create a details sheet in the exported spreadsheet
+   * @param {Spreadsheet} ss - The spreadsheet to add details to
+   * @param {Array} reviews - The review data
+   */
+  function createDetailsSheet(ss, reviews) {
+    try {
+      // Create a new sheet for details
+      const detailsSheet = ss.insertSheet('Evaluation Details');
+      
+      // Only focus on completed reviews
+      const completedReviews = reviews.filter(r => r.status === 'Complete');
+      
+      if (completedReviews.length === 0) {
+        detailsSheet.getRange(1, 1).setValue('No completed reviews available');
+        return;
+      }
+      
+      // Add headers
+      detailsSheet.appendRow([
+        'ID', 'Interaction Date', 'Counselor Name', 'Interaction Type',
+        'Interaction ID', 'Total Score', 'Call Opening Score', 'Risk Assessment Score',
+        'Communication Skills Score', 'Support Effectiveness Score', 'Call Closure Score',
+        'Quality Status', 'Overall Feedback'
+      ]);
+      
+      // Add data rows
+      completedReviews.forEach(review => {
+        const interactionDate = review.interactionDate instanceof Date ? 
+          review.interactionDate : new Date(review.interactionDate);
+        
+        // Calculate section percentages
+        const callOpeningPercent = review.callOpeningPossible > 0 ? 
+          (review.callOpeningPoints / review.callOpeningPossible) * 100 : 0;
+        
+        const riskAssessmentPercent = review.riskAssessmentPossible > 0 ? 
+          (review.riskAssessmentPoints / review.riskAssessmentPossible) * 100 : 0;
+        
+        const communicationSkillsPercent = review.communicationSkillsPossible > 0 ? 
+          (review.communicationSkillsPoints / review.communicationSkillsPossible) * 100 : 0;
+        
+        const supportEffectivenessPercent = review.supportEffectivenessPossible > 0 ? 
+          (review.supportEffectivenessPoints / review.supportEffectivenessPossible) * 100 : 0;
+        
+        const callClosurePercent = review.callClosurePossible > 0 ? 
+          (review.callClosurePoints / review.callClosurePossible) * 100 : 0;
+        
+        detailsSheet.appendRow([
+          review.id,
+          interactionDate,
+          review.counselorName,
+          review.interactionType,
+          review.interactionId,
+          review.scorePercentage + '%',
+          callOpeningPercent.toFixed(1) + '%',
+          riskAssessmentPercent.toFixed(1) + '%',
+          communicationSkillsPercent.toFixed(1) + '%',
+          supportEffectivenessPercent.toFixed(1) + '%',
+          callClosurePercent.toFixed(1) + '%',
+          review.qualityStatus,
+          review.overallFeedback || ''
+        ]);
+      });
+      
+      // Format header row
+      detailsSheet.getRange(1, 1, 1, 13).setFontWeight('bold').setBackground('#E8EAED');
+      
+      // Auto-resize columns
+      for (let i = 1; i <= 13; i++) {
+        detailsSheet.autoResizeColumn(i);
+      }
+    } catch (e) {
+      Logger.log('Error creating details sheet: ' + e.toString());
+    }
+  }
+  
+  /**
+   * Create a charts sheet in the exported spreadsheet
+   * @param {Spreadsheet} ss - The spreadsheet to add charts to
+   * @param {Array} reviews - The review data
+   */
+  function createChartsSheet(ss, reviews) {
+    try {
+      // Create a new sheet for charts
+      const chartsSheet = ss.insertSheet('Charts');
+      
+      // Add title
+      chartsSheet.getRange(1, 1).setValue('QA Performance Charts');
+      chartsSheet.getRange(1, 1).setFontWeight('bold').setFontSize(14);
+      
+      // Only focus on completed reviews
+      const completedReviews = reviews.filter(r => r.status === 'Complete');
+      
+      if (completedReviews.length === 0) {
+        chartsSheet.getRange(3, 1).setValue('No completed reviews available for charting');
+        return;
+      }
+      
+      // Prepare data for quality status distribution chart
+      chartsSheet.getRange(3, 1).setValue('Quality Status Distribution');
+      chartsSheet.getRange(3, 1).setFontWeight('bold');
+      
+      chartsSheet.getRange(4, 1).setValue('Status');
+      chartsSheet.getRange(4, 2).setValue('Count');
+      
+      const excellentCount = completedReviews.filter(r => r.qualityStatus === 'Excellent').length;
+      const goodCount = completedReviews.filter(r => r.qualityStatus === 'Good').length;
+      const needsImprovementCount = completedReviews.filter(r => r.qualityStatus === 'Needs Improvement').length;
+      
+      chartsSheet.getRange(5, 1).setValue('Excellent');
+      chartsSheet.getRange(5, 2).setValue(excellentCount);
+      
+      chartsSheet.getRange(6, 1).setValue('Good');
+      chartsSheet.getRange(6, 2).setValue(goodCount);
+      
+      chartsSheet.getRange(7, 1).setValue('Needs Improvement');
+      chartsSheet.getRange(7, 2).setValue(needsImprovementCount);
+      
+      // Create pie chart for status distribution
+      const statusData = chartsSheet.getRange('A4:B7');
+      
+      const statusChart = chartsSheet.newChart()
+        .setChartType(Charts.ChartType.PIE)
+        .addRange(statusData)
+        .setPosition(3, 4, 0, 0)
+        .setOption('title', 'Quality Status Distribution')
+        .setOption('pieHole', 0.4)
+        .setOption('legend', {position: 'right'})
+        .setOption('width', 400)
+        .setOption('height', 300)
+        .build();
+      
+      chartsSheet.insertChart(statusChart);
+      
+      // Prepare data for section scores
+      chartsSheet.getRange(10, 1).setValue('Average Section Performance');
+      chartsSheet.getRange(10, 1).setFontWeight('bold');
+      
+      chartsSheet.getRange(11, 1).setValue('Section');
+      chartsSheet.getRange(11, 2).setValue('Average Score');
+      
+      // Calculate section averages
+      let totalCallOpeningPoints = 0;
+      let totalCallOpeningPossible = 0;
+      let totalRiskAssessmentPoints = 0;
+      let totalRiskAssessmentPossible = 0;
+      let totalCommunicationSkillsPoints = 0;
+      let totalCommunicationSkillsPossible = 0;
+      let totalSupportEffectivenessPoints = 0;
+      let totalSupportEffectivenessPossible = 0;
+      let totalCallClosurePoints = 0;
+      let totalCallClosurePossible = 0;
+      
+      completedReviews.forEach(review => {
+        totalCallOpeningPoints += review.callOpeningPoints || 0;
+        totalCallOpeningPossible += review.callOpeningPossible || 0;
+        totalRiskAssessmentPoints += review.riskAssessmentPoints || 0;
+        totalRiskAssessmentPossible += review.riskAssessmentPossible || 0;
+        totalCommunicationSkillsPoints += review.communicationSkillsPoints || 0;
+        totalCommunicationSkillsPossible += review.communicationSkillsPossible || 0;
+        totalSupportEffectivenessPoints += review.supportEffectivenessPoints || 0;
+        totalSupportEffectivenessPossible += review.supportEffectivenessPossible || 0;
+        totalCallClosurePoints += review.callClosurePoints || 0;
+        totalCallClosurePossible += review.callClosurePossible || 0;
+      });
+      
+      const calculatePercentage = (points, possible) => {
+        return possible > 0 ? (points / possible) * 100 : 0;
+      };
+      
+      const callOpeningAvg = calculatePercentage(totalCallOpeningPoints, totalCallOpeningPossible);
+      const riskAssessmentAvg = calculatePercentage(totalRiskAssessmentPoints, totalRiskAssessmentPossible);
+      const communicationSkillsAvg = calculatePercentage(totalCommunicationSkillsPoints, totalCommunicationSkillsPossible);
+      const supportEffectivenessAvg = calculatePercentage(totalSupportEffectivenessPoints, totalSupportEffectivenessPossible);
+      const callClosureAvg = calculatePercentage(totalCallClosurePoints, totalCallClosurePossible);
+      
+      chartsSheet.getRange(12, 1).setValue('Call Opening');
+      chartsSheet.getRange(12, 2).setValue(callOpeningAvg);
+      
+      chartsSheet.getRange(13, 1).setValue('Risk Assessment');
+      chartsSheet.getRange(13, 2).setValue(riskAssessmentAvg);
+      
+      chartsSheet.getRange(14, 1).setValue('Communication Skills');
+      chartsSheet.getRange(14, 2).setValue(communicationSkillsAvg);
+      
+      chartsSheet.getRange(15, 1).setValue('Support Effectiveness');
+      chartsSheet.getRange(15, 2).setValue(supportEffectivenessAvg);
+      
+      chartsSheet.getRange(16, 1).setValue('Call Closure');
+      chartsSheet.getRange(16, 2).setValue(callClosureAvg);
+      
+      // Create column chart for section performance
+      const sectionData = chartsSheet.getRange('A11:B16');
+      
+      const sectionChart = chartsSheet.newChart()
+        .setChartType(Charts.ChartType.COLUMN)
+        .addRange(sectionData)
+        .setPosition(10, 4, 0, 0)
+        .setOption('title', 'Average Section Performance')
+        .setOption('legend', {position: 'none'})
+        .setOption('vAxis', {
+          title: 'Score (%)',
+          minValue: 0,
+          maxValue: 100
+        })
+        .setOption('width', 500)
+        .setOption('height', 300)
+        .build();
+      
+      chartsSheet.insertChart(sectionChart);
+      
+      // Format the chart data
+      chartsSheet.getRange('B12:B16').setNumberFormat('0.0"%"');
+      
+      // Auto-fit columns
+      chartsSheet.autoResizeColumn(1);
+      chartsSheet.autoResizeColumn(2);
+    } catch (e) {
+      Logger.log('Error creating charts sheet: ' + e.toString());
+    }
+  }
+  
+  /**
+   * Export QA data to CSV format
+   * @param {Array} reviews - Array of QA reviews
+   * @param {string} exportName - Name for the export file
+   * @param {Object} options - Export options
+   * @return {Object} Result object with success flag and url
+   */
+  function exportToCSV(reviews, exportName, options) {
+    try {
+      // Generate CSV content
+      let csvContent = '';
+      
+      // Define headers
+      const headers = [
+        'ID', 'InteractionDate', 'CounselorName', 'CounselorEmail', 'InteractionType',
+        'InteractionID', 'Reviewer', 'Score', 'Status', 'QualityStatus',
+        'TotalPoints', 'TotalPossible', 'CallOpeningPoints', 'CallOpeningPossible',
+        'RiskAssessmentPoints', 'RiskAssessmentPossible', 'CommunicationSkillsPoints',
+        'CommunicationSkillsPossible', 'SupportEffectivenessPoints', 'SupportEffectivenessPossible',
+        'CallClosurePoints', 'CallClosurePossible', 'OverallFeedback', 'CreatedDate', 'LastUpdated'
+      ];
+      
+      // Add headers row
+      csvContent += headers.join(',') + '\n';
+      
+      // Add data rows
+      reviews.forEach(review => {
+        const row = [];
+        
+        // Format dates
+        const interactionDate = review.interactionDate instanceof Date ? 
+          review.interactionDate.toISOString().split('T')[0] : 
+          new Date(review.interactionDate).toISOString().split('T')[0];
+        
+        const createdDate = review.createdDate instanceof Date ? 
+          review.createdDate.toISOString() : 
+          new Date(review.createdDate).toISOString();
+        
+        const lastUpdated = review.lastUpdated instanceof Date ? 
+          review.lastUpdated.toISOString() : 
+          new Date(review.lastUpdated).toISOString();
+        
+        // Clean feedback text for CSV (escape quotes, remove newlines)
+        const cleanFeedback = review.overallFeedback ? 
+          '"' + review.overallFeedback.replace(/"/g, '""').replace(/\n/g, ' ') + '"' : '';
+        
+        row.push(
+          review.id,
+          interactionDate,
+          '"' + review.counselorName + '"',
+          review.counselorEmail,
+          review.interactionType,
+          review.interactionId,
+          '"' + review.reviewer + '"',
+          review.scorePercentage || 0,
+          review.status,
+          review.qualityStatus || '',
+          review.totalPoints || 0,
+          review.totalPossible || 0,
+          review.callOpeningPoints || 0,
+          review.callOpeningPossible || 0,
+          review.riskAssessmentPoints || 0,
+          review.riskAssessmentPossible || 0,
+          review.communicationSkillsPoints || 0,
+          review.communicationSkillsPossible || 0,
+          review.supportEffectivenessPoints || 0,
+          review.supportEffectivenessPossible || 0,
+          review.callClosurePoints || 0,
+          review.callClosurePossible || 0,
+          cleanFeedback,
+          createdDate,
+          lastUpdated
+        );
+        
+        csvContent += row.join(',') + '\n';
+      });
+      
+      // Create a blob and save to Drive
+      const blob = Utilities.newBlob(csvContent, 'text/csv', exportName + '.csv');
+      const file = DriveApp.createFile(blob);
+      
+      // Record export in history
+      recordExport({
+        name: exportName,
+        format: 'csv',
+        url: file.getUrl(),
+        recordCount: reviews.length
+      });
+      
+      return {
+        success: true,
+        message: 'Exported ' + reviews.length + ' reviews to CSV',
+        url: file.getUrl()
+      };
+    } catch (e) {
+      Logger.log('Error exporting to CSV: ' + e.toString());
+      return {
+        success: false,
+        message: 'Error exporting to CSV: ' + e.toString()
+      };
+    }
+  }
+  
+  /**
+   * Export QA data to Google Sheet
+   * @param {Array} reviews - Array of QA reviews
+   * @param {string} exportName - Name for the export file
+   * @param {Object} options - Export options
+   * @return {Object} Result object with success flag and url
+   */
+  function exportToGoogleSheet(reviews, exportName, options) {
+    // This is essentially the same as Excel export, as we're already creating a Google Sheet
+    return exportToExcel(reviews, exportName, options);
+  }
+  
+  /**
+   * Export QA data to PDF format
+   * @param {Array} reviews - Array of QA reviews
+   * @param {string} exportName - Name for the export file
+   * @param {Object} options - Export options
+   * @return {Object} Result object with success flag and url
+   */
+  function exportToPDF(reviews, exportName, options) {
+    try {
+      // Create a temporary spreadsheet for PDF conversion
+      const tempSs = SpreadsheetApp.create('Temp - ' + exportName);
+      const sheet = tempSs.getActiveSheet();
+      sheet.setName('QA Reviews');
+      
+      // Set title and date range
+      sheet.getRange(1, 1).setValue(exportName);
+      sheet.getRange(1, 1).setFontWeight('bold').setFontSize(16);
+      
+      if (options.startDate && options.endDate) {
+        const startDate = options.startDate instanceof Date ? 
+          options.startDate.toLocaleDateString() : 
+          new Date(options.startDate).toLocaleDateString();
+        
+        const endDate = options.endDate instanceof Date ? 
+          options.endDate.toLocaleDateString() : 
+          new Date(options.endDate).toLocaleDateString();
+        
+        sheet.getRange(2, 1).setValue(`Date Range: ${startDate} to ${endDate}`);
+      }
+      
+      // Define headers for the report
+      const headers = [
+        'Date', 'Counselor', 'Interaction Type', 'Score', 'Quality Status'
+      ];
+      
+      // Add headers at row 4
+      headers.forEach((header, index) => {
+        sheet.getRange(4, index + 1).setValue(header);
+      });
+      
+      // Format header row
+      sheet.getRange(4, 1, 1, headers.length).setFontWeight('bold').setBackground('#E8EAED');
+      
+      // Add data rows
+      const completedReviews = reviews.filter(r => r.status === 'Complete');
+      
+      completedReviews.forEach((review, rowIndex) => {
+        const interactionDate = review.interactionDate instanceof Date ? 
+          review.interactionDate.toLocaleDateString() : 
+          new Date(review.interactionDate).toLocaleDateString();
+        
+        sheet.getRange(5 + rowIndex, 1).setValue(interactionDate);
+        sheet.getRange(5 + rowIndex, 2).setValue(review.counselorName);
+        sheet.getRange(5 + rowIndex, 3).setValue(review.interactionType);
+        sheet.getRange(5 + rowIndex, 4).setValue(review.scorePercentage ? review.scorePercentage.toFixed(1) + '%' : 'N/A');
+        sheet.getRange(5 + rowIndex, 5).setValue(review.qualityStatus || 'N/A');
+      });
+      
+      // Add summary section
+      const summaryStartRow = 5 + completedReviews.length + 2;
+      
+      sheet.getRange(summaryStartRow, 1).setValue('Summary Statistics');
+      sheet.getRange(summaryStartRow, 1).setFontWeight('bold').setFontSize(14);
+      
+      // Calculate stats
+      const totalReviews = reviews.length;
+      const excellentCount = completedReviews.filter(r => r.qualityStatus === 'Excellent').length;
+      const goodCount = completedReviews.filter(r => r.qualityStatus === 'Good').length;
+      const needsImprovementCount = completedReviews.filter(r => r.qualityStatus === 'Needs Improvement').length;
+      
+      // Calculate average score
+      let totalScore = 0;
+      completedReviews.forEach(r => {
+        totalScore += r.scorePercentage || 0;
+      });
+      const averageScore = completedReviews.length > 0 ? totalScore / completedReviews.length : 0;
+      
+      // Add summary data
+      sheet.getRange(summaryStartRow + 1, 1).setValue('Total Reviews:');
+      sheet.getRange(summaryStartRow + 1, 2).setValue(totalReviews);
+      
+      sheet.getRange(summaryStartRow + 2, 1).setValue('Completed Reviews:');
+      sheet.getRange(summaryStartRow + 2, 2).setValue(completedReviews.length);
+      
+      sheet.getRange(summaryStartRow + 3, 1).setValue('Excellent:');
+      sheet.getRange(summaryStartRow + 3, 2).setValue(excellentCount);
+      
+      sheet.getRange(summaryStartRow + 4, 1).setValue('Good:');
+      sheet.getRange(summaryStartRow + 4, 2).setValue(goodCount);
+      
+      sheet.getRange(summaryStartRow + 5, 1).setValue('Needs Improvement:');
+      sheet.getRange(summaryStartRow + 5, 2).setValue(needsImprovementCount);
+      
+      sheet.getRange(summaryStartRow + 6, 1).setValue('Average Score:');
+      sheet.getRange(summaryStartRow + 6, 2).setValue(averageScore.toFixed(1) + '%');
+      
+      // Auto-resize columns
+      for (let i = 1; i <= headers.length; i++) {
+        sheet.autoResizeColumn(i);
+      }
+      
+      // Get spreadsheet ID and URL
+      const ssId = tempSs.getId();
+      const url = tempSs.getUrl();
+      
+      // Get the blob of the PDF from the spreadsheet
+      const blob = DriveApp.getFileById(ssId).getAs('application/pdf');
+      blob.setName(exportName + '.pdf');
+      
+      // Save the PDF to Drive
+      const pdfFile = DriveApp.createFile(blob);
+      
+      // Delete the temporary spreadsheet
+      DriveApp.getFileById(ssId).setTrashed(true);
+      
+      // Record export in history
+      recordExport({
+        name: exportName,
+        format: 'pdf',
+        url: pdfFile.getUrl(),
+        recordCount: reviews.length
+      });
+      
+      return {
+        success: true,
+        message: 'Exported ' + reviews.length + ' reviews to PDF',
+        url: pdfFile.getUrl()
+      };
+    } catch (e) {
+      Logger.log('Error exporting to PDF: ' + e.toString());
+      return {
+        success: false,
+        message: 'Error exporting to PDF: ' + e.toString()
+      };
+    }
+  }
+  
+  /**
+   * Record an export in the history sheet
+   * @param {Object} exportData - Data about the export
+   */
+  function recordExport(exportData) {
+    try {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let sheet = ss.getSheetByName(QA_HISTORY_SHEET_NAME);
+      
+      if (!sheet) {
+        // Create the history sheet if it doesn't exist
+        sheet = ss.insertSheet(QA_HISTORY_SHEET_NAME);
+        sheet.appendRow(['name', 'date', 'format', 'url', 'exportedBy', 'recordCount']);
+        sheet.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#E8EAED');
+      }
+      
+      // Add the export record
+      sheet.appendRow([
+        exportData.name,
+        new Date(),
+        exportData.format,
+        exportData.url || '',
+        Session.getActiveUser().getEmail(),
+        exportData.recordCount || 0
+      ]);
+      
+    } catch (e) {
+      Logger.log('Error recording export: ' + e.toString());
+    }
+  }
+  
+  /**
+   * Get export history data
+   * @return {Array} List of previous exports
+   */
+  function getQAExportHistory() {
+    try {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let sheet = ss.getSheetByName(QA_HISTORY_SHEET_NAME);
+      
+      if (!sheet) {
+        // Create the history sheet if it doesn't exist
+        sheet = ss.insertSheet(QA_HISTORY_SHEET_NAME);
+        sheet.appendRow(['name', 'date', 'format', 'url', 'exportedBy', 'recordCount']);
+        sheet.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#E8EAED');
+        return [];
+      }
+      
+      const data = sheet.getDataRange().getValues();
+      if (data.length <= 1) {
+        return []; // Only header row exists
+      }
+      
+      const headers = data[0];
+      const exports = [];
+      
+      // Convert data to objects
+      for (let i = 1; i < data.length; i++) {
+        const exportItem = {};
+        
+        for (let j = 0; j < headers.length; j++) {
+          exportItem[headers[j]] = data[i][j];
+        }
+        
+        exports.push(exportItem);
+      }
+      
+      return exports;
+    } catch (e) {
+      Logger.log('Error getting export history: ' + e.toString());
+      return [];
+    }
+  }
+  
+  /**
+   * Get week number from date
+   * @param {Date} date - Date to get week number for
+   * @return {number} Week number (1-53)
+   */
+  function getWeekNumber(date) {
+    // Copy date to avoid modifying original
+    const d = new Date(date);
+    // Set to nearest Thursday (to match ISO 8601 week date definition)
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    // Get first day of year
+    const yearStart = new Date(d.getFullYear(), 0, 1);
+    // Calculate week number
+    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  }
+
+
+ // Make sure your IIFE structure ends correctly
+  // Return public functions - this is the last part of the IIFE
+  return {
+    initializeSheet: initializeSheet,
+    saveQAReview: saveQAReview,
+    getQAReviewById: getQAReviewById,
+    getQAReviews: getQAReviews,
+    getQADashboardData: getQADashboardData,
+    sendQAReviewEmail: sendQAReviewEmail,
+    exportQAData: exportQAData,
+    getQAExportHistory: getQAExportHistory
+  };
+})(); // These final parentheses invoke the function
+
+/**
+ * Navigation functions for opening different QA pages
+ */
+function openQAReviewForm(reviewId) {
+  const url = reviewId ? '?id=' + reviewId : '';
+  const html = HtmlService.createTemplateFromFile('qa-review-form')
+    .evaluate()
+    .setTitle('QA Review Form')
+    .setWidth(1200)
+    .setHeight(800);
+  SpreadsheetApp.getUi().showModalDialog(html, 'QA Review Form');
+}
+
+function openQADashboard() {
+  const html = HtmlService.createTemplateFromFile('qa-dashboard')
+    .evaluate()
+    .setTitle('QA Dashboard')
+    .setWidth(1200)
+    .setHeight(800);
+  SpreadsheetApp.getUi().showModalDialog(html, 'QA Dashboard');
+}
+
+function openQAReports(reviewId) {
+  const url = reviewId ? '?id=' + reviewId : '';
+  const html = HtmlService.createTemplateFromFile('qa-reports')
+    .evaluate()
+    .setTitle('QA Reports')
+    .setWidth(1200)
+    .setHeight(800);
+  SpreadsheetApp.getUi().showModalDialog(html, 'QA Reports');
+}
+
+function openQAReportWithId(reviewId) {
+  openQAReports(reviewId);
+}
+
+function openQAExport() {
+  const html = HtmlService.createTemplateFromFile('qa-export')
+    .evaluate()
+    .setTitle('QA Export')
+    .setWidth(1200)
+    .setHeight(800);
+  SpreadsheetApp.getUi().showModalDialog(html, 'QA Export');
+}
