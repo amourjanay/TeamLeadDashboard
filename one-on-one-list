@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>One-on-One Notes</title>
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Animate.css for animations -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  
+  <style>
+    :root {
+      --primary: #4e73df;
+      --primary-light: #5a80e6;
+      --primary-dark: #2e59d9;
+      --secondary: #858796;
+      --success: #1cc88a;
+      --info: #36b9cc;
+      --warning: #f6c23e;
+      --danger: #e74a3b;
+      --light: #f8f9fc;
+      --dark: #5a5c69;
+      --gray-100: #f8f9fc;
+      --gray-200: #eaecf4;
+      --gray-300: #dddfeb;
+      --gray-400: #d1d3e2;
+      --gray-500: #b7b9cc;
+      --gray-600: #858796;
+      --gray-700: #6e707e;
+      --gray-800: #5a5c69;
+      --gray-900: #3a3b45;
+      --shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15);
+      --shadow-sm: 0 .125rem .25rem 0 rgba(58,59,69,.1);
+      --shadow-lg: 0 1rem 3rem rgba(0,0,0,.175);
+      --transition: all 0.3s ease;
+    }
+    
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-800);
+      padding: 0;
+      margin: 0;
+    }
+    
+    h1, h2, h3, h4, h5, h6, .heading {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+    }
+    
+    .container-fluid {
+      padding: 30px !important;
+    }
+    
+    /* Cards */
+    .card {
+      border: none;
+      box-shadow: var(--shadow);
+      border-radius: 0.75rem;
+      background: #fff;
+      transition: var(--transition);
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+    
+    .card-header {
+      background: #fff;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .card-header-title {
+      margin: 0;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--gray-900);
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Page header section */
+    .page-header {
+      background: #fff;
+      border-radius: 0.75rem;
+      padding: 25px 30px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .page-title {
+      font-size: 1.75rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .page-title i {
+      color: var(--primary);
+      margin-right: 12px;
+    }
+    
+    /* Button styles */
+    .btn {
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .btn i {
+      margin-right: 8px;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 .5rem 1rem rgba(78,115,223,.15);
+    }
+    
+    .btn-outline-primary {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .btn-outline-primary:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    
+    .btn-light {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border-color: var(--gray-100);
+    }
+    
+    .btn-light:hover {
+      background: var(--gray-200);
+      color: var(--gray-800);
+    }
+    
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.875rem;
+    }
+    
+    /* Filters */
+    .filters-section {
+      margin-bottom: 25px;
+      background: #fff;
+      border-radius: 0.75rem;
+      padding: 20px 25px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .filters-title {
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 15px;
+    }
+    
+    .filter-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: flex-end;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .filter-label {
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+      display: block;
+      font-size: 0.9rem;
+    }
+    
+    .form-control {
+      border-radius: 10px;
+      border: 1px solid var(--gray-300);
+      padding: 10px 15px;
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+
+    /* Stats cards */
+    .stats-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    
+    .stat-card {
+      flex: 1;
+      background: #fff;
+      border-radius: 0.75rem;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      min-width: 200px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+    }
+    
+    .stat-card .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    
+    .stat-primary .stat-icon {
+      background: rgba(78, 115, 223, 0.1);
+      color: var(--primary);
+    }
+    
+    .stat-success .stat-icon {
+      background: rgba(28, 200, 138, 0.1);
+      color: var(--success);
+    }
+    
+    .stat-warning .stat-icon {
+      background: rgba(246, 194, 62, 0.1);
+      color: var(--warning);
+    }
+    
+    .stat-info .stat-icon {
+      background: rgba(54, 185, 204, 0.1);
+      color: var(--info);
+    }
+    
+    .stat-content {
+      flex: 1;
+    }
+    
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1;
+      margin: 0 0 5px;
+    }
+    
+    .stat-label {
+      color: var(--gray-600);
+      font-size: 0.85rem;
+      margin: 0;
+    }
+    
+    .stat-bg-icon {
+      position: absolute;
+      right: -10px;
+      bottom: -10px;
+      font-size: 4rem;
+      opacity: 0.05;
+      transform: rotate(-15deg);
+    }
+    
+    /* Notes Timeline */
+    .notes-timeline {
+      position: relative;
+      padding-left: 40px;
+    }
+    
+    .notes-timeline:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 15px;
+      width: 2px;
+      background: var(--gray-300);
+    }
+    
+    .note-item {
+      position: relative;
+    }
+    
+    .note-item:not(:last-child) {
+      margin-bottom: 30px;
+    }
+    
+    .note-item:before {
+      content: '';
+      position: absolute;
+      left: -40px;
+      top: 20px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 4px solid #fff;
+      box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.3);
+      z-index: 1;
+    }
+    
+    .note-date {
+      position: absolute;
+      left: -135px;
+      top: 15px;
+      width: 80px;
+      text-align: right;
+      color: var(--gray-600);
+      font-size: 0.85rem;
+    }
+    
+    .note-card {
+      background: #fff;
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      overflow: hidden;
+    }
+    
+    .note-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+    
+    .note-header {
+      background-color: #fff;
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .note-title {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--gray-800);
+    }
+    
+    .note-meta {
+      margin-top: 5px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .note-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+    
+    .note-content {
+      padding: 20px;
+    }
+    
+    .note-section {
+      margin-bottom: 15px;
+    }
+    
+    .note-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .note-section h6 {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--gray-800);
+    }
+    
+    .note-text {
+      background: var(--gray-100);
+      border-radius: 8px;
+      padding: 12px 15px;
+      color: var(--gray-700);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    .note-footer {
+      background: var(--gray-100);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    
+    /* Action items */
+    .action-items-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .action-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .action-item:last-child {
+      border-bottom: none;
+    }
+    
+    .action-number {
+      color: var(--primary);
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    
+    .action-content {
+      flex: 1;
+    }
+    
+    .action-text {
+      color: var(--gray-800);
+    }
+    
+    .action-meta {
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .action-due-date {
+      font-size: 0.8rem;
+      color: var(--gray-600);
+    }
+    
+    .action-priority {
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 50px;
+    }
+    
+    .action-priority.high {
+      background-color: rgba(231, 74, 59, 0.1);
+      color: var(--danger);
+    }
+    
+    .action-priority.medium {
+      background-color: rgba(246, 194, 62, 0.1);
+      color: var(--warning);
+    }
+    
+    .action-priority.low {
+      background-color: rgba(28, 200, 138, 0.1);
+      color: var(--success);
+    }
+    
+    /* Status badges */
+    .status-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 50px;
+    }
+    
+    .status-completed {
+      color: #0c864e;
+      background-color: #e6f7f0;
+    }
+    
+    .status-scheduled {
+      color: #2a6cdb;
+      background-color: #edf3ff;
+    }
+    
+    .status-cancelled {
+      color: #d13212;
+      background-color: #fdf0ed;
+    }
+    
+    .status-in-progress {
+      color: #b07906;
+      background-color: #fef7e8;
+    }
+    
+    /* Empty state */
+    .empty-state {
+      padding: 50px 20px;
+      text-align: center;
+      background: #fff;
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .empty-icon {
+      font-size: 4rem;
+      color: var(--gray-400);
+      margin-bottom: 20px;
+    }
+    
+    .empty-title {
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: var(--gray-700);
+      margin-bottom: 10px;
+    }
+    
+    .empty-text {
+      color: var(--gray-600);
+      max-width: 500px;
+      margin: 0 auto 20px;
+    }
+    
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 15px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-container {
+      background: white;
+      border-radius: 0.75rem;
+      width: 90%;
+      max-width: 800px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: modalEnter 0.3s ease-out;
+    }
+    
+    .modal-header {
+      padding: 20px 25px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-title {
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--gray-500);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .modal-close:hover {
+      color: var(--gray-800);
+    }
+    
+    .modal-body {
+      padding: 25px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    
+    .modal-footer {
+      padding: 15px 25px;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    
+    @keyframes modalEnter {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    /* Toast notifications */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+    
+    .toast {
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      margin-bottom: 15px;
+      width: 300px;
+      overflow: hidden;
+      animation: slideInRight 0.3s ease-out;
+    }
+    
+    .toast-header {
+      padding: 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .toast-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+    }
+    
+    .toast-success .toast-icon {
+      background-color: var(--success);
+      color: white;
+    }
+    
+    .toast-error .toast-icon {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .toast-title {
+      flex: 1;
+      font-weight: 600;
+    }
+    
+    .toast-close {
+      background: none;
+      border: none;
+      color: var(--gray-600);
+      cursor: pointer;
+    }
+    
+    .toast-body {
+      padding: 0 15px 15px;
+    }
+    
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    /* Tabs styling */
+    .nav-tabs {
+      border-bottom: 1px solid var(--gray-200);
+      margin-bottom: 20px;
+    }
+    
+    .nav-tabs .nav-link {
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      padding: 10px 20px;
+      color: var(--gray-600);
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    
+    .nav-tabs .nav-link:hover {
+      color: var(--primary);
+      border-bottom-color: var(--gray-300);
+    }
+    
+    .nav-tabs .nav-link.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 992px) {
+      .container-fluid {
+        padding: 20px !important;
+      }
+      
+      .stats-cards {
+        gap: 15px;
+      }
+      
+      .stat-card .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+      }
+      
+      .stat-value {
+        font-size: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+      }
+      
+      .page-actions {
+        margin-top: 15px;
+        width: 100%;
+      }
+      
+      .stats-cards {
+        flex-direction: column;
+      }
+      
+      .stat-card {
+        width: 100%;
+      }
+      
+      .filters-section {
+        padding: 15px 20px;
+      }
+      
+      .filter-form {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .filter-group {
+        width: 100%;
+      }
+      
+      .notes-timeline {
+        padding-left: 25px;
+      }
+      
+      .notes-timeline:before {
+        left: 10px;
+      }
+      
+      .note-item:before {
+        left: -25px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--gray-100);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--gray-400);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div id="loadingText" class="loading-text">Loading...</div>
+  </div>
+  
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+  
+  <div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header animate__animated animate__fadeIn">
+      <h1 class="page-title">
+        <i class="fas fa-sticky-note"></i> One-on-One Notes
+      </h1>
+      <div class="page-actions">
+        <button id="refreshBtn" class="btn btn-light mr-2">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <button id="createBtn" class="btn btn-primary">
+          <i class="fas fa-plus"></i> New Note
+        </button>
+      </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="stats-cards animate__animated animate__fadeIn">
+      <div class="stat-card stat-primary">
+        <div class="stat-icon">
+          <i class="fas fa-sticky-note"></i>
+        </div>
+        <div class="stat-content">
+          <div id="totalNotes" class="stat-value">0</div>
+          <div class="stat-label">Total Notes</div>
+        </div>
+        <i class="fas fa-sticky-note stat-bg-icon"></i>
+      </div>
+      
+      <div class="stat-card stat-info">
+        <div class="stat-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="stat-content">
+          <div id="recentNotes" class="stat-value">0</div>
+          <div class="stat-label">Last 30 Days</div>
+        </div>
+        <i class="fas fa-calendar-alt stat-bg-icon"></i>
+      </div>
+      
+      <div class="stat-card stat-success">
+        <div class="stat-icon">
+          <i class="fas fa-user-friends"></i>
+        </div>
+        <div class="stat-content">
+          <div id="teamMembersCount" class="stat-value">0</div>
+          <div class="stat-label">Team Members</div>
+        </div>
+        <i class="fas fa-user-friends stat-bg-icon"></i>
+      </div>
+      
+      <div class="stat-card stat-warning">
+        <div class="stat-icon">
+          <i class="fas fa-tasks"></i>
+        </div>
+        <div class="stat-content">
+          <div id="actionItemsCount" class="stat-value">0</div>
+          <div class="stat-label">Action Items</div>
+        </div>
+        <i class="fas fa-tasks stat-bg-icon"></i>
+      </div>
+    </div>
+    
+    <!-- Filters Section -->
+    <div class="filters-section animate__animated animate__fadeIn">
+      <h5 class="filters-title">
+        <i class="fas fa-filter text-primary mr-2"></i> Filters
+      </h5>
+      <div class="filter-form">
+        <div class="filter-group">
+          <label class="filter-label" for="teamMemberFilter">Team Member</label>
+          <select class="form-control" id="teamMemberFilter">
+            <option value="">All Team Members</option>
+            <!-- Team members will be loaded dynamically -->
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="dateFromFilter">From Date</label>
+          <input type="date" class="form-control" id="dateFromFilter">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="dateToFilter">To Date</label>
+          <input type="date" class="form-control" id="dateToFilter">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="searchFilter">Search</label>
+          <input type="text" class="form-control" id="searchFilter" placeholder="Search in notes">
+        </div>
+        <div style="align-self: flex-end;">
+          <button id="applyFiltersBtn" class="btn btn-primary">
+            Apply Filters
+          </button>
+          <button id="clearFiltersBtn" class="btn btn-light ml-2">
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Notes Section -->
+    <div class="card animate__animated animate__fadeIn">
+      <div class="card-header">
+        <h5 class="card-header-title">
+          <i class="fas fa-sticky-note text-primary mr-2"></i>
+          <span id="notesTitle">All Notes</span>
+        </h5>
+        <div>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-secondary active" data-view="timeline">
+              <i class="fas fa-stream"></i> Timeline
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-view="cards">
+              <i class="fas fa-th-large"></i> Cards
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="notesContainer">
+          <!-- Notes will be loaded here dynamically -->
+          <div class="d-flex justify-content-center align-items-center p-5">
+            <div class="spinner-border text-primary mr-3" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <span>Loading notes...</span>
+          </div>
+        </div>
+        
+        <!-- Empty State (will show when no notes are found) -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+          <div class="empty-icon">
+            <i class="fas fa-sticky-note"></i>
+          </div>
+          <h4 class="empty-title">No Notes Found</h4>
+          <p class="empty-text">No one-on-one notes match your current filters. Try changing your search criteria or create a new note.</p>
+          <button id="createEmptyBtn" class="btn btn-primary">
+            <i class="fas fa-plus mr-2"></i>Create New Note
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Note Details Modal -->
+  <div id="noteModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalTitle">Note Details</h4>
+        <button type="button" class="modal-close" onclick="hideModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Note details will be inserted here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" onclick="hideModal()">Close</button>
+        <button type="button" class="btn btn-primary" id="editNoteBtn">Edit Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    // Global variables
+    let allNotes = [];
+    let filteredNotes = [];
+    let currentViewMode = 'timeline';
+    let currentUserInfo = null;
+    let teamMembers = [];
+    let stats = {
+      totalNotes: 0,
+      recentNotes: 0,
+      teamMembers: 0,
+      actionItems: 0
+    };
+    
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set up event listeners
+      document.getElementById('refreshBtn').addEventListener('click', refreshData);
+      document.getElementById('createBtn').addEventListener('click', createNewNote);
+      document.getElementById('createEmptyBtn').addEventListener('click', createNewNote);
+      document.getElementById('applyFiltersBtn').addEventListener('click', applyFilters);
+      document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
+      document.getElementById('editNoteBtn').addEventListener('click', function() {
+        if (window.currentNoteId) editOneOnOneNote(window.currentNoteId);
+      });
+      
+      // View mode toggle buttons
+      document.querySelectorAll('[data-view]').forEach(button => {
+        button.addEventListener('click', function() {
+          setViewMode(this.getAttribute('data-view'));
+        });
+      });
+      
+      // Team member filter change
+      document.getElementById('teamMemberFilter').addEventListener('change', function() {
+        const teamMemberEmail = this.value;
+        if (teamMemberEmail) {
+          document.getElementById('notesTitle').textContent = `Notes for ${getTeamMemberName(teamMemberEmail)}`;
+        } else {
+          document.getElementById('notesTitle').textContent = 'All Notes';
+        }
+      });
+      
+      // Set default date range (last 90 days to today)
+      setDefaultDateRange();
+      
+      // Load initial data
+      loadInitialData();
+    });
+    
+    // Load all initial data
+    function loadInitialData() {
+      showLoading('Loading data...');
+      
+      // Get current user info first
+      google.script.run
+        .withSuccessHandler(function(userInfo) {
+          // Store user info without hardcoding
+          currentUserInfo = userInfo;
+          console.log('User info loaded successfully');
+          
+          // Then load team members
+          loadTeamMembers()
+            .then(function() {
+              // Then load notes
+              return loadAllNotes();
+            })
+            .then(function() {
+              // Calculate and update stats
+              updateStats();
+              hideLoading();
+            })
+            .catch(function(error) {
+              console.error('Error loading data:', error);
+              showToast('Error loading data: ' + error, 'error');
+              hideLoading();
+            });
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error getting user info:', error);
+          showToast('Error loading user information', 'error');
+          
+          // Still try to load other data
+          loadTeamMembers()
+            .then(loadAllNotes)
+            .then(updateStats)
+            .catch(function(err) {
+              showToast('Error loading data: ' + err, 'error');
+            })
+            .finally(hideLoading);
+        })
+        .getCurrentUserAndDate();
+    }
+    
+    // Refresh all data
+    function refreshData() {
+      showLoading('Refreshing data...');
+      
+      loadAllNotes()
+        .then(function() {
+          updateStats();
+          showToast('Data refreshed successfully', 'success');
+        })
+        .catch(function(error) {
+          console.error('Error refreshing data:', error);
+          showToast('Error refreshing data: ' + error, 'error');
+        })
+        .finally(hideLoading);
+    }
+    
+    // Load team members
+    function loadTeamMembers() {
+      return new Promise(function(resolve, reject) {
+        google.script.run
+          .withSuccessHandler(function(members) {
+            if (!Array.isArray(members)) {
+              console.warn('Invalid team members data:', members);
+              members = [];
+            }
+            
+            teamMembers = members;
+            populateTeamMemberDropdown(members);
+            resolve(members);
+          })
+          .withFailureHandler(function(error) {
+            console.error('Error loading team members:', error);
+            reject(error || 'Failed to load team members');
+          })
+          .getTeamMembers();
+      });
+    }
+    
+    // Load all notes
+    function loadAllNotes() {
+      return new Promise(function(resolve, reject) {
+        document.getElementById('loadingText').textContent = 'Loading notes...';
+        
+        google.script.run
+          .withSuccessHandler(function(notes) {
+            if (!Array.isArray(notes)) {
+              console.warn('Invalid notes data:', notes);
+              notes = [];
+            }
+            
+            allNotes = notes;
+            console.log(`Loaded ${notes.length} notes`);
+            
+            // Apply any active filters or show all
+            const teamMemberFilter = document.getElementById('teamMemberFilter').value;
+            if (teamMemberFilter) {
+              applyFilters();
+            } else {
+              filteredNotes = [...allNotes];
+              renderNotes();
+            }
+            
+            resolve(notes);
+          })
+          .withFailureHandler(function(error) {
+            console.error('Error loading notes:', error);
+            reject(error || 'Failed to load notes');
+          })
+          .getAllOneOnOneNotes();
+      });
+    }
+    
+    // Set default date range
+    function setDefaultDateRange() {
+      try {
+        const today = new Date();
+        const ninetyDaysAgo = new Date();
+        ninetyDaysAgo.setDate(today.getDate() - 90);
+        
+        // Format dates as YYYY-MM-DD for the date inputs
+        const formatDate = date => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        };
+        
+        document.getElementById('dateToFilter').value = formatDate(today);
+        document.getElementById('dateFromFilter').value = formatDate(ninetyDaysAgo);
+      } catch (e) {
+        console.error('Error setting default date range:', e);
+      }
+    }
+    
+    // Populate team member dropdown
+    function populateTeamMemberDropdown(members) {
+      try {
+        const dropdown = document.getElementById('teamMemberFilter');
+        
+        // Preserve the first option
+        const firstOption = dropdown.options[0];
+        dropdown.innerHTML = '';
+        dropdown.appendChild(firstOption);
+        
+        // Add team members
+        members.forEach(function(member) {
+          if (member && member.email) {
+            const option = document.createElement('option');
+            option.value = member.email;
+            
+            const displayName = member.firstName && member.lastName 
+              ? `${member.firstName} ${member.lastName}`
+              : member.email.split('@')[0];
+              
+            option.textContent = displayName;
+            dropdown.appendChild(option);
+          }
+        });
+        
+        console.log(`Populated dropdown with ${members.length} team members`);
+      } catch (e) {
+        console.error('Error populating team member dropdown:', e);
+      }
+    }
+    
+    // Get team member name by email
+    function getTeamMemberName(email) {
+      if (!email) return '';
+      
+      const member = teamMembers.find(m => m.email.toLowerCase() === email.toLowerCase());
+      
+      if (member && member.firstName && member.lastName) {
+        return `${member.firstName} ${member.lastName}`;
+      }
+      
+      return email.split('@')[0];
+    }
+    
+    // Update stats
+    function updateStats() {
+      try {
+        // Calculate stats
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        // Total notes
+        stats.totalNotes = allNotes.length;
+        
+        // Recent notes (last 30 days)
+        stats.recentNotes = allNotes.filter(note => {
+          const noteDate = new Date(note.date || note.createdDate || 0);
+          return noteDate >= thirtyDaysAgo;
+        }).length;
+        
+        // Team members with notes
+        const uniqueTeamMembers = new Set();
+        allNotes.forEach(note => {
+          if (note.teamMemberEmail) {
+            uniqueTeamMembers.add(note.teamMemberEmail.toLowerCase());
+          }
+        });
+        stats.teamMembers = uniqueTeamMembers.size;
+        
+        // Action items count
+        stats.actionItems = 0;
+        allNotes.forEach(note => {
+          if (note.actionItems) {
+            if (Array.isArray(note.actionItems)) {
+              stats.actionItems += note.actionItems.length;
+            } else if (typeof note.actionItems === 'string') {
+              try {
+                const items = JSON.parse(note.actionItems);
+                if (Array.isArray(items)) {
+                  stats.actionItems += items.length;
+                }
+              } catch (e) {
+                // Not JSON, count as one if not empty
+                if (note.actionItems.trim()) {
+                  stats.actionItems += 1;
+                }
+              }
+            }
+          }
+        });
+        
+        // Update UI
+        document.getElementById('totalNotes').textContent = stats.totalNotes;
+        document.getElementById('recentNotes').textContent = stats.recentNotes;
+        document.getElementById('teamMembersCount').textContent = stats.teamMembers;
+        document.getElementById('actionItemsCount').textContent = stats.actionItems;
+        
+        console.log('Stats updated:', stats);
+      } catch (e) {
+        console.error('Error updating stats:', e);
+      }
+    }
+    
+    // Apply filters
+    function applyFilters() {
+      try {
+        const teamMemberEmail = document.getElementById('teamMemberFilter').value;
+        const fromDate = document.getElementById('dateFromFilter').value;
+        const toDate = document.getElementById('dateToFilter').value;
+        const searchText = document.getElementById('searchFilter').value.toLowerCase();
+        
+        filteredNotes = allNotes.filter(note => {
+          // Skip invalid notes
+          if (!note) return false;
+          
+          // Team member filter
+          if (teamMemberEmail && note.teamMemberEmail !== teamMemberEmail) {
+            return false;
+          }
+          
+          // Date range filter
+          if (fromDate || toDate) {
+            const noteDate = new Date(note.date || note.createdDate || 0);
+            
+            if (fromDate) {
+              const startDate = new Date(fromDate);
+              startDate.setHours(0, 0, 0, 0);
+              if (noteDate < startDate) return false;
+            }
+            
+            if (toDate) {
+              const endDate = new Date(toDate);
+              endDate.setHours(23, 59, 59, 999);
+              if (noteDate > endDate) return false;
+            }
+          }
+          
+          // Search text filter
+          if (searchText) {
+            const noteLower = JSON.stringify(note).toLowerCase();
+            if (!noteLower.includes(searchText)) return false;
+          }
+          
+          return true;
+        });
+        
+        // Update notes display
+        renderNotes();
+        
+        // Update title if team member is selected
+        if (teamMemberEmail) {
+          document.getElementById('notesTitle').textContent = `Notes for ${getTeamMemberName(teamMemberEmail)}`;
+        } else {
+          document.getElementById('notesTitle').textContent = 'All Notes';
+        }
+        
+        console.log(`Filtered to ${filteredNotes.length} notes`);
+      } catch (e) {
+        console.error('Error applying filters:', e);
+        showToast('Error applying filters', 'error');
+      }
+    }
+    
+    // Clear filters
+    function clearFilters() {
+      try {
+        document.getElementById('teamMemberFilter').value = '';
+        document.getElementById('dateFromFilter').value = '';
+        document.getElementById('dateToFilter').value = '';
+        document.getElementById('searchFilter').value = '';
+        
+        filteredNotes = [...allNotes];
+        renderNotes();
+        
+        document.getElementById('notesTitle').textContent = 'All Notes';
+        
+        console.log('Filters cleared');
+      } catch (e) {
+        console.error('Error clearing filters:', e);
+      }
+    }
+    
+    // Set view mode (timeline or cards)
+    function setViewMode(mode) {
+      // Update active button
+      document.querySelectorAll('[data-view]').forEach(button => {
+        if (button.getAttribute('data-view') === mode) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+      
+      currentViewMode = mode;
+      renderNotes();
+    }
+    
+    // Render notes
+    function renderNotes() {
+      const container = document.getElementById('notesContainer');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (!filteredNotes || filteredNotes.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      container.style.display = 'block';
+      emptyState.style.display = 'none';
+      
+      // Sort notes by date (newest first)
+      const sortedNotes = [...filteredNotes].sort((a, b) => {
+        const dateA = new Date(a.date || a.createdDate || 0);
+        const dateB = new Date(b.date || b.createdDate || 0);
+        return dateB - dateA;
+      });
+      
+      // Render based on current view mode
+      if (currentViewMode === 'timeline') {
+        renderTimelineView(sortedNotes, container);
+      } else {
+        renderCardsView(sortedNotes, container);
+      }
+    }
+    
+    // Render timeline view
+    function renderTimelineView(notes, container) {
+      let html = '<div class="notes-timeline">';
+      
+      notes.forEach(note => {
+        const noteDate = formatDate(note.date || note.createdDate) || 'Unknown Date';
+        const status = note.status || '';
+        const statusClass = getStatusClass(status);
+        
+        html += `
+          <div class="note-item">
+            <div class="note-card">
+              <div class="note-header">
+                <div>
+                  <h5 class="note-title">${noteDate}</h5>
+                  <div class="note-meta">
+                    <span class="note-badge">${getTeamMemberName(note.teamMemberEmail)}</span>
+                    ${status ? `<span class="status-badge ${statusClass}">${status}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="note-content">
+        `;
+        
+        // Add note content
+        if (note.notes || note.content) {
+          html += `
+            <div class="note-section">
+              <h6><i class="fas fa-sticky-note text-primary mr-2"></i>Notes</h6>
+              <div class="note-text">${formatTextWithLineBreaks(truncateText(note.notes || note.content, 150))}</div>
+            </div>
+          `;
+        }
+        
+        // Add action items preview if they exist
+        if (note.actionItems) {
+          let actionItems = [];
+          
+          // Parse action items if needed
+          if (typeof note.actionItems === 'string') {
+            try {
+              actionItems = JSON.parse(note.actionItems);
+            } catch (e) {
+              // Treat as single item
+              actionItems = [note.actionItems];
+            }
+          } else if (Array.isArray(note.actionItems)) {
+            actionItems = note.actionItems;
+          }
+          
+          if (actionItems.length > 0) {
+            html += `
+              <div class="note-section">
+                <h6><i class="fas fa-tasks text-primary mr-2"></i>Action Items (${actionItems.length})</h6>
+                <div class="note-text">
+                  ${actionItems.length === 1 
+                    ? formatTextWithLineBreaks(truncateText(typeof actionItems[0] === 'object' ? JSON.stringify(actionItems[0]) : actionItems[0], 100))
+                    : `${actionItems.length} action items`}
+                </div>
+              </div>
+            `;
+          }
+        }
+        
+        html += `
+              </div>
+              
+              <div class="note-footer">
+                <button class="btn btn-sm btn-outline-primary" onclick="viewOneOnOneNote('${note.id}')">
+                  <i class="fas fa-eye mr-1"></i> View Details
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="editOneOnOneNote('${note.id}')">
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      container.innerHTML = html;
+    }
+    
+    // Render cards view
+    function renderCardsView(notes, container) {
+      let html = '<div class="row">';
+      
+      notes.forEach(note => {
+        const noteDate = formatDate(note.date || note.createdDate) || 'Unknown Date';
+        const status = note.status || '';
+        const statusClass = getStatusClass(status);
+        
+        html += `
+          <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+              <div class="card-header">
+                <div>
+                  <h5 class="note-title">${noteDate}</h5>
+                  <div class="note-meta">
+                    <span class="note-badge">${getTeamMemberName(note.teamMemberEmail)}</span>
+                    ${status ? `<span class="status-badge ${statusClass}">${status}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card-body">
+        `;
+        
+        // Add note content
+        if (note.notes || note.content) {
+          html += `
+            <div class="note-section">
+              <h6><i class="fas fa-sticky-note text-primary mr-2"></i>Notes</h6>
+              <div class="note-text">${formatTextWithLineBreaks(truncateText(note.notes || note.content, 100))}</div>
+            </div>
+          `;
+        }
+        
+        // Add action items count if they exist
+        if (note.actionItems) {
+          let actionItems = [];
+          
+          // Parse action items if needed
+          if (typeof note.actionItems === 'string') {
+            try {
+              actionItems = JSON.parse(note.actionItems);
+            } catch (e) {
+              // Treat as single item
+              actionItems = [note.actionItems];
+            }
+          } else if (Array.isArray(note.actionItems)) {
+            actionItems = note.actionItems;
+          }
+          
+          if (actionItems.length > 0) {
+            html += `
+              <div class="note-section">
+                <h6><i class="fas fa-tasks text-primary mr-2"></i>Action Items</h6>
+                <div class="d-flex align-items-center">
+                  <span class="badge badge-primary badge-pill mr-2">${actionItems.length}</span>
+                  <span>action ${actionItems.length === 1 ? 'item' : 'items'}</span>
+                </div>
+              </div>
+            `;
+          }
+        }
+        
+        html += `
+              </div>
+              
+              <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                  <button class="btn btn-sm btn-outline-primary" onclick="viewOneOnOneNote('${note.id}')">
+                    <i class="fas fa-eye mr-1"></i> View
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary" onclick="editOneOnOneNote('${note.id}')">
+                    <i class="fas fa-edit mr-1"></i> Edit
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      container.innerHTML = html;
+    }
+    
+    // Create new note
+    function createNewNote() {
+      showLoading('Creating new note...');
+      
+      google.script.run
+        .withSuccessHandler(function() {
+          hideLoading();
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          console.error('Error creating note:', error);
+          showToast('Error creating note: ' + error, 'error');
+        })
+        .createOneOnOneNote();
+    }
+    
+    // View one-on-one note
+    function viewOneOnOneNote(noteId) {
+      if (!noteId) {
+        showToast('Invalid note ID', 'error');
+        return;
+      }
+      
+      showLoading('Loading note details...');
+      window.currentNoteId = noteId;
+      
+      getOneOnOneNote(noteId)
+        .then(function(note) {
+          hideLoading();
+          
+          // Format date for display
+          const noteDate = formatDate(note.date || note.createdDate) || 'Unknown Date';
+          
+          // Build modal content
+          let modalContent = `
+            <div class="note-details">
+              <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0"><i class="fas fa-calendar-day text-primary mr-2"></i>Date</h5>
+                  <span class="badge badge-light px-3 py-2">${noteDate}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0"><i class="fas fa-user text-primary mr-2"></i>Team Member</h5>
+                  <span class="badge badge-light px-3 py-2">${getTeamMemberName(note.teamMemberEmail)}</span>
+                </div>
+          `;
+          
+          // Add session status if available
+          if (note.status) {
+            const statusClass = getStatusClass(note.status);
+            modalContent += `
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="fas fa-check-circle text-primary mr-2"></i>Status</h5>
+                <span class="status-badge ${statusClass}">${note.status}</span>
+              </div>
+            `;
+          }
+          
+          modalContent += `</div>`;
+          
+          // Add note sections
+          if (note.notes || note.content) {
+            modalContent += `
+              <div class="mb-4">
+                <h5 class="mb-3"><i class="fas fa-sticky-note text-primary mr-2"></i>Notes</h5>
+                <div class="bg-light p-3 rounded">${formatTextWithLineBreaks(note.notes || note.content)}</div>
+              </div>
+            `;
+          }
+          
+          // Add specific note sections if they exist
+          const noteSections = [
+            { field: 'statusNotes', title: 'Status Notes', icon: 'chart-line' },
+            { field: 'performanceNotes', title: 'Performance Notes', icon: 'star' },
+            { field: 'developmentNotes', title: 'Development Notes', icon: 'graduation-cap' },
+            { field: 'supportNotes', title: 'Support Notes', icon: 'hands-helping' }
+          ];
+          
+          noteSections.forEach(section => {
+            if (note[section.field]) {
+              modalContent += `
+                <div class="mb-4">
+                  <h5 class="mb-3"><i class="fas fa-${section.icon} text-primary mr-2"></i>${section.title}</h5>
+                  <div class="bg-light p-3 rounded">${formatTextWithLineBreaks(note[section.field])}</div>
+                </div>
+              `;
+            }
+          });
+          
+          // Add action items if they exist
+          if (note.actionItems) {
+            let actionItems = [];
+            
+            // Parse action items if needed
+            if (typeof note.actionItems === 'string') {
+              try {
+                actionItems = JSON.parse(note.actionItems);
+              } catch (e) {
+                actionItems = [note.actionItems]; // Treat as single item
+              }
+            } else if (Array.isArray(note.actionItems)) {
+              actionItems = note.actionItems;
+            }
+            
+            if (actionItems.length > 0) {
+              modalContent += `
+                <div class="mb-4">
+                  <h5 class="mb-3"><i class="fas fa-tasks text-primary mr-2"></i>Action Items</h5>
+                  <div class="list-group">
+              `;
+              
+              actionItems.forEach((item, index) => {
+                // Handle if item is an object or string
+                let itemText = typeof item === 'object' ? (item.text || item.description || JSON.stringify(item)) : item;
+                
+                modalContent += `
+                  <div class="list-group-item d-flex align-items-center">
+                    <div class="mr-3 text-primary"><i class="fas fa-check-circle"></i></div>
+                    <div>${index + 1}. ${itemText}</div>
+                  </div>
+                `;
+              });
+              
+              modalContent += `
+                  </div>
+                </div>
+              `;
+            }
+          }
+          
+          // Add tags if they exist
+          if (note.tags) {
+            let tags = [];
+            
+            // Parse tags if needed
+            if (typeof note.tags === 'string') {
+              try {
+                tags = JSON.parse(note.tags);
+              } catch (e) {
+                tags = note.tags.split(',').map(tag => tag.trim()); // Try comma-separated
+              }
+            } else if (Array.isArray(note.tags)) {
+              tags = note.tags;
+            }
+            
+            if (tags.length > 0) {
+              modalContent += `
+                <div class="mb-4">
+                  <h5 class="mb-3"><i class="fas fa-tags text-primary mr-2"></i>Tags</h5>
+                  <div class="d-flex flex-wrap">
+              `;
+              
+              tags.forEach(tag => {
+                if (tag && tag.trim()) {
+                  modalContent += `<span class="badge badge-primary mr-2 mb-2">${tag}</span>`;
+                }
+              });
+              
+              modalContent += `
+                  </div>
+                </div>
+              `;
+            }
+          }
+          
+          // Add metadata
+          modalContent += `
+            <hr>
+            <div class="text-muted small mt-3">
+              <div><strong>Note ID:</strong> ${note.id || 'Unknown'}</div>
+              ${note.createdDate ? `<div><strong>Created:</strong> ${formatDate(note.createdDate)}</div>` : ''}
+              ${note.lastUpdated ? `<div><strong>Updated:</strong> ${formatDate(note.lastUpdated)}</div>` : ''}
+              ${note.createdBy ? `<div><strong>Created by:</strong> ${note.createdBy}</div>` : ''}
+            </div>
+          `;
+          
+          // Update modal title and body
+          document.getElementById('modalTitle').textContent = `Note from ${noteDate}`;
+          document.getElementById('modalBody').innerHTML = modalContent;
+          
+          // Show the modal
+          showModal();
+        })
+        .catch(function(error) {
+          hideLoading();
+          console.error('Error viewing note:', error);
+          showToast('Failed to load note: ' + error.message, 'error');
+        });
+    }
+    
+    // Edit one-on-one note
+    function editOneOnOneNote(noteId) {
+      if (!noteId) {
+        showToast('Invalid note ID', 'error');
+        return;
+      }
+      
+      hideModal();
+      showLoading('Opening note editor...');
+      
+      google.script.run
+        .withSuccessHandler(function() {
+          hideLoading();
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          console.error('Error opening note editor:', error);
+          showToast('Error opening note editor: ' + error, 'error');
+        })
+        .editOneOnOneNote(noteId);
+    }
+    
+    /**
+     * Gets a one-on-one note by ID
+     * @param {string} noteId - The ID of the note to retrieve
+     * @return {Promise} Promise that resolves with the note data
+     */
+    function getOneOnOneNote(noteId) {
+      return new Promise((resolve, reject) => {
+        if (!noteId) {
+          reject(new Error('Note ID is required'));
+          return;
+        }
+        
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result && result.success && result.note) {
+              resolve(result.note);
+            } else {
+              reject(new Error(result && result.message ? result.message : 'Failed to retrieve note'));
+            }
+          })
+          .withFailureHandler(function(error) {
+            reject(new Error(error || 'Unknown error retrieving note'));
+          })
+          .getOneOnOneNoteById(noteId);
+      });
+    }
+    
+    // Format text with line breaks
+    function formatTextWithLineBreaks(text) {
+       if (!text) return '';
+  
+  // Replace newlines with <br> tags and escape any HTML
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+    .replace(/\n/g, '<br>');
+}
+
+// Truncate text with ellipsis if it exceeds the specified length
+function truncateText(text, maxLength = 100) {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+}
+
+// Format date for display
+function formatDate(dateInput) {
+  if (!dateInput) return '';
+  
+  try {
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return ''; // Invalid date
+    
+    const options = { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    };
+    
+    return date.toLocaleDateString(undefined, options);
+  } catch (e) {
+    console.error('Error formatting date:', e);
+    return '';
+  }
+}
+
+// Get status badge class
+function getStatusClass(status) {
+  if (!status) return '';
+  
+  const statusLower = status.toLowerCase();
+  
+  if (statusLower.includes('complete') || statusLower === 'done') {
+    return 'status-completed';
+  } else if (statusLower.includes('schedule') || statusLower === 'planned' || statusLower === 'upcoming') {
+    return 'status-scheduled';
+  } else if (statusLower.includes('cancel')) {
+    return 'status-cancelled';
+  } else if (statusLower.includes('progress') || statusLower === 'ongoing' || statusLower === 'active') {
+    return 'status-in-progress';
+  }
+  
+  return '';
+}
+
+// Show loading overlay
+function showLoading(message = 'Loading...') {
+  document.getElementById('loadingText').textContent = message;
+  document.getElementById('loadingOverlay').style.display = 'flex';
+}
+
+// Hide loading overlay
+function hideLoading() {
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+// Show modal
+function showModal() {
+  document.getElementById('noteModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
+}
+
+// Hide modal
+function hideModal() {
+  document.getElementById('noteModal').style.display = 'none';
+  document.body.style.overflow = ''; // Restore scrolling
+}
+
+// Show toast notification
+function showToast(message, type = 'info') {
+  const toastContainer = document.getElementById('toastContainer');
+  
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + (type === 'error' ? 'toast-error' : 'toast-success');
+  
+  const iconClass = type === 'error' ? 'fa-exclamation-circle' : 
+                  type === 'warning' ? 'fa-exclamation-triangle' : 
+                  type === 'info' ? 'fa-info-circle' : 'fa-check-circle';
+  
+  const titleText = type.charAt(0).toUpperCase() + type.slice(1);
+  
+  toast.innerHTML = `
+    <div class="toast-header">
+      <div class="toast-icon">
+        <i class="fas ${iconClass}"></i>
+      </div>
+      <div class="toast-title">${titleText}</div>
+      <button class="toast-close" onclick="this.parentElement.parentElement.remove();">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="toast-body">${message}</div>
+  `;
+  
+  toastContainer.appendChild(toast);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    if (toast.parentNode) {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(100%)';
+      
+      // Remove after fade out
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.remove();
+        }
+      }, 300);
+    }
+  }, 5000);
+}
+
+// Debug function to check if required sheets exist
+function checkSheetExists() {
+  showLoading('Checking sheets...');
+  
+  google.script.run
+    .withSuccessHandler(function(result) {
+      hideLoading();
+      console.log('Sheet check result:', result);
+      showToast(`Notes sheet exists: ${result.exists}. Records: ${result.rowCount || 0}`, 'info');
+    })
+    .withFailureHandler(function(error) {
+      hideLoading();
+      console.error('Error checking sheets:', error);
+      showToast('Error checking sheets: ' + error, 'error');
+    })
+    .checkOneOnOneNotesSheet();
+}
+</script>
+</body> 
+</html>
