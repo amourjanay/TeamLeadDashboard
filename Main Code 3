@@ -1,0 +1,2509 @@
+/**
+ * Team Lead Dashboard
+ * 
+ * A comprehensive dashboard system for team leads to manage their teams effectively.
+ * Created: 2025-04-03
+ * Author: Team Lead Dashboard System
+ */
+
+// Constants for sheet names
+const SHEET_NAMES = {
+  TEAM_MEMBERS: 'Team Members',
+  ONE_ON_ONES: 'One-on-One Sessions',
+  MANAGER_ONE_ON_ONES: 'Manager One-on-One Sessions',
+  ONE_ON_ONE_TOPICS: 'One-on-One Topics',
+  SKILLS_MATRIX: 'Skills Matrix',
+  DEPARTMENTS: 'Departments',
+  QA_REVIEWS: 'QA Reviews',
+  METRICS: 'Metrics',
+  ACTION_ITEMS: 'Action Items',
+  TASKS: 'Tasks',
+  ASANA_TASKS: 'Asana Tasks',
+  TIME_TRACKING: 'Time Tracking',
+  SCHEDULE: 'Schedule',
+  GENERAL_NOTES: 'General Notes',
+  NOTES: 'Notes',
+  CONFIG: 'Config'
+};
+
+/**
+ * Runs when the spreadsheet is opened
+ */
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  
+  // Add a custom menu with emojis
+  ui.createMenu('📊 Dashboard')
+    .addItem('🏠 View Dashboard', 'showDashboard')
+    .addSeparator()
+    .addSubMenu(ui.createMenu('👥 Team Management')
+      .addItem('👤 View Team Members', 'showTeamView')
+      .addItem('➕ Add Team Member', 'showAddTeamMemberForm')
+      .addItem('🔄 Update Status', 'showUpdateStatusForm'))
+    .addSeparator()
+    .addSubMenu(ui.createMenu('📋 One-on-One Notes')
+      .addItem('📝 New Session', 'showOneOnOneForm')
+      .addItem('📊 View Sessions', 'showOneOnOneNotes')
+      .addItem('📈 Dashboard', 'showOneOnOneDashboard')
+      .addItem('📤 Export Options', 'showOneOnOneExport'))
+    .addSeparator()
+    .addSubMenu(ui.createMenu('🤝 Manager One-on-One')
+      .addItem('📝 New Session', 'showManagerOneOnOneForm')
+      .addItem('📊 View Sessions', 'showManagerOneOnOneNotes')
+      .addItem('📈 Dashboard', 'showManagerOneOnOneDashboard'))
+    .addSeparator()
+    .addSubMenu(ui.createMenu('📊 Metrics')
+      .addItem('📊 Daily Metrics', 'showMetricsForm')
+      .addItem('📈 Reports', 'showMetricsReports')
+      .addItem('📉 Dashboard', 'showMetricsDashboard')
+      .addItem('📧 Email Config', 'showMetricsEmailConfig')
+      .addItem('📤 Export', 'showMetricsExport'))
+    .addSeparator()
+    .addSubMenu(ui.createMenu('🧪 QA Reviews')
+      .addItem('📝 New Review', 'showQAReviewForm')
+      .addItem('📊 View Reviews', 'showQAReports')
+      .addItem('📈 Dashboard', 'showQADashboard')
+      .addItem('📤 Export', 'showQAExport'))
+    .addSeparator()
+    .addSubMenu(ui.createMenu('📝 General Notes')
+      .addItem('📝 New Note', 'showGeneralNoteForm')
+      .addItem('📊 View Notes', 'showGeneralNotes')
+      .addItem('📈 Dashboard', 'showGeneralNotesDashboard'))
+    .addSeparator()
+    .addSubMenu(ui.createMenu('⏱️ Time & Schedule')
+      .addItem('⏱️ Time Tracker', 'showTeamLeadTimeTracker')
+      .addItem('📊 Time Reports', 'showTimeReports')
+      .addItem('📅 Manage Schedule', 'showScheduleManager')
+      .addItem('🔄 Initialize Week', 'showInitializeWeekForm')
+      .addItem('📈 Schedule Reports', 'showScheduleReports'))
+    .addSeparator()
+    .addSubMenu(ui.createMenu('✅ Tasks')
+      .addItem('✅ Add Task', 'showTaskForm')
+      .addItem('🌐 Add Asana Task', 'showAsanaTaskForm')
+      .addItem('📋 View Tasks', 'showTasksList'))
+    .addSeparator()
+    .addSubMenu(ui.createMenu('📌 Action Items')
+      .addItem('📌 Add Action Item', 'showActionItemsForm')
+      .addItem('📊 View Action Items', 'showActionItemsView')
+      .addItem('🔔 Reminders', 'showActionItemsReminders'))
+    .addSeparator()
+    .addSubMenu(ui.createMenu('⚙️ Settings & Support')
+      .addItem('⚙️ System Settings', 'showSettings')
+      .addItem('👤 User Preferences', 'showUserPreferences')
+      .addItem('❓ Help & Support', 'showHelp'))
+    .addToUi();
+  
+  // Check if the system is initialized
+  if (!isSystemInitialized()) {
+    showInitializationPrompt();
+  }
+}
+
+/**
+ * Check if system is initialized properly
+ * @return {boolean} True if initialized, false otherwise
+ */
+function isSystemInitialized() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // Check for essential sheets
+    const requiredSheets = [
+      SHEET_NAMES.CONFIG,
+      SHEET_NAMES.TEAM_MEMBERS
+    ];
+    
+    for (const sheetName of requiredSheets) {
+      if (!ss.getSheetByName(sheetName)) {
+        return false;
+      }
+    }
+    
+    // Check if config has initialization date
+    const configSheet = ss.getSheetByName(SHEET_NAMES.CONFIG);
+    if (!configSheet) return false;
+    
+    const data = configSheet.getDataRange().getValues();
+    let initialized = false;
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === 'InitializedAt' && data[i][1]) {
+        initialized = true;
+        break;
+      }
+    }
+    
+    return initialized;
+  } catch (error) {
+    console.error(`Error checking if system is initialized: ${error}`);
+    return false;
+  }
+}
+
+/**
+ * Show initialization prompt to user
+ */
+function showInitializationPrompt() {
+  try {
+    // Create a beautiful interactive UI
+    const ui = HtmlService.createHtmlOutput(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Initialize Team Lead Dashboard</title>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+          <style>
+            :root {
+              --primary-color: #5540af;
+              --primary-light: #6e5cb9;
+              --primary-dark: #3c2e85;
+              --accent-color: #38bdf8;
+              --text-dark: #1e293b;
+              --text-light: #64748b;
+              --bg-light: #f8fafc;
+              --border-color: #e2e8f0;
+              --success-color: #10b981;
+              --warning-color: #f59e0b;
+              --danger-color: #ef4444;
+            }
+            
+            * {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+            }
+            
+            body {
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+              color: var(--text-dark);
+              line-height: 1.6;
+              background-color: var(--bg-light);
+              padding: 0;
+              margin: 0;
+            }
+            
+            .container {
+              max-width: 100%;
+              margin: 0 auto;
+              padding: 40px;
+              text-align: center;
+            }
+            
+            .logo {
+              font-size: 64px;
+              margin-bottom: 24px;
+              animation: float 6s ease-in-out infinite;
+              transform-origin: center;
+            }
+            
+            @keyframes float {
+              0% { transform: translateY(0px); }
+              50% { transform: translateY(-20px); }
+              100% { transform: translateY(0px); }
+            }
+            
+            h1 {
+              font-weight: 700;
+              font-size: 28px;
+              margin-bottom: 16px;
+              background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+              text-fill-color: transparent;
+            }
+            
+            p {
+              font-size: 16px;
+              color: var(--text-light);
+              max-width: 500px;
+              margin: 0 auto;
+              margin-bottom: 24px;
+              line-height: 1.6;
+            }
+            
+            .features {
+              text-align: left;
+              margin: 24px 0;
+              padding: 16px;
+              background-color: #f8fafc;
+              border-radius: 16px;
+              border: 1px solid #e2e8f0;
+            }
+            
+            .feature {
+              margin-bottom: 12px;
+              display: flex;
+              align-items: flex-start;
+              gap: 12px;
+            }
+            
+            .feature-icon {
+              flex-shrink: 0;
+              font-size: 20px;
+            }
+            
+            .feature-text {
+              margin: 0;
+              font-size: 14px;
+            }
+            
+            .btn {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              padding: 12px 24px;
+              font-weight: 600;
+              font-size: 15px;
+              border-radius: 12px;
+              cursor: pointer;
+              transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+              margin: 8px;
+              gap: 8px;
+            }
+            
+            .btn-primary {
+              background: linear-gradient(135deg, #5540af, #38bdf8);
+              color: white;
+              border: none;
+              box-shadow: 0 4px 12px rgba(85, 64, 175, 0.25);
+            }
+            
+            .btn-primary:hover {
+              transform: translateY(-4px);
+              box-shadow: 0 8px 20px rgba(85, 64, 175, 0.4);
+            }
+            
+            .btn-secondary {
+              background: white;
+              color: #5540af;
+              border: 1px solid #e2e8f0;
+            }
+            
+            .btn-secondary:hover {
+              background: #f8fafc;
+              border-color: #cbd5e1;
+            }
+            
+            .btn-icon {
+              font-size: 18px;
+            }
+            
+            .loading {
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(255, 255, 255, 0.9);
+              backdrop-filter: blur(5px);
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              z-index: 1000;
+              display: none;
+            }
+            
+            .loader {
+              width: 64px;
+              height: 64px;
+              border-radius: 50%;
+              position: relative;
+              margin-bottom: 24px;
+            }
+            
+            .loader:before, .loader:after {
+              content: "";
+              position: absolute;
+              border-radius: 50%;
+              animation: pulse 2s linear infinite;
+            }
+            
+            .loader:before {
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(135deg, #5540af, #38bdf8);
+              animation: pulse 2s linear infinite;
+            }
+            
+            .loader:after {
+              width: 75%;
+              height: 75%;
+              background: white;
+              top: 12.5%;
+              left: 12.5%;
+              animation: pulse 2s linear infinite 1s;
+            }
+            
+            @keyframes pulse {
+              0% {
+                transform: scale(0.8);
+                opacity: 0.8;
+              }
+              50% {
+                transform: scale(1.1);
+                opacity: 0.6;
+              }
+              100% {
+                transform: scale(0.8);
+                opacity: 0.8;
+              }
+            }
+            
+            .loading-text {
+              font-weight: 600;
+              color: #1e293b;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="logo">🚀</div>
+            <h1>Welcome to Team Lead Dashboard!</h1>
+            <p>This dashboard needs to be initialized before you can use all its features. The initialization will create the necessary sheets and configure your dashboard.</p>
+            
+            <div class="features">
+              <div class="feature">
+                <span class="feature-icon">👥</span>
+                <p class="feature-text"><strong>Team Management:</strong> Track team members, skills, and departments</p>
+              </div>
+              <div class="feature">
+                <span class="feature-icon">🤝</span>
+                <p class="feature-text"><strong>One-on-Ones:</strong> Schedule and document regular check-ins</p>
+              </div>
+              <div class="feature">
+                <span class="feature-icon">✅</span>
+                <p class="feature-text"><strong>Action Items:</strong> Track follow-ups and commitments</p>
+              </div>
+              <div class="feature">
+                <span class="feature-icon">📊</span>
+                <p class="feature-text"><strong>Analytics:</strong> Visualize team metrics and insights</p>
+              </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="initialize()">
+              <span class="btn-icon">⚙️</span>
+              <span>Initialize Dashboard</span>
+            </button>
+            <button class="btn btn-secondary" onclick="learnMore()">
+              <span class="btn-icon">❓</span>
+              <span>Learn More</span>
+            </button>
+          </div>
+          
+          <div class="loading" id="loadingOverlay">
+            <div class="loader"></div>
+            <div class="loading-text">Initializing your dashboard...</div>
+          </div>
+          
+          <script>
+            function initialize() {
+              document.getElementById('loadingOverlay').style.display = 'flex';
+              google.script.run
+                .withSuccessHandler(function(result) {
+                  document.getElementById('loadingOverlay').style.display = 'none';
+                  if (result && result.success) {
+                    // Success
+                    google.script.run.showDashboard();
+                  } else {
+                    alert('Error: ' + (result ? result.error : 'Initialization failed'));
+                  }
+                })
+                .withFailureHandler(function(error) {
+                  document.getElementById('loadingOverlay').style.display = 'none';
+                  alert('Error: ' + error);
+                })
+                .initializeSystem();
+            }
+            
+            function learnMore() {
+              google.script.run.showHelp();
+            }
+          </script>
+        </body>
+      </html>
+    `)
+    .setWidth(600)
+    .setHeight(560)
+    .setTitle('🚀 Welcome to Team Lead Dashboard');
+    
+    SpreadsheetApp.getUi().showModalDialog(ui, '🚀 Welcome to Team Lead Dashboard');
+  } catch (error) {
+    console.error(`Error showing initialization prompt: ${error.message}`);
+    
+    // Use a simple prompt as fallback
+    const ui = SpreadsheetApp.getUi();
+    const result = ui.alert('Initialize Dashboard', 
+      'Welcome to Team Lead Dashboard! This sheet needs to be initialized before use. Would you like to initialize now?',
+      ui.ButtonSet.YES_NO);
+    
+    if (result === ui.Button.YES) {
+      initializeSystem();
+    }
+  }
+}
+
+/**
+ * Initialize the entire system
+ * @return {Object} Result status 
+ */
+function initializeSystem() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // Create all required sheets
+    createConfigSheet();
+    createTeamMembersSheet();
+    createOneOnOneSheets();
+    createManagerOneOnOneSheets();
+    createQAReviewsSheet();
+    createMetricsSheet();
+    createActionItemsSheet();
+    createTasksSheet();
+    createTimeTrackingSheet();
+    createScheduleSheet();
+    createGeneralNotesSheet();
+    
+    // Get user information for configuration
+    const userEmail = Session.getActiveUser().getEmail();
+    const userName = userEmail.split('@')[0].replace(/[._]/g, ' ')
+      .replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+    
+    // Set configuration values
+    setConfigValue('InitializedAt', new Date().toISOString());
+    setConfigValue('InitializedBy', userEmail);
+    setConfigValue('TeamLeadName', userName);
+    setConfigValue('TeamLeadEmail', userEmail);
+    setConfigValue('Version', '1.0.0');
+    setConfigValue('LastUpdated', new Date().toISOString());
+    
+    // Create welcome message
+    createWelcomeNote(userName);
+    
+    return { success: true };
+  } catch (error) {
+    console.error(`Error initializing system: ${error.message}`);
+    return { 
+      success: false, 
+      error: error.message 
+    };
+  }
+}
+
+/**
+ * Create Config sheet
+ */
+function createConfigSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.CONFIG);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.CONFIG);
+    
+    // Add headers
+    sheet.getRange('A1:B1').setValues([['Key', 'Value']]);
+    sheet.getRange('A1:B1').setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    
+    // Set column widths
+    sheet.setColumnWidth(1, 200);
+    sheet.setColumnWidth(2, 400);
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create Team Members sheet
+ */
+function createTeamMembersSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.TEAM_MEMBERS);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.TEAM_MEMBERS);
+    
+    // Add headers
+    const headers = [
+      'ID', 'FirstName', 'LastName', 'Email', 'PhoneNumber', 
+      'Role', 'Department', 'Manager', 'Status', 'StartDate', 
+      'Skills', 'Notes', 'LastOneOnOne', 'Created', 'Updated'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(3);
+    
+    // Set column widths
+    sheet.setColumnWidth(1, 100); // ID
+    sheet.setColumnWidth(2, 150); // FirstName
+    sheet.setColumnWidth(3, 150); // LastName
+    sheet.setColumnWidth(4, 200); // Email
+    sheet.setColumnWidth(5, 150); // PhoneNumber
+    sheet.setColumnWidth(6, 150); // Role
+    sheet.setColumnWidth(7, 150); // Department
+    sheet.setColumnWidth(8, 150); // Manager
+    sheet.setColumnWidth(9, 120); // Status
+    sheet.setColumnWidth(10, 120); // StartDate
+    sheet.setColumnWidth(11, 300); // Skills
+    sheet.setColumnWidth(12, 300); // Notes
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create One-on-One sheets
+ */
+function createOneOnOneSheets() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.ONE_ON_ONES);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.ONE_ON_ONES);
+    
+    // Add headers
+    const headers = [
+      'ID', 'TeamMemberID', 'TeamMemberName', 'Date', 'StartTime', 
+      'Duration', 'Status', 'Topics', 'Notes', 'ActionItems', 
+      'FollowUp', 'FollowUpDate', 'CalendarEventID', 'Created', 'Updated'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(3);
+    
+    // Set column widths
+    sheet.setColumnWidth(1, 100); // ID
+    sheet.setColumnWidth(2, 100); // TeamMemberID
+    sheet.setColumnWidth(3, 150); // TeamMemberName
+    sheet.setColumnWidth(4, 100); // Date
+    sheet.setColumnWidth(5, 100); // StartTime
+    sheet.setColumnWidth(6, 80);  // Duration
+    sheet.setColumnWidth(7, 100); // Status
+    sheet.setColumnWidth(8, 250); // Topics
+    sheet.setColumnWidth(9, 400); // Notes
+    sheet.setColumnWidth(10, 250); // ActionItems
+  }
+  
+  // Create topics sheet
+  let topicsSheet = ss.getSheetByName(SHEET_NAMES.ONE_ON_ONE_TOPICS);
+  
+  if (!topicsSheet) {
+    topicsSheet = ss.insertSheet(SHEET_NAMES.ONE_ON_ONE_TOPICS);
+    
+    // Add headers
+    const topicHeaders = [
+      'ID', 'Category', 'Topic', 'Description', 'Created', 'Updated'
+    ];
+    
+    topicsSheet.getRange(1, 1, 1, topicHeaders.length).setValues([topicHeaders]);
+    topicsSheet.getRange(1, 1, 1, topicHeaders.length).setFontWeight('bold').setBackground('#e2e8f0');
+    topicsSheet.setFrozenRows(1);
+    
+    // Add default topics
+    const defaultTopics = [
+      ['topic_1', 'Performance', 'Current Performance', 'Discuss current performance and ongoing projects', new Date(), new Date()],
+      ['topic_2', 'Goals', 'Personal Goals', 'Discuss personal development goals', new Date(), new Date()],
+      ['topic_3', 'Feedback', 'Feedback for Manager', 'Team member provides feedback to manager', new Date(), new Date()],
+      ['topic_4', 'Feedback', 'Feedback for Team Member', 'Manager provides feedback to team member', new Date(), new Date()],
+      ['topic_5', 'Career', 'Career Development', 'Discuss career development opportunities', new Date(), new Date()],
+      ['topic_6', 'Wellbeing', 'Wellbeing Check', 'Check on team member wellbeing and work-life balance', new Date(), new Date()]
+    ];
+    
+    topicsSheet.getRange(2, 1, defaultTopics.length, topicHeaders.length).setValues(defaultTopics);
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create Manager One-on-One sheets
+ */
+function createManagerOneOnOneSheets() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.MANAGER_ONE_ON_ONES);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.MANAGER_ONE_ON_ONES);
+    
+    // Add headers
+    const headers = [
+      'ID', 'ManagerID', 'ManagerName', 'Date', 'StartTime', 
+      'Duration', 'Status', 'Topics', 'Notes', 'ActionItems', 
+      'FollowUp', 'FollowUpDate', 'CalendarEventID', 'Created', 'Updated'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(3);
+    
+    // Set column widths
+    sheet.setColumnWidth(1, 100); // ID
+    sheet.setColumnWidth(2, 100); // ManagerID
+    sheet.setColumnWidth(3, 150); // ManagerName
+    sheet.setColumnWidth(4, 100); // Date
+    sheet.setColumnWidth(5, 100); // StartTime
+    sheet.setColumnWidth(6, 80);  // Duration
+    sheet.setColumnWidth(7, 100); // Status
+    sheet.setColumnWidth(8, 250); // Topics
+    sheet.setColumnWidth(9, 400); // Notes
+    sheet.setColumnWidth(10, 250); // ActionItems
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create QA Reviews sheet
+ */
+function createQAReviewsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.QA_REVIEWS);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.QA_REVIEWS);
+    
+    // Add headers
+    const headers = [
+      'ID', 'Date', 'TeamMemberID', 'TeamMemberName', 'ReviewerID', 
+      'ReviewerName', 'ItemID', 'Score', 'MaxScore', 'Category', 
+      'Feedback', 'ActionItems', 'Created', 'Updated'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(3);
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create Metrics sheet
+ */
+function createMetricsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.METRICS);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.METRICS);
+    
+    // Add headers
+    const headers = [
+      'ID', 'Date', 'TeamMemberID', 'TeamMemberName', 'MetricType', 
+      'MetricValue', 'Target', 'Notes', 'Created', 'Updated'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(3);
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create Action Items sheet
+ */
+function createActionItemsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.ACTION_ITEMS);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.ACTION_ITEMS);
+    
+    // Add headers
+    const headers = [
+      'ID', 'AssigneeID', 'AssigneeName', 'Description', 'DueDate', 
+      'Status', 'Priority', 'Source', 'SourceID', 'CompletionDate', 
+      'Notes', 'Created', 'Updated'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(3);
+    
+    // Set column widths
+    sheet.setColumnWidth(1, 100); // ID
+    sheet.setColumnWidth(2, 120); // AssigneeID
+    sheet.setColumnWidth(3, 150); // AssigneeName
+    sheet.setColumnWidth(4, 350); // Description
+    sheet.setColumnWidth(10, 350); // Notes
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create Tasks sheet
+ */
+function createTasksSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.TASKS);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.TASKS);
+    
+    // Add headers
+    const headers = [
+      'ID', 'Title', 'Description', 'AssigneeID', 'AssigneeName', 
+      'DueDate', 'Priority', 'Status', 'CompletionDate', 'Notes', 
+      'Created', 'Updated'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(2);
+  }
+  
+  // Create Asana Tasks sheet
+  let asanaSheet = ss.getSheetByName(SHEET_NAMES.ASANA_TASKS);
+  
+  if (!asanaSheet) {
+    asanaSheet = ss.insertSheet(SHEET_NAMES.ASANA_TASKS);
+    
+    // Add headers
+    const asanaHeaders = [
+      'ID', 'AsanaID', 'Title', 'Description', 'AssigneeID', 
+      'AssigneeName', 'Project', 'DueDate', 'Status', 'URL', 
+      'Created', 'Updated'
+    ];
+    
+    asanaSheet.getRange(1, 1, 1, asanaHeaders.length).setValues([asanaHeaders]);
+    asanaSheet.getRange(1, 1, 1, asanaHeaders.length).setFontWeight('bold').setBackground('#e2e8f0');
+    asanaSheet.setFrozenRows(1);
+    asanaSheet.setFrozenColumns(2);
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create Time Tracking sheet
+ */
+function createTimeTrackingSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.TIME_TRACKING);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.TIME_TRACKING);
+    
+    // Add headers
+    const headers = [
+      'ID', 'Date', 'TeamMemberID', 'TeamMemberName', 'StartTime', 
+      'EndTime', 'Duration', 'Activity', 'Category', 'Notes', 
+      'Created', 'Updated'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(3);
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create Schedule sheet
+ */
+function createScheduleSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.SCHEDULE);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.SCHEDULE);
+    
+    // Add headers
+    const headers = [
+      'ID', 'Date', 'TeamMemberID', 'TeamMemberName', 'StartTime', 
+      'EndTime', 'Duration', 'Type', 'Notes', 'Status', 
+      'Created', 'Updated'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(3);
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create General Notes sheet
+ */
+function createGeneralNotesSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAMES.NOTES);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAMES.NOTES);
+    
+    // Add headers
+    const headers = [
+      'ID', 'Title', 'Category', 'Content', 'Tags', 
+      'Created By', 'Created At', 'Updated By', 'Updated At'
+    ];
+    
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e2e8f0');
+    sheet.setFrozenRows(1);
+    sheet.setFrozenColumns(2);
+    
+    // Set column widths
+    sheet.setColumnWidth(1, 100); // ID
+    sheet.setColumnWidth(2, 200); // Title
+    sheet.setColumnWidth(3, 150); // Category
+    sheet.setColumnWidth(4, 500); // Content
+  }
+  
+  return sheet;
+}
+
+/**
+ * Create welcome note in Notes sheet
+ * @param {string} userName - User's name
+ * @return {boolean} Success status
+ */
+function createWelcomeNote(userName) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const notesSheet = ss.getSheetByName(SHEET_NAMES.NOTES);
+    
+    if (!notesSheet) return false;
+    
+    const noteId = 'note_' + generateUniqueId();
+    const userEmail = Session.getActiveUser().getEmail();
+    const now = new Date();
+    
+    const welcomeNote = [
+      noteId,
+      '🚀 Welcome to Team Lead Dashboard',
+      'Introduction',
+      `Welcome, ${userName || 'Team Lead'}! This dashboard helps you manage your team, track one-on-one meetings, and follow up on action items. To get started, you can add team members, schedule one-on-ones, or explore the dashboard features. If you need help, click on the "Help & Resources" option in the menu.`,
+      'welcome,introduction,getting-started',
+      userEmail,
+      now,
+      userEmail,
+      now
+    ];
+    
+    notesSheet.appendRow(welcomeNote);
+    
+    return true;
+  } catch (error) {
+    console.error(`Error creating welcome note: ${error.message}`);
+    return false;
+  }
+}
+
+/**
+ * Set configuration value
+ * @param {string} key - Configuration key
+ * @param {string} value - Configuration value
+ * @return {boolean} Success status
+ */
+function setConfigValue(key, value) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const configSheet = ss.getSheetByName(SHEET_NAMES.CONFIG);
+    
+    if (!configSheet) return false;
+    
+    // Check if key exists already
+    const data = configSheet.getDataRange().getValues();
+    let found = false;
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === key) {
+        configSheet.getRange(i + 1, 2).setValue(value);
+        found = true;
+        break;
+      }
+    }
+    
+    // If key not found, add it
+    if (!found) {
+      configSheet.appendRow([key, value]);
+    }
+    
+    return true;
+  } catch (error) {
+    console.error(`Error setting config value: ${error.message}`);
+    return false;
+  }
+}
+
+/**
+ * Get configuration value
+ * @param {string} key - Configuration key
+ * @return {string|null} Configuration value or null if not found
+ */
+function getConfigValue(key) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const configSheet = ss.getSheetByName(SHEET_NAMES.CONFIG);
+    
+    if (!configSheet) return null;
+    
+    const data = configSheet.getDataRange().getValues();
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === key) {
+        return data[i][1];
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error(`Error getting config value: ${error.message}`);
+    return null;
+  }
+}
+
+/**
+ * Generate unique ID for database entries
+ * @return {string} Unique ID
+ */
+function generateUniqueId() {
+  return Utilities.getUuid().substring(0, 8);
+}
+
+/**
+ * Include an HTML file in another HTML file
+ * @param {string} filename - HTML filename to include
+ * @return {string} HTML content
+ */
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+/**
+ * Log feature usage for analytics
+ * @param {string} featureName - Name of the feature being used
+ */
+function logFeatureUsage(featureName) {
+  try {
+    const userProps = PropertiesService.getUserProperties();
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // Get or create a session ID for this user session
+    let sessionId = userProps.getProperty('sessionId');
+    if (!sessionId) {
+      sessionId = Utilities.getUuid();
+      userProps.setProperty('sessionId', sessionId);
+      userProps.setProperty('sessionStart', new Date().toISOString());
+    }
+    
+    // Update last feature used timestamp
+    userProps.setProperty('lastFeatureUsed', new Date().toISOString());
+    
+    // Get or create usage log sheet (hidden)
+    let usageSheet = ss.getSheetByName('_UsageLog');
+    if (!usageSheet) {
+      usageSheet = ss.insertSheet('_UsageLog');
+      usageSheet.getRange('A1:D1').setValues([['Timestamp', 'User', 'Feature', 'Session ID']]);
+      usageSheet.hideSheet();
+    }
+    
+    // Log usage
+    usageSheet.appendRow([
+      new Date(),
+      Session.getActiveUser().getEmail(),
+      featureName,
+      sessionId
+    ]);
+  } catch (error) {
+    console.error(`Error logging feature usage: ${error.message}`);
+    // Non-critical error - don't block execution
+  }
+}
+
+/**
+ * Show toast notification
+ * @param {string} message - Message to display
+ * @param {string} title - Toast title
+ * @param {string} type - Type of toast (info, success, warning, error)
+ */
+function showToast(message, title = 'Notification', type = 'info') {
+  try {
+    // Set timeout based on toast type
+    let timeout = 5; // Default 5 seconds
+    
+    // Set emoji based on type
+    let emoji = 'ℹ️';
+    switch (type) {
+      case 'success':
+        emoji = '✅';
+        timeout = 3;
+        break;
+      case 'warning':
+        emoji = '⚠️';
+        timeout = 7;
+        break;
+      case 'error':
+        emoji = '❌';
+        timeout = 10;
+        break;
+    }
+    
+    SpreadsheetApp.getActiveSpreadsheet().toast(message, `${emoji} ${title}`, timeout);
+  } catch (error) {
+    console.error(`Error showing toast: ${error.message}`);
+  }
+}
+
+// -------------- DASHBOARD SHOW FUNCTIONS --------------
+
+/**
+ * Show the main dashboard
+ */
+function showDashboard() {
+  try {
+    // Create a visually stunning dashboard
+    const template = HtmlService.createTemplateFromFile('dashboard');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead',
+      lastLogin: PropertiesService.getUserProperties().getProperty('lastLogin') || new Date().toISOString()
+    };
+    
+    // Set current timestamp as last login
+    PropertiesService.getUserProperties().setProperty('lastLogin', new Date().toISOString());
+    
+    const html = template.evaluate()
+      .setTitle('🚀 Team Lead Dashboard')
+      .setWidth(1200)
+      .setHeight(900);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '🚀 Team Lead Dashboard');
+    
+    // Log usage
+    logFeatureUsage('showDashboard');
+  } catch (error) {
+    console.error(`Error showing dashboard: ${error.message}`);
+    showToast(`Failed to load dashboard: ${error.message}`, 'Dashboard Error', 'error');
+  }
+}
+
+/**
+ * Show team view with all team members
+ */
+function showTeamView() {
+  try {
+    const template = HtmlService.createTemplateFromFile('team-view');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('👥 Team Members')
+      .setWidth(1200)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '👥 Team Members');
+    
+    // Log usage
+    logFeatureUsage('showTeamView');
+  } catch (error) {
+    console.error(`Error showing team view: ${error.message}`);
+    showToast(`Failed to load team view: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show form to add a new team member
+ */
+function showAddTeamMemberForm() {
+  try {
+    const template = HtmlService.createTemplateFromFile('add-team-member');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    // This is a new team member (not editing)
+    template.isEditing = false;
+    
+    const html = template.evaluate()
+      .setTitle('➕ Add Team Member')
+      .setWidth(800)
+      .setHeight(600);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '➕ Add Team Member');
+    
+    // Log usage
+    logFeatureUsage('showAddTeamMemberForm');
+  } catch (error) {
+    console.error(`Error showing add team member form: ${error.message}`);
+    showToast(`Failed to load team member form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show form to update a team member's status
+ */
+function showUpdateStatusForm() {
+  try {
+    const template = HtmlService.createTemplateFromFile('update-status');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('🔄 Update Team Member Status')
+      .setWidth(600)
+      .setHeight(450);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '🔄 Update Team Member Status');
+    
+    // Log usage
+    logFeatureUsage('showUpdateStatusForm');
+  } catch (error) {
+    console.error(`Error showing update status form: ${error.message}`);
+    showToast(`Failed to load status form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show form to create a one-on-one session
+ * @param {string} teamMemberId - Optional team member ID to pre-select
+ */
+function showOneOnOneForm(teamMemberId) {
+  try {
+    const template = HtmlService.createTemplateFromFile('one-on-one-form');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    // Pre-select team member if ID is provided
+    if (teamMemberId) {
+      template.teamMemberId = teamMemberId;
+    }
+    
+    const html = template.evaluate()
+      .setTitle('📝 Schedule One-on-One')
+      .setWidth(800)
+      .setHeight(700);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📝 Schedule One-on-One');
+    
+    // Log usage
+    logFeatureUsage('showOneOnOneForm');
+  } catch (error) {
+    console.error(`Error showing one-on-one form: ${error.message}`);
+    showToast(`Failed to load one-on-one form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show view for one-on-one notes
+ */
+function showOneOnOneNotes() {
+  try {
+    const template = HtmlService.createTemplateFromFile('one-on-one-notes');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📊 One-on-One Notes')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📊 One-on-One Notes');
+    
+    // Log usage
+    logFeatureUsage('showOneOnOneNotes');
+  } catch (error) {
+    console.error(`Error showing one-on-one notes: ${error.message}`);
+    showToast(`Failed to load one-on-one notes: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show one-on-one dashboard with analytics
+ */
+function showOneOnOneDashboard() {
+  try {
+    const template = HtmlService.createTemplateFromFile('one-on-one-dashboard');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📈 One-on-One Dashboard')
+      .setWidth(1200)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📈 One-on-One Dashboard');
+    
+    // Log usage
+    logFeatureUsage('showOneOnOneDashboard');
+  } catch (error) {
+    console.error(`Error showing one-on-one dashboard: ${error.message}`);
+    showToast(`Failed to load one-on-one dashboard: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show one-on-one export options
+ */
+function showOneOnOneExport() {
+  try {
+    const template = HtmlService.createTemplateFromFile('one-on-one-export');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📤 Export One-on-Ones')
+      .setWidth(600)
+      .setHeight(500);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📤 Export One-on-Ones');
+    
+    // Log usage
+    logFeatureUsage('showOneOnOneExport');
+  } catch (error) {
+    console.error(`Error showing one-on-one export: ${error.message}`);
+    showToast(`Failed to load export options: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show form to create a manager one-on-one session
+ * @param {string} managerId - Optional manager ID to pre-select
+ */
+function showManagerOneOnOneForm(managerId) {
+  try {
+    const template = HtmlService.createTemplateFromFile('manager-one-on-one-form');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    // Pre-select manager if ID is provided
+    if (managerId) {
+      template.managerId = managerId;
+    }
+    
+    const html = template.evaluate()
+      .setTitle('📝 Schedule Manager One-on-One')
+      .setWidth(800)
+      .setHeight(700);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📝 Schedule Manager One-on-One');
+    
+    // Log usage
+    logFeatureUsage('showManagerOneOnOneForm');
+  } catch (error) {
+    console.error(`Error showing manager one-on-one form: ${error.message}`);
+    showToast(`Failed to load manager one-on-one form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show view for manager one-on-one notes
+ */
+function showManagerOneOnOneNotes() {
+  try {
+    const template = HtmlService.createTemplateFromFile('manager-one-on-one-notes');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📊 Manager One-on-One Notes')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📊 Manager One-on-One Notes');
+    
+    // Log usage
+    logFeatureUsage('showManagerOneOnOneNotes');
+  } catch (error) {
+    console.error(`Error showing manager one-on-one notes: ${error.message}`);
+    showToast(`Failed to load manager one-on-one notes: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show manager one-on-one dashboard with analytics
+ */
+function showManagerOneOnOneDashboard() {
+  try {
+    const template = HtmlService.createTemplateFromFile('manager-one-on-one-dashboard');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📈 Manager One-on-One Dashboard')
+      .setWidth(1200)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📈 Manager One-on-One Dashboard');
+    
+    // Log usage
+    logFeatureUsage('showManagerOneOnOneDashboard');
+  } catch (error) {
+    console.error(`Error showing manager one-on-one dashboard: ${error.message}`);
+    showToast(`Failed to load manager one-on-one dashboard: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show daily metrics form
+ */
+function showMetricsForm() {
+  try {
+    const template = HtmlService.createTemplateFromFile('metrics-form');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📊 Daily Metrics')
+      .setWidth(800)
+      .setHeight(600);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📊 Daily Metrics');
+    
+    // Log usage
+    logFeatureUsage('showMetricsForm');
+  } catch (error) {
+    console.error(`Error showing metrics form: ${error.message}`);
+    showToast(`Failed to load metrics form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show metrics reports
+ */
+function showMetricsReports() {
+  try {
+    const template = HtmlService.createTemplateFromFile('metrics-reports');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📈 Metrics Reports')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📈 Metrics Reports');
+    
+    // Log usage
+    logFeatureUsage('showMetricsReports');
+  } catch (error) {
+    console.error(`Error showing metrics reports: ${error.message}`);
+    showToast(`Failed to load metrics reports: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show metrics dashboard
+ */
+function showMetricsDashboard() {
+  try {
+    const template = HtmlService.createTemplateFromFile('metrics-dashboard');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📉 Metrics Dashboard')
+      .setWidth(1200)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📉 Metrics Dashboard');
+    
+    // Log usage
+    logFeatureUsage('showMetricsDashboard');
+  } catch (error) {
+    console.error(`Error showing metrics dashboard: ${error.message}`);
+    showToast(`Failed to load metrics dashboard: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show metrics email configuration
+ */
+function showMetricsEmailConfig() {
+  try {
+    const template = HtmlService.createTemplateFromFile('metrics-email-config');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📧 Metrics Email Configuration')
+      .setWidth(700)
+      .setHeight(550);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📧 Metrics Email Configuration');
+    
+    // Log usage
+    logFeatureUsage('showMetricsEmailConfig');
+  } catch (error) {
+    console.error(`Error showing metrics email config: ${error.message}`);
+    showToast(`Failed to load email configuration: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show metrics export options
+ */
+function showMetricsExport() {
+  try {
+    const template = HtmlService.createTemplateFromFile('metrics-export');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📤 Export Metrics')
+      .setWidth(600)
+      .setHeight(500);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📤 Export Metrics');
+    
+    // Log usage
+    logFeatureUsage('showMetricsExport');
+  } catch (error) {
+    console.error(`Error showing metrics export: ${error.message}`);
+    showToast(`Failed to load export options: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show QA review form
+ */
+function showQAReviewForm() {
+  try {
+    const template = HtmlService.createTemplateFromFile('qa-review-form');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('🧪 QA Review')
+      .setWidth(800)
+      .setHeight(650);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '🧪 QA Review');
+    
+    // Log usage
+    logFeatureUsage('showQAReviewForm');
+  } catch (error) {
+    console.error(`Error showing QA review form: ${error.message}`);
+    showToast(`Failed to load QA review form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show QA reports
+ */
+function showQAReports() {
+  try {
+    const template = HtmlService.createTemplateFromFile('qa-reports');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📊 QA Reports')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📊 QA Reports');
+    
+    // Log usage
+    logFeatureUsage('showQAReports');
+  } catch (error) {
+    console.error(`Error showing QA reports: ${error.message}`);
+    showToast(`Failed to load QA reports: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show QA dashboard
+ */
+function showQADashboard() {
+  try {
+    const template = HtmlService.createTemplateFromFile('qa-dashboard');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📈 QA Dashboard')
+      .setWidth(1200)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📈 QA Dashboard');
+    
+    // Log usage
+    logFeatureUsage('showQADashboard');
+  } catch (error) {
+    console.error(`Error showing QA dashboard: ${error.message}`);
+    showToast(`Failed to load QA dashboard: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show QA export options
+ */
+function showQAExport() {
+  try {
+    const template = HtmlService.createTemplateFromFile('qa-export');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📤 Export QA Reviews')
+      .setWidth(600)
+      .setHeight(500);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📤 Export QA Reviews');
+    
+        // Log usage
+    logFeatureUsage('showQAExport');
+  } catch (error) {
+    console.error(`Error showing QA export: ${error.message}`);
+    showToast(`Failed to load QA export options: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show general note form
+ */
+function showGeneralNoteForm() {
+  try {
+    const template = HtmlService.createTemplateFromFile('general-note-form');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    // Set current date for the note
+    template.currentDate = new Date().toISOString();
+    
+    const html = template.evaluate()
+      .setTitle('📝 New Note')
+      .setWidth(800)
+      .setHeight(600);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📝 New Note');
+    
+    // Log usage
+    logFeatureUsage('showGeneralNoteForm');
+  } catch (error) {
+    console.error(`Error showing general note form: ${error.message}`);
+    showToast(`Failed to load note form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show general notes view
+ */
+function showGeneralNotes() {
+  try {
+    const template = HtmlService.createTemplateFromFile('general-notes');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📋 General Notes')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📋 General Notes');
+    
+    // Log usage
+    logFeatureUsage('showGeneralNotes');
+  } catch (error) {
+    console.error(`Error showing general notes: ${error.message}`);
+    showToast(`Failed to load general notes: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show general notes dashboard
+ */
+function showGeneralNotesDashboard() {
+  try {
+    const template = HtmlService.createTemplateFromFile('general-notes-dashboard');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📊 Notes Dashboard')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📊 Notes Dashboard');
+    
+    // Log usage
+    logFeatureUsage('showGeneralNotesDashboard');
+  } catch (error) {
+    console.error(`Error showing notes dashboard: ${error.message}`);
+    showToast(`Failed to load notes dashboard: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show time tracker
+ */
+function showTeamLeadTimeTracker() {
+  try {
+    const template = HtmlService.createTemplateFromFile('time-tracker');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('⏱️ Time Tracker')
+      .setWidth(450)
+      .setHeight(600);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '⏱️ Time Tracker');
+    
+    // Log usage
+    logFeatureUsage('showTeamLeadTimeTracker');
+  } catch (error) {
+    console.error(`Error showing time tracker: ${error.message}`);
+    showToast(`Failed to load time tracker: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show time reports
+ */
+function showTimeReports() {
+  try {
+    const template = HtmlService.createTemplateFromFile('time-reports');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📊 Time Reports')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📊 Time Reports');
+    
+    // Log usage
+    logFeatureUsage('showTimeReports');
+  } catch (error) {
+    console.error(`Error showing time reports: ${error.message}`);
+    showToast(`Failed to load time reports: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show schedule manager
+ */
+function showScheduleManager() {
+  try {
+    const template = HtmlService.createTemplateFromFile('schedule-manager');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    // Add current date information
+    const now = new Date();
+    template.currentDate = now.toISOString();
+    template.currentDay = now.getDay();
+    
+    const html = template.evaluate()
+      .setTitle('📅 Schedule Manager')
+      .setWidth(1200)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📅 Schedule Manager');
+    
+    // Log usage
+    logFeatureUsage('showScheduleManager');
+  } catch (error) {
+    console.error(`Error showing schedule manager: ${error.message}`);
+    showToast(`Failed to load schedule manager: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show initialize week form for schedule
+ */
+function showInitializeWeekForm() {
+  try {
+    const template = HtmlService.createTemplateFromFile('initialize-week-form');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    // Calculate next week's start date (next Monday)
+    const today = new Date();
+    const daysUntilMonday = (1 + 7 - today.getDay()) % 7;
+    const nextMonday = new Date(today);
+    nextMonday.setDate(today.getDate() + daysUntilMonday);
+    
+    template.nextWeekStart = nextMonday.toISOString().split('T')[0];
+    
+    const html = template.evaluate()
+      .setTitle('🔄 Initialize Schedule Week')
+      .setWidth(600)
+      .setHeight(450);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '🔄 Initialize Schedule Week');
+    
+    // Log usage
+    logFeatureUsage('showInitializeWeekForm');
+  } catch (error) {
+    console.error(`Error showing initialize week form: ${error.message}`);
+    showToast(`Failed to load initialize week form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show schedule reports
+ */
+function showScheduleReports() {
+  try {
+    const template = HtmlService.createTemplateFromFile('schedule-reports');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📈 Schedule Reports')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📈 Schedule Reports');
+    
+    // Log usage
+    logFeatureUsage('showScheduleReports');
+  } catch (error) {
+    console.error(`Error showing schedule reports: ${error.message}`);
+    showToast(`Failed to load schedule reports: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show task form
+ * @param {string} assigneeId - Optional ID of team member to assign the task to
+ */
+function showTaskForm(assigneeId) {
+  try {
+    const template = HtmlService.createTemplateFromFile('task-form');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    // Pre-select assignee if provided
+    if (assigneeId) {
+      template.assigneeId = assigneeId;
+    }
+    
+    const html = template.evaluate()
+      .setTitle('✅ Add Task')
+      .setWidth(700)
+      .setHeight(600);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '✅ Add Task');
+    
+    // Log usage
+    logFeatureUsage('showTaskForm');
+  } catch (error) {
+    console.error(`Error showing task form: ${error.message}`);
+    showToast(`Failed to load task form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show Asana task form
+ */
+function showAsanaTaskForm() {
+  try {
+    const template = HtmlService.createTemplateFromFile('asana-task-form');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('🌐 Add Asana Task')
+      .setWidth(700)
+      .setHeight(650);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '🌐 Add Asana Task');
+    
+    // Log usage
+    logFeatureUsage('showAsanaTaskForm');
+  } catch (error) {
+    console.error(`Error showing Asana task form: ${error.message}`);
+    showToast(`Failed to load Asana task form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show tasks list
+ */
+function showTasksList() {
+  try {
+    const template = HtmlService.createTemplateFromFile('tasks-list');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📋 Tasks List')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📋 Tasks List');
+    
+    // Log usage
+    logFeatureUsage('showTasksList');
+  } catch (error) {
+    console.error(`Error showing tasks list: ${error.message}`);
+    showToast(`Failed to load tasks list: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show action items form
+ * @param {string} assigneeId - Optional ID of team member to assign the action item to
+ */
+function showActionItemsForm(assigneeId) {
+  try {
+    const template = HtmlService.createTemplateFromFile('action-items-form');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    // Pre-select assignee if provided
+    if (assigneeId) {
+      template.assigneeId = assigneeId;
+    }
+    
+    const html = template.evaluate()
+      .setTitle('📌 Add Action Item')
+      .setWidth(700)
+      .setHeight(600);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📌 Add Action Item');
+    
+    // Log usage
+    logFeatureUsage('showActionItemsForm');
+  } catch (error) {
+    console.error(`Error showing action items form: ${error.message}`);
+    showToast(`Failed to load action items form: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show action items view
+ */
+function showActionItemsView() {
+  try {
+    const template = HtmlService.createTemplateFromFile('action-items-view');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('📊 Action Items')
+      .setWidth(1100)
+      .setHeight(800);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '📊 Action Items');
+    
+    // Log usage
+    logFeatureUsage('showActionItemsView');
+  } catch (error) {
+    console.error(`Error showing action items view: ${error.message}`);
+    showToast(`Failed to load action items view: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show action items reminders
+ */
+function showActionItemsReminders() {
+  try {
+    const template = HtmlService.createTemplateFromFile('action-items-reminders');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('🔔 Action Item Reminders')
+      .setWidth(700)
+      .setHeight(600);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '🔔 Action Item Reminders');
+    
+    // Log usage
+    logFeatureUsage('showActionItemsReminders');
+  } catch (error) {
+    console.error(`Error showing action items reminders: ${error.message}`);
+    showToast(`Failed to load action items reminders: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show settings dialog
+ */
+function showSettings() {
+  try {
+    const template = HtmlService.createTemplateFromFile('settings');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    // Add system information
+    template.systemInfo = {
+      version: getConfigValue('Version') || '1.0.0',
+      initializedAt: getConfigValue('InitializedAt') || 'Unknown',
+      initializedBy: getConfigValue('InitializedBy') || 'Unknown',
+      lastUpdated: getConfigValue('LastUpdated') || 'Never'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('⚙️ Settings')
+      .setWidth(800)
+      .setHeight(650);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '⚙️ Settings');
+    
+    // Log usage
+    logFeatureUsage('showSettings');
+  } catch (error) {
+    console.error(`Error showing settings: ${error.message}`);
+    showToast(`Failed to load settings: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show user preferences
+ */
+function showUserPreferences() {
+  try {
+    const template = HtmlService.createTemplateFromFile('user-preferences');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead'
+    };
+    
+    const html = template.evaluate()
+      .setTitle('👤 User Preferences')
+      .setWidth(650)
+      .setHeight(550);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '👤 User Preferences');
+    
+    // Log usage
+    logFeatureUsage('showUserPreferences');
+  } catch (error) {
+    console.error(`Error showing user preferences: ${error.message}`);
+    showToast(`Failed to load user preferences: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Show help and resources
+ */
+function showHelp() {
+  try {
+    const template = HtmlService.createTemplateFromFile('help');
+    
+    // Add user data dynamically
+    template.user = {
+      email: Session.getActiveUser().getEmail(),
+      name: getConfigValue('TeamLeadName') || 'Team Lead',
+      accessTime: new Date().toISOString()
+    };
+    
+    // Add version info
+    template.version = getConfigValue('Version') || '1.0.0';
+    
+    const html = template.evaluate()
+      .setTitle('❓ Help & Resources')
+      .setWidth(800)
+      .setHeight(650);
+    
+    SpreadsheetApp.getUi().showModalDialog(html, '❓ Help & Resources');
+    
+    // Log usage
+    logFeatureUsage('showHelp');
+  } catch (error) {
+    console.error(`Error showing help: ${error.message}`);
+    showToast(`Failed to load help resources: ${error.message}`, 'Error', 'error');
+  }
+}
+
+/**
+ * Universal function to create new records in any table
+ * @param {string} sheetName - Name of the sheet to insert into
+ * @param {Object} record - Record data as key-value pairs
+ * @return {Object} Result with success status and message
+ */
+function createRecord(sheetName, record) {
+  try {
+    // Validate inputs
+    if (!sheetName || !record || Object.keys(record).length === 0) {
+      return {
+        success: false,
+        error: 'Invalid input parameters'
+      };
+    }
+    
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(sheetName);
+    
+    if (!sheet) {
+      return {
+        success: false,
+        error: `Sheet "${sheetName}" not found`
+      };
+    }
+    
+    // Get headers
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    
+    // Generate unique ID if not provided
+    if (!record.ID) {
+      const idPrefix = sheetName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 4) + '_';
+      record.ID = idPrefix + generateUniqueId();
+    }
+    
+    // Add created/updated timestamps
+    const now = new Date();
+    const userEmail = Session.getActiveUser().getEmail();
+    
+    if (headers.includes('Created')) record.Created = now;
+    if (headers.includes('Created At')) record['Created At'] = now;
+    if (headers.includes('Created By')) record['Created By'] = userEmail;
+    
+    if (headers.includes('Updated')) record.Updated = now;
+    if (headers.includes('Updated At')) record['Updated At'] = now;
+    if (headers.includes('Updated By')) record['Updated By'] = userEmail;
+    
+    // Build the row data in correct header order
+    const rowData = headers.map(header => record[header] || '');
+    
+    // Append row
+    sheet.appendRow(rowData);
+    
+    // Support formatting or conditional formatting when needed
+    if (sheetName === SHEET_NAMES.ACTION_ITEMS) {
+      applyActionItemsFormatting(sheet);
+    }
+    
+    return {
+      success: true,
+      data: {
+        id: record.ID,
+        message: 'Record created successfully'
+      }
+    };
+  } catch (error) {
+    console.error(`Error creating record in ${sheetName}: ${error.message}`);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Universal function to update existing records in any table
+ * @param {string} sheetName - Name of the sheet to update
+ * @param {string} id - ID of the record to update
+ * @param {Object} record - Record data as key-value pairs
+ * @return {Object} Result with success status and message
+ */
+function updateRecord(sheetName, id, record) {
+  try {
+    // Validate inputs
+    if (!sheetName || !id || !record || Object.keys(record).length === 0) {
+      return {
+        success: false,
+        error: 'Invalid input parameters'
+      };
+    }
+    
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(sheetName);
+    
+    if (!sheet) {
+      return {
+        success: false,
+        error: `Sheet "${sheetName}" not found`
+      };
+    }
+    
+    // Get all data including headers
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    
+    // Find the row with the matching ID
+    const idColIndex = headers.indexOf('ID');
+    if (idColIndex === -1) {
+      return {
+        success: false,
+        error: 'ID column not found in sheet'
+      };
+    }
+    
+    let rowIndex = -1;
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][idColIndex] === id) {
+        rowIndex = i + 1; // +1 because array is 0-indexed but sheet is 1-indexed
+        break;
+      }
+    }
+    
+    if (rowIndex === -1) {
+      return {
+        success: false,
+        error: `Record with ID "${id}" not found`
+      };
+    }
+    
+    // Update timestamp and user info
+    const now = new Date();
+    const userEmail = Session.getActiveUser().getEmail();
+    
+    if (headers.includes('Updated')) record.Updated = now;
+    if (headers.includes('Updated At')) record['Updated At'] = now;
+    if (headers.includes('Updated By')) record['Updated By'] = userEmail;
+    
+    // Update each cell for which we have a value
+    for (const [key, value] of Object.entries(record)) {
+      const colIndex = headers.indexOf(key);
+      if (colIndex !== -1) {
+        sheet.getRange(rowIndex, colIndex + 1).setValue(value);
+      }
+    }
+    
+    return {
+      success: true,
+      data: {
+        id: id,
+        message: 'Record updated successfully'
+      }
+    };
+  } catch (error) {
+    console.error(`Error updating record in ${sheetName}: ${error.message}`);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Apply conditional formatting for action items
+ * @param {Sheet} sheet - The sheet to apply formatting to
+ */
+function applyActionItemsFormatting(sheet) {
+  try {
+    // Clear existing conditional format rules
+    const rules = sheet.getConditionalFormatRules();
+    sheet.clearConditionalFormatRules();
+    
+    // Find the Status column
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const statusColIndex = headers.indexOf('Status') + 1;
+    const priorityColIndex = headers.indexOf('Priority') + 1;
+    
+    if (statusColIndex > 0) {
+      const statusRange = sheet.getRange(2, statusColIndex, sheet.getLastRow(), 1);
+      
+      // Completed - Green
+      let rule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Completed')
+        .setBackground('#d1fae5')
+        .setFontColor('#047857')
+        .setRanges([statusRange])
+        .build();
+      rules.push(rule);
+      
+      // In Progress - Blue
+      rule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('In Progress')
+        .setBackground('#dbeafe')
+        .setFontColor('#1e40af')
+        .setRanges([statusRange])
+        .build();
+      rules.push(rule);
+      
+      // Blocked - Red
+      rule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Blocked')
+        .setBackground('#fee2e2')
+        .setFontColor('#b91c1c')
+        .setRanges([statusRange])
+        .build();
+      rules.push(rule);
+      
+      // Pending - Yellow
+      rule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Pending')
+        .setBackground('#fef3c7')
+        .setFontColor('#92400e')
+        .setRanges([statusRange])
+        .build();
+      rules.push(rule);
+    }
+    
+    if (priorityColIndex > 0) {
+      const priorityRange = sheet.getRange(2, priorityColIndex, sheet.getLastRow(), 1);
+      
+      // High - Red
+      let rule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('High')
+        .setBackground('#fee2e2')
+        .setFontColor('#b91c1c')
+        .setRanges([priorityRange])
+        .build();
+      rules.push(rule);
+      
+      // Medium - Yellow
+      rule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Medium')
+        .setBackground('#fef3c7')
+        .setFontColor('#92400e')
+        .setRanges([priorityRange])
+        .build();
+      rules.push(rule);
+      
+      // Low - Green
+      rule = SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo('Low')
+        .setBackground('#d1fae5')
+        .setFontColor('#047857')
+        .setRanges([priorityRange])
+        .build();
+      rules.push(rule);
+    }
+    
+    // Apply all rules
+    sheet.setConditionalFormatRules(rules);
+  } catch (error) {
+    console.error(`Error applying conditional formatting: ${error.message}`);
+  }
+}
+
+/**
+ * Get current user's email
+ * @return {string} User email
+ */
+function getCurrentUserEmail() {
+  return Session.getActiveUser().getEmail();
+}
+
+/**
+ * Get current user's name from config or derive from email
+ * @return {string} User name
+ */
+function getCurrentUserName() {
+  // Try to get from config first
+  const nameFromConfig = getConfigValue('TeamLeadName');
+  if (nameFromConfig) {
+    return nameFromConfig;
+  }
+  
+  // Derive from email if not in config
+  const email = getCurrentUserEmail();
+  
+  // Check if email is amourjanay1 (current user) and use it directly
+  if (email === 'amourjanay1') {
+    return 'Amour Janay';
+  }
+  
+  // Otherwise derive from email
+  const namePart = email.split('@')[0];
+  if (!namePart) return 'Team Lead';
+  
+  return namePart
+    .replace(/[._]/g, ' ')
+    .replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+}
+
+/**
+ * Reset the entire dashboard system (for testing only)
+ * WARNING: This will delete all data in the system!
+ * @return {boolean} Success status
+ */
+function resetSystem() {
+  try {
+    const ui = SpreadsheetApp.getUi();
+    
+    // Ask for confirmation
+    const response = ui.alert(
+      '⚠️ Reset Entire System',
+      'WARNING! This will delete ALL data in the dashboard. ' +
+      'This action cannot be undone. Are you sure you want to continue?',
+      ui.ButtonSet.YES_NO
+    );
+    
+    if (response !== ui.Button.YES) {
+      return false;
+    }
+    
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // Delete all sheets except the first one
+    const sheets = ss.getSheets();
+    for (let i = 1; i < sheets.length; i++) {
+      ss.deleteSheet(sheets[i]);
+    }
+    
+    // Rename the first sheet to make it ready for initialization
+    const firstSheet = ss.getSheets()[0];
+    firstSheet.setName('Sheet1');
+    
+    // Clear all properties
+    PropertiesService.getUserProperties().deleteAllProperties();
+    
+    // Show success message
+    ui.alert(
+      '✅ System Reset',
+      'The dashboard has been reset. Please reload the page and initialize the system again.',
+      ui.ButtonSet.OK
+    );
+    
+    return true;
+  } catch (error) {
+    console.error(`Error resetting system: ${error.message}`);
+    SpreadsheetApp.getUi().alert(
+      '❌ Error',
+      `Failed to reset system: ${error.message}`,
+      SpreadsheetApp.getUi().ButtonSet.OK
+    );
+    return false;
+  }
+}
