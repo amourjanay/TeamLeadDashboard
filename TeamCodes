@@ -1,0 +1,4072 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Team Member</title>
+  
+  <!-- Inter Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  
+  <!-- Manrope Font for Headings -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <style>
+    :root {
+      /* Base colors palette */
+      --primary-color: #5540af;
+      --primary-light: #6e5cb9;
+      --primary-dark: #3c2e85;
+      --primary-gradient: linear-gradient(135deg, #5540af, #4d61d8);
+      --secondary-color: #38bdf8;
+      --secondary-gradient: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      --accent-color: #fb7185;
+      --accent-gradient: linear-gradient(135deg, #fb7185, #e11d48);
+      
+      /* Semantic colors */
+      --success-color: #10b981;
+      --success-light: rgba(16, 185, 129, 0.1);
+      --warning-color: #f59e0b;
+      --warning-light: rgba(245, 158, 11, 0.1);
+      --danger-color: #ef4444;
+      --danger-light: rgba(239, 68, 68, 0.1);
+      --info-color: #3b82f6;
+      --info-light: rgba(59, 130, 246, 0.1);
+      
+      /* Neutrals */
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-tertiary: #64748b;
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-tertiary: #e2e8f0;
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.1), 0 1px 2px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+      
+      /* Radius */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      
+      /* Transitions */
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+      --transition-slow: 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background-color: var(--bg-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+    
+    .form-container {
+      max-width: 100%;
+      background-color: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .form-header {
+      padding: 20px 24px;
+      background: var(--primary-gradient);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .form-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(35deg);
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .form-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .form-subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .id-preview {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(4px);
+      font-family: 'Manrope', sans-serif;
+      z-index: 2;
+    }
+    
+    .id-label {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-bottom: 2px;
+    }
+    
+    .id-value {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    
+    .form-body {
+      padding: 24px;
+    }
+    
+    .form-section {
+      margin-bottom: 24px;
+    }
+    
+    .section-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .section-title i {
+      color: var(--primary-color);
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    
+    .input-group {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px 10px 36px;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      background-color: white;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="date"]:focus,
+    input[type="tel"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(85, 64, 175, 0.1);
+    }
+    
+    .select-group select {
+      appearance: none;
+      padding-right: 30px;
+    }
+    
+    .select-group::after {
+      content: '\f078';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+      pointer-events: none;
+      font-size: 12px;
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .help-text {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    .shift-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    
+    .shift-option {
+      flex: 1;
+      min-width: 120px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .shift-option:hover {
+      background-color: var(--bg-tertiary);
+    }
+    
+    .shift-option.selected {
+      background-color: rgba(85, 64, 175, 0.1);
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    .shift-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .shift-time {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    .skills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: var(--bg-secondary);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+    
+    .remove-skill {
+      cursor: pointer;
+      color: var(--text-tertiary);
+      font-size: 10px;
+      padding: 2px;
+    }
+    
+    .remove-skill:hover {
+      color: var(--danger-color);
+    }
+    
+    .add-skill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: white;
+      border: 1px dashed var(--border-medium);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .add-skill-btn:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      background-color: rgba(85, 64, 175, 0.05);
+    }
+    
+    .status-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    
+    .status-option {
+      flex: 1;
+      min-width: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .status-option:hover {
+      background-color: var(--bg-tertiary);
+    }
+    
+    .status-option.selected {
+      background-color: rgba(85, 64, 175, 0.1);
+      border-color: var(--primary-color);
+    }
+    
+    .status-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-bottom: 8px;
+      color: white;
+      font-size: 14px;
+    }
+    
+    .status-active .status-icon {
+      background-color: var(--success-color);
+    }
+    
+    .status-training .status-icon {
+      background-color: var(--info-color);
+    }
+    
+    .status-pto .status-icon {
+      background-color: var(--warning-color);
+    }
+    
+    .status-loa .status-icon {
+      background-color: var(--accent-color);
+    }
+    
+    .status-uto .status-icon {
+      background-color: var(--danger-color);
+    }
+    
+    .status-disappeared .status-icon {
+      background-color: var(--text-tertiary);
+    }
+    
+    .status-name {
+      font-weight: 500;
+      font-size: 12px;
+    }
+    
+    .form-footer {
+      padding: 20px 24px;
+      background-color: var(--bg-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-light);
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-weight: 500;
+      font-size: 14px;
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      border: none;
+    }
+    
+    .btn-secondary {
+      background-color: white;
+      border: 1px solid var(--border-medium);
+      color: var(--text-secondary);
+    }
+    
+    .btn-secondary:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+    
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 2px 10px rgba(85, 64, 175, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(85, 64, 175, 0.4);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+    }
+    
+    .loading-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(85, 64, 175, 0.1);
+      border-left-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 12px;
+      font-weight: 500;
+      color: var(--primary-color);
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background-color: white;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateX(120%);
+      transition: transform var(--transition-normal);
+      z-index: 999;
+      max-width: 320px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    
+    .notification-success .notification-icon {
+      background-color: var(--success-light);
+      color: var(--success-color);
+    }
+    
+    .notification-error .notification-icon {
+      background-color: var(--danger-light);
+      color: var(--danger-color);
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    
+    .notification-message {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .id-preview {
+        position: static;
+        margin-top: 12px;
+        display: inline-block;
+      }
+      
+      .form-footer {
+        flex-direction: column-reverse;
+        gap: 12px;
+      }
+      
+      .form-footer .btn {
+        width: 100%;
+      }
+    }
+    
+    /* Futuristic Elements */
+    .cyber-line {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      animation: scanline 3s linear infinite;
+    }
+    
+    @keyframes scanline {
+      0% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+    
+    .glow-effect {
+      position: relative;
+    }
+    
+    .glow-effect::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      background: var(--primary-gradient);
+      border-radius: inherit;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .glow-effect:focus-within::before {
+      opacity: 0.3;
+    }
+    
+    .form-header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      animation: scan 2s linear infinite;
+    }
+    
+    @keyframes scan {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(600%);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form-container">
+    <div class="form-header">
+      <h1 class="form-title">✨ Add New Team Member</h1>
+      <p class="form-subtitle">Add a new crisis counselor to your team</p>
+      <div class="id-preview">
+        <div class="id-label">Counselor ID:</div>
+        <div class="id-value" id="counselorIdPreview">TL-0001</div>
+      </div>
+      <div class="cyber-line"></div>
+    </div>
+    
+    <div class="form-body">
+      <form id="addTeamMemberForm">
+        <div class="form-section">
+          <h2 class="section-title"><i class="fas fa-user-plus"></i> Basic Information</h2>
+          <div class="form-grid">
+            <div class="form-group glow-effect">
+              <label for="firstName">First Name</label>
+              <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="firstName" name="firstName" required>
+              </div>
+            </div>
+            
+            <div class="form-group glow-effect">
+              <label for="lastName">Last Name</label>
+              <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="lastName" name="lastName" required>
+              </div>
+            </div>
+            
+            <div class="form-group glow-effect">
+              <label for="email">Email Address</label>
+              <div class="input-group">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="email" name="email" required>
+              </div>
+            </div>
+            
+            <div class="form-group glow-effect">
+              <label for="phone">Phone Number (Optional)</label>
+              <div class="input-group">
+                <i class="fas fa-phone input-icon"></i>
+                <input type="tel" id="phone" name="phone">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Schedule & Status</h2>
+          <div class="form-group">
+            <label for="startDate">Start Date</label>
+            <div class="input-group glow-effect">
+              <i class="fas fa-calendar-day input-icon"></i>
+              <input type="date" id="startDate" name="startDate" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Shift Assignment</label>
+            <div class="shift-options">
+              <div class="shift-option" data-shift="morning">
+                <div class="shift-name">Morning</div>
+                <div class="shift-time">7:00 AM - 3:00 PM</div>
+              </div>
+              <div class="shift-option" data-shift="afternoon">
+                <div class="shift-name">Afternoon</div>
+                <div class="shift-time">3:00 PM - 11:00 PM</div>
+              </div>
+              <div class="shift-option" data-shift="overnight">
+                <div class="shift-name">Overnight</div>
+                <div class="shift-time">11:00 PM - 7:00 AM</div>
+              </div>
+              <div class="shift-option" data-shift="weekend">
+                <div class="shift-name">Weekend</div>
+                <div class="shift-time">Various Hours</div>
+              </div>
+            </div>
+            <input type="hidden" id="shiftAssignment" name="shiftAssignment" value="">
+          </div>
+          
+          <div class="form-group">
+            <label>Initial Status</label>
+            <div class="status-options">
+              <div class="status-option status-active selected" data-status="Active">
+                <div class="status-icon">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="status-name">Active</div>
+              </div>
+              <div class="status-option status-training" data-status="Training">
+                <div class="status-icon">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="status-name">Training</div>
+              </div>
+              <div class="status-option status-pto" data-status="PTO">
+                <div class="status-icon">
+                  <i class="fas fa-umbrella-beach"></i>
+                </div>
+                <div class="status-name">PTO</div>
+              </div>
+              <div class="status-option status-loa" data-status="LOA">
+                <div class="status-icon">
+                  <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="status-name">LOA</div>
+              </div>
+              <div class="status-option status-uto" data-status="UTO">
+                <div class="status-icon">
+                  <i class="fas fa-ban"></i>
+                </div>
+                <div class="status-name">UTO</div>
+              </div>
+              <div class="status-option status-disappeared" data-status="Disappeared">
+                <div class="status-icon">
+                  <i class="fas fa-ghost"></i>
+                </div>
+                <div class="status-name">MIA</div>
+              </div>
+            </div>
+            <input type="hidden" id="status" name="status" value="Active">
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h2 class="section-title"><i class="fas fa-star"></i> Skills & Experience</h2>
+          <div class="form-grid">
+            <div class="form-group glow-effect">
+              <label for="skillInput">Skills & Certifications</label>
+              <div class="input-group">
+                <i class="fas fa-certificate input-icon"></i>
+                <input type="text" id="skillInput" placeholder="Type a skill and press Enter">
+              </div>
+              <div class="help-text">Press Enter to add multiple skills</div>
+              
+              <div class="skills-container" id="skillsContainer">
+                <span class="add-skill-btn" id="addSkillBtn">
+                  <i class="fas fa-plus"></i> Add Skill
+                </span>
+              </div>
+              <input type="hidden" id="skills" name="skills" value="">
+            </div>
+            
+            <div class="form-group glow-effect">
+              <label for="experience">Crisis Experience (Optional)</label>
+              <div class="input-group select-group">
+                <i class="fas fa-briefcase input-icon"></i>
+                <select id="experience" name="experience">
+                  <option value="New">New to crisis support</option>
+                  <option value="< 1 year">Less than 1 year</option>
+                  <option value="1-2 years">1-2 years</option>
+                  <option value="3-5 years">3-5 years</option>
+                  <option value="5+ years">5+ years</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group glow-effect">
+            <label for="notes">Additional Notes (Optional)</label>
+            <div class="input-group">
+              <i class="fas fa-sticky-note input-icon" style="top: 12px"></i>
+              <textarea id="notes" name="notes"></textarea>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="form-footer">
+      <button class="btn btn-secondary" id="cancelBtn">
+        <i class="fas fa-times"></i> Cancel
+      </button>
+      <button class="btn btn-primary" id="saveBtn">
+        <i class="fas fa-save"></i> Add Team Member
+      </button>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Adding team member...</div>
+  </div>
+  
+  <!-- Notification -->
+  <div id="notification" class="notification">
+    <div class="notification-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">Success!</div>
+      <div class="notification-message">Team member added successfully.</div>
+    </div>
+  </div>
+  
+  <script>
+    // Global variables
+    let teamMemberID = '';
+    let skillsList = [];
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Generate a unique counselor ID
+      generateCounselorID();
+      
+      // Set up event listeners
+      setupEventListeners();
+    });
+    
+    // Generate a unique counselor ID
+    function generateCounselorID() {
+      // Use current date as part of the ID to ensure uniqueness
+      const now = new Date();
+      const timestamp = now.getFullYear().toString().substr(-2) + 
+                       (now.getMonth() + 1).toString().padStart(2, '0') +
+                       now.getDate().toString().padStart(2, '0') +
+                       now.getHours().toString().padStart(2, '0') +
+                       now.getMinutes().toString().padStart(2, '0');
+      
+      // Create ID format: TL-XXXXXX (where X is a combination of timestamp and random digits)
+      teamMemberID = `TL-${timestamp}`;
+      
+      // Display in the preview
+      document.getElementById('counselorIdPreview').textContent = teamMemberID;
+    }
+    
+    // Set up all event listeners
+    function setupEventListeners() {
+      // Shift selection
+      const shiftOptions = document.querySelectorAll('.shift-option');
+      shiftOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          shiftOptions.forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          document.getElementById('shiftAssignment').value = this.getAttribute('data-shift');
+        });
+      });
+      
+      // Status selection
+      const statusOptions = document.querySelectorAll('.status-option');
+      statusOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          statusOptions.forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          document.getElementById('status').value = this.getAttribute('data-status');
+        });
+      });
+      
+      // Skills input
+      const skillInput = document.getElementById('skillInput');
+      skillInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addSkill(this.value);
+          this.value = '';
+        }
+      });
+      
+      // Add skill button
+      document.getElementById('addSkillBtn').addEventListener('click', function() {
+        const input = document.getElementById('skillInput');
+        if (input.value.trim()) {
+          addSkill(input.value);
+          input.value = '';
+        } else {
+          input.focus();
+        }
+      });
+      
+      // Save button
+      document.getElementById('saveBtn').addEventListener('click', saveTeamMember);
+      
+      // Cancel button
+      document.getElementById('cancelBtn').addEventListener('click', function() {
+        google.script.host.close();
+      });
+    }
+    
+    // Add a skill to the list
+    function addSkill(skill) {
+      if (!skill || skill.trim() === '') return;
+      
+      skill = skill.trim();
+      
+      // Check if skill already exists
+      if (skillsList.includes(skill)) return;
+      
+      skillsList.push(skill);
+      
+      // Update hidden input
+      document.getElementById('skills').value = skillsList.join(',');
+      
+      // Create skill tag
+      const skillTag = document.createElement('div');
+      skillTag.className = 'skill-tag';
+      skillTag.innerHTML = `
+        ${skill}
+        <span class="remove-skill" data-skill="${skill}">
+          <i class="fas fa-times"></i>
+        </span>
+      `;
+      
+      // Add remove functionality
+      skillTag.querySelector('.remove-skill').addEventListener('click', function() {
+        const skillToRemove = this.getAttribute('data-skill');
+        skillsList = skillsList.filter(s => s !== skillToRemove);
+        document.getElementById('skills').value = skillsList.join(',');
+        this.parentElement.remove();
+      });
+      
+      // Add to container before the "Add Skill" button
+      const container = document.getElementById('skillsContainer');
+      container.insertBefore(skillTag, document.getElementById('addSkillBtn'));
+    }
+    
+    // Save the team member
+    function saveTeamMember() {
+      // Validate form
+      const form = document.getElementById('addTeamMemberForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      
+      // Show loading overlay
+      showLoading(true);
+      
+      // Collect form data
+      const teamMember = {
+        id: teamMemberID,
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        startDate: document.getElementById('startDate').value,
+        shift: document.getElementById('shiftAssignment').value,
+        status: document.getElementById('status').value,
+        skills: skillsList.join(','),
+        experience: document.getElementById('experience').value,
+        notes: document.getElementById('notes').value
+      };
+      
+      // Call server-side function to save
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showLoading(false);
+          
+          if (result.success) {
+            showNotification('Success!', 'Team member added successfully.', 'success');
+            // Close after a delay
+            setTimeout(function() {
+              google.script.host.close();
+            }, 1500);
+          } else {
+            showNotification('Error', result.message || 'Failed to add team member.', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showNotification('Error', error.message || 'An unexpected error occurred.', 'error');
+        })
+        .addTeamMember(teamMember);
+    }
+    
+    // Show/hide loading overlay
+    function showLoading(show) {
+      const overlay = document.getElementById('loadingOverlay');
+      if (show) {
+        overlay.classList.add('show');
+      } else {
+        overlay.classList.remove('show');
+      }
+    }
+    
+    // Show notification
+    function showNotification(title, message, type = 'success') {
+      const notification = document.getElementById('notification');
+      const iconElement = notification.querySelector('.notification-icon i');
+      
+      // Set notification type
+      notification.className = 'notification notification-' + type;
+      
+      // Set icon
+      iconElement.className = type === 'success' ? 'fas fa-check' : 'fas fa-exclamation-circle';
+      
+      // Set content
+      notification.querySelector('.notification-title').textContent = title;
+      notification.querySelector('.notification-message').textContent = message;
+      
+      // Show notification
+      notification.classList.add('show');
+      
+      // Auto hide after 5 seconds
+      setTimeout(function() {
+        notification.classList.remove('show');
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Team Member Status</title>
+  
+  <!-- Inter Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  
+  <!-- Manrope Font for Headings -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <style>
+    :root {
+      /* Base colors palette */
+      --primary-color: #5540af;
+      --primary-light: #6e5cb9;
+      --primary-dark: #3c2e85;
+      --primary-gradient: linear-gradient(135deg, #5540af, #4d61d8);
+      --secondary-color: #38bdf8;
+      --secondary-gradient: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      --accent-color: #fb7185;
+      --accent-gradient: linear-gradient(135deg, #fb7185, #e11d48);
+      
+      /* Status colors */
+      --status-active: #10b981;
+      --status-training: #3b82f6;
+      --status-pto: #f59e0b;
+      --status-loa: #fb7185;
+      --status-uto: #ef4444;
+      --status-disappeared: #94a3b8;
+      
+      /* Neutrals */
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-tertiary: #64748b;
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-tertiary: #e2e8f0;
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.1), 0 1px 2px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+      
+      /* Radius */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      
+      /* Transitions */
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+      --transition-slow: 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background-color: var(--bg-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 20px;
+    }
+    
+    .status-form-container {
+      max-width: 100%;
+      background-color: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    
+    .form-header {
+      padding: 20px 24px;
+      background: var(--primary-gradient);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .form-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(35deg);
+      pointer-events: none;
+    }
+    
+    .form-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      position: relative;
+    }
+    
+    .form-subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+      position: relative;
+    }
+    
+    .form-body {
+      padding: 24px;
+    }
+    
+    .form-section {
+      margin-bottom: 24px;
+    }
+    
+    .section-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .section-title i {
+      color: var(--primary-color);
+    }
+    
+    .member-selector {
+      margin-bottom: 24px;
+      position: relative;
+    }
+    
+    .member-selector-header {
+      padding: 12px 16px;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      background-color: white;
+    }
+    
+    .member-selector-header:hover {
+      border-color: var(--primary-color);
+    }
+    
+    .member-selector-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .member-selector-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+    }
+    
+    .member-selector-icon.selected {
+      background: var(--primary-gradient);
+      color: white;
+    }
+    
+    .member-selector-text {
+      font-weight: 500;
+    }
+    
+    .member-selector-value {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .member-selector-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 100%;
+      background-color: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 10;
+      max-height: 250px;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .member-selector-dropdown.open {
+      display: block;
+    }
+    
+    .member-search {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 2;
+    }
+    
+    .member-search-input {
+      width: 100%;
+      padding: 8px 12px 8px 36px;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+    }
+    
+    .member-search-icon {
+      position: absolute;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+    }
+    
+    .member-search-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(85, 64, 175, 0.1);
+    }
+    
+    .member-list {
+      padding: 8px 0;
+    }
+    
+    .member-item {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background-color var(--transition-fast);
+    }
+    
+    .member-item:hover {
+      background-color: var(--bg-secondary);
+    }
+    
+    .member-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    
+    .member-info {
+      flex: 1;
+    }
+    
+    .member-name {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    
+    .member-email {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    .member-status {
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-active {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--status-active);
+    }
+    
+    .status-training {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--status-training);
+    }
+    
+    .status-pto {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--status-pto);
+    }
+    
+    .status-loa {
+      background-color: rgba(251, 113, 133, 0.1);
+      color: var(--status-loa);
+    }
+    
+    .status-uto {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--status-uto);
+    }
+    
+    .status-disappeared {
+      background-color: rgba(148, 163, 184, 0.1);
+      color: var(--status-disappeared);
+    }
+    
+    .status-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+    
+    .status-option {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+    
+    .status-option:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .status-option.selected {
+      border-width: 2px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .status-active-option.selected {
+      border-color: var(--status-active);
+    }
+    
+    .status-training-option.selected {
+      border-color: var(--status-training);
+    }
+    
+    .status-pto-option.selected {
+      border-color: var(--status-pto);
+    }
+    
+    .status-loa-option.selected {
+      border-color: var(--status-loa);
+    }
+    
+    .status-uto-option.selected {
+      border-color: var(--status-uto);
+    }
+    
+    .status-disappeared-option.selected {
+      border-color: var(--status-disappeared);
+    }
+    
+    .status-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+    }
+    
+    .status-active-option .status-icon {
+      background-color: var(--status-active);
+    }
+    
+    .status-training-option .status-icon {
+      background-color: var(--status-training);
+    }
+    
+    .status-pto-option .status-icon {
+      background-color: var(--status-pto);
+    }
+    
+    .status-loa-option .status-icon {
+      background-color: var(--status-loa);
+    }
+    
+    .status-uto-option .status-icon {
+      background-color: var(--status-uto);
+    }
+    
+    .status-disappeared-option .status-icon {
+      background-color: var(--status-disappeared);
+    }
+    
+    .status-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .status-description {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    
+    .input-group {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+    }
+    
+    textarea {
+      width: 100%;
+      padding: 10px 12px 10px 36px;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(85, 64, 175, 0.1);
+    }
+    
+    .form-footer {
+      padding: 20px 24px;
+      background-color: var(--bg-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-light);
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-weight: 500;
+      font-size: 14px;
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      border: none;
+    }
+    
+    .btn-secondary {
+      background-color: white;
+      border: 1px solid var(--border-medium);
+      color: var(--text-secondary);
+    }
+    
+    .btn-secondary:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+    
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 2px 10px rgba(85, 64, 175, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(85, 64, 175, 0.4);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    
+    .btn-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+    }
+    
+    .loading-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(85, 64, 175, 0.1);
+      border-left-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .loading-text {
+      margin-top: 12px;
+      font-weight: 500;
+      color: var(--primary-color);
+    }
+    
+    /* Toast notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background-color: white;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateX(120%);
+      transition: transform var(--transition-normal);
+      z-index: 999;
+      max-width: 320px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    
+    .notification-success .notification-icon {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--status-active);
+    }
+    
+    .notification-error .notification-icon {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--status-uto);
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    
+    .notification-message {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    /* Futuristic elements */
+    .cyber-line {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      animation: scanline 3s linear infinite;
+    }
+    
+    @keyframes scanline {
+      0% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+    
+    .status-option .pulse-effect {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      animation: pulse 2s infinite;
+      border-radius: var(--radius-md);
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .status-active-option .pulse-effect {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    
+    .status-training-option .pulse-effect {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    
+    .status-pto-option .pulse-effect {
+      box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    }
+    
+    .status-loa-option .pulse-effect {
+      box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.7);
+    }
+    
+    .status-uto-option .pulse-effect {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+    
+    .status-disappeared-option .pulse-effect {
+      box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.7);
+    }
+    
+    .status-option.selected .pulse-effect {
+      opacity: 1;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(var(--pulse-color), 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(var(--pulse-color), 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(var(--pulse-color), 0);
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .status-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .form-footer {
+        flex-direction: column-reverse;
+        gap: 12px;
+      }
+      
+      .form-footer .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="status-form-container">
+    <div class="form-header">
+      <h1 class="form-title"><i class="fas fa-user-clock"></i> Update Team Member Status</h1>
+      <p class="form-subtitle">Change status, shifts, or update team member information</p>
+      <div class="cyber-line"></div>
+    </div>
+    
+    <div class="form-body">
+      <div class="section-title">
+        <i class="fas fa-user-check"></i> Select Team Member
+      </div>
+      
+      <div class="member-selector" id="memberSelector">
+        <div class="member-selector-header" id="memberSelectorHeader">
+          <div class="member-selector-label">
+            <div class="member-selector-icon" id="memberSelectorIcon">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="member-selector-text">
+              <span id="selectedMemberPrompt">Choose a team member to update</span>
+              <span id="selectedMemberName" style="display:none;"></span>
+            </div>
+          </div>
+          <div>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+        </div>
+        
+        <div class="member-selector-dropdown" id="memberDropdown">
+          <div class="member-search">
+            <i class="fas fa-search member-search-icon"></i>
+            <input type="text" class="member-search-input" id="memberSearchInput" placeholder="Search team members...">
+          </div>
+          <div class="member-list" id="memberList">
+            <!-- Members will be loaded here -->
+          </div>
+        </div>
+      </div>
+      
+      <div id="statusUpdateForm" style="display: none;">
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-toggle-on"></i> Update Status
+          </div>
+          
+          <div class="status-options">
+            <div class="status-option status-active-option" data-status="Active">
+              <div class="status-icon">
+                <i class="fas fa-check"></i>
+              </div>
+              <div class="status-name">Active</div>
+              <div class="status-description">Working regularly</div>
+                            <div class="pulse-effect"></div>
+            </div>
+            
+            <div class="status-option status-loa-option" data-status="LOA">
+              <div class="status-icon">
+                <i class="fas fa-hourglass-half"></i>
+              </div>
+              <div class="status-name">LOA</div>
+              <div class="status-description">Leave of Absence</div>
+              <div class="pulse-effect"></div>
+            </div>
+            
+            <div class="status-option status-loa-option" data-status="FMLA">
+              <div class="status-icon">
+                <i class="fas fa-file-medical"></i>
+              </div>
+              <div class="status-name">FMLA</div>
+              <div class="status-description">Family Medical Leave</div>
+              <div class="pulse-effect"></div>
+            </div>
+            
+            <div class="status-option status-uto-option" data-status="UTO">
+              <div class="status-icon">
+                <i class="fas fa-ban"></i>
+              </div>
+              <div class="status-name">UTO</div>
+              <div class="status-description">Unplanned Time Off</div>
+              <div class="pulse-effect"></div>
+            </div>
+            
+            <div class="status-option status-pto-option" data-status="PTO">
+              <div class="status-icon">
+                <i class="fas fa-umbrella-beach"></i>
+              </div>
+              <div class="status-name">PTO</div>
+              <div class="status-description">Planned Time Off</div>
+              <div class="pulse-effect"></div>
+            </div>
+            
+            <div class="status-option status-disappeared-option" data-status="On shift disappearance">
+              <div class="status-icon">
+                <i class="fas fa-ghost"></i>
+              </div>
+              <div class="status-name">Disappeared</div>
+              <div class="status-description">On shift disappearance</div>
+              <div class="pulse-effect"></div>
+            </div>
+            
+            <div class="status-option status-training-option" data-status="Tech issues">
+              <div class="status-icon">
+                <i class="fas fa-laptop-code"></i>
+              </div>
+              <div class="status-name">Tech Issues</div>
+              <div class="status-description">Technical problems</div>
+              <div class="pulse-effect"></div>
+            </div>
+            
+            <div class="status-option status-pto-option" data-status="Early out">
+              <div class="status-icon">
+                <i class="fas fa-sign-out-alt"></i>
+              </div>
+              <div class="status-name">Early Out</div>
+              <div class="status-description">Left shift early</div>
+              <div class="pulse-effect"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-comment-alt"></i> Additional Information
+          </div>
+          
+          <div class="form-group">
+            <label for="effectiveDate">Effective Date</label>
+            <div class="input-group">
+              <i class="fas fa-calendar-day input-icon"></i>
+              <input type="date" id="effectiveDate" name="effectiveDate" style="width: 100%; padding: 10px 12px 10px 36px; border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-family: 'Inter', sans-serif; font-size: 14px;">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <div class="input-group">
+              <i class="fas fa-sticky-note input-icon" style="top: 12px;"></i>
+              <textarea id="notes" name="notes" placeholder="Add any additional context or details..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-footer">
+      <button class="btn btn-secondary" id="cancelBtn">
+        <i class="fas fa-times"></i> Cancel
+      </button>
+      <button class="btn btn-primary btn-disabled" id="updateBtn">
+        <i class="fas fa-save"></i> Update Status
+      </button>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Updating status...</div>
+  </div>
+  
+  <!-- Toast Notification -->
+  <div id="notification" class="notification">
+    <div class="notification-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">Success!</div>
+      <div class="notification-message">Status updated successfully.</div>
+    </div>
+  </div>
+  
+  <script>
+    // Global variables
+    let selectedMemberId = null;
+    let selectedMemberName = '';
+    let selectedStatus = 'Active';
+    let teamMembers = [];
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load team members
+      loadTeamMembers();
+      
+      // Set effective date to today
+      document.getElementById('effectiveDate').valueAsDate = new Date();
+      
+      // Set up event listeners
+      setupEventListeners();
+    });
+    
+    // Load team members from the server
+    function loadTeamMembers() {
+      showLoading(true);
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showLoading(false);
+          
+          if (result.success) {
+            teamMembers = result.data;
+            populateMemberList(teamMembers);
+          } else {
+            showNotification('Error', result.message || 'Failed to load team members.', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showNotification('Error', error.message || 'An unexpected error occurred.', 'error');
+        })
+        .getAllTeamMembers();
+    }
+    
+    // Set up event listeners
+    function setupEventListeners() {
+      // Member selector dropdown
+      const memberSelectorHeader = document.getElementById('memberSelectorHeader');
+      const memberDropdown = document.getElementById('memberDropdown');
+      
+      memberSelectorHeader.addEventListener('click', function() {
+        memberDropdown.classList.toggle('open');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!memberSelectorHeader.contains(e.target) && !memberDropdown.contains(e.target)) {
+          memberDropdown.classList.remove('open');
+        }
+      });
+      
+      // Member search
+      const memberSearchInput = document.getElementById('memberSearchInput');
+      memberSearchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        filterMemberList(searchTerm);
+      });
+      
+      // Status selection
+      const statusOptions = document.querySelectorAll('.status-option');
+      statusOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          statusOptions.forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedStatus = this.getAttribute('data-status');
+        });
+      });
+      
+      // Cancel button
+      document.getElementById('cancelBtn').addEventListener('click', function() {
+        google.script.host.close();
+      });
+      
+      // Update button
+      document.getElementById('updateBtn').addEventListener('click', updateMemberStatus);
+    }
+    
+    // Populate the member list
+    function populateMemberList(members) {
+      const memberList = document.getElementById('memberList');
+      memberList.innerHTML = '';
+      
+      if (members.length === 0) {
+        const emptyMessage = document.createElement('div');
+        emptyMessage.style.padding = '16px';
+        emptyMessage.style.textAlign = 'center';
+        emptyMessage.style.color = 'var(--text-tertiary)';
+        emptyMessage.textContent = 'No team members found';
+        memberList.appendChild(emptyMessage);
+        return;
+      }
+      
+      members.forEach(member => {
+        const memberItem = document.createElement('div');
+        memberItem.className = 'member-item';
+        memberItem.setAttribute('data-id', member['Team Member ID']);
+        
+        // Create initials for avatar
+        const firstName = member['First Name'] || '';
+        const lastName = member['Last Name'] || '';
+        const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+        const status = member['Status'] || 'Active';
+        
+        memberItem.innerHTML = `
+          <div class="member-avatar">${initials}</div>
+          <div class="member-info">
+            <div class="member-name">${firstName} ${lastName}</div>
+            <div class="member-email">${member['Email'] || ''}</div>
+          </div>
+          <div class="member-status status-${status.toLowerCase().replace(/\s+/g, '-')}">${status}</div>
+        `;
+        
+        // Add click event
+        memberItem.addEventListener('click', function() {
+          selectTeamMember(member);
+          memberDropdown.classList.remove('open');
+        });
+        
+        memberList.appendChild(memberItem);
+      });
+    }
+    
+    // Filter the member list
+    function filterMemberList(searchTerm) {
+      const memberItems = document.querySelectorAll('.member-item');
+      
+      memberItems.forEach(item => {
+        const name = item.querySelector('.member-name').textContent.toLowerCase();
+        const email = item.querySelector('.member-email').textContent.toLowerCase();
+        
+        if (name.includes(searchTerm) || email.includes(searchTerm)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+    
+    // Select a team member
+    function selectTeamMember(member) {
+      selectedMemberId = member['Team Member ID'];
+      selectedMemberName = `${member['First Name']} ${member['Last Name']}`;
+      
+      // Update UI
+      const memberSelectorIcon = document.getElementById('memberSelectorIcon');
+      memberSelectorIcon.classList.add('selected');
+      memberSelectorIcon.innerHTML = `${member['First Name'].charAt(0)}${member['Last Name'].charAt(0)}`.toUpperCase();
+      
+      document.getElementById('selectedMemberPrompt').style.display = 'none';
+      const selectedMemberNameEl = document.getElementById('selectedMemberName');
+      selectedMemberNameEl.textContent = selectedMemberName;
+      selectedMemberNameEl.style.display = '';
+      
+      // Show the status update form
+      document.getElementById('statusUpdateForm').style.display = '';
+      
+      // Enable the update button
+      document.getElementById('updateBtn').classList.remove('btn-disabled');
+      
+      // Set the current status as selected
+      const currentStatus = member['Status'] || 'Active';
+      const statusOptions = document.querySelectorAll('.status-option');
+      statusOptions.forEach(option => {
+        option.classList.remove('selected');
+        if (option.getAttribute('data-status') === currentStatus) {
+          option.classList.add('selected');
+          selectedStatus = currentStatus;
+        }
+      });
+    }
+    
+    // Update the member status
+    function updateMemberStatus() {
+      if (!selectedMemberId) {
+        showNotification('Error', 'Please select a team member first.', 'error');
+        return;
+      }
+      
+      // Show loading overlay
+      showLoading(true);
+      
+      // Collect data
+      const updateData = {
+        memberId: selectedMemberId,
+        status: selectedStatus,
+        effectiveDate: document.getElementById('effectiveDate').value,
+        notes: document.getElementById('notes').value
+      };
+      
+      // Call the server-side function
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showLoading(false);
+          
+          if (result.success) {
+            showNotification('Success!', `${selectedMemberName}'s status has been updated to ${selectedStatus}.`, 'success');
+            
+            // Close after a delay
+            setTimeout(function() {
+              google.script.host.close();
+            }, 1500);
+          } else {
+            showNotification('Error', result.message || 'Failed to update status.', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showNotification('Error', error.message || 'An unexpected error occurred.', 'error');
+        })
+        .updateTeamMemberStatus(updateData);
+    }
+    
+    // Show/hide loading overlay
+    function showLoading(show) {
+      const overlay = document.getElementById('loadingOverlay');
+      if (show) {
+        overlay.classList.add('show');
+      } else {
+        overlay.classList.remove('show');
+      }
+    }
+    
+    // Show notification
+    function showNotification(title, message, type = 'success') {
+      const notification = document.getElementById('notification');
+      const iconElement = notification.querySelector('.notification-icon i');
+      
+      // Set notification type
+      notification.className = 'notification notification-' + type;
+      
+      // Set icon
+      iconElement.className = type === 'success' ? 'fas fa-check' : 'fas fa-exclamation-circle';
+      
+      // Set content
+      notification.querySelector('.notification-title').textContent = title;
+      notification.querySelector('.notification-message').textContent = message;
+      
+      // Show notification
+      notification.classList.add('show');
+      
+      // Auto hide after 5 seconds
+      setTimeout(function() {
+        notification.classList.remove('show');
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Members</title>
+  
+  <!-- Inter Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  
+  <!-- Manrope Font for Headings -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <style>
+    :root {
+      /* Base colors palette */
+      --primary-color: #5540af;
+      --primary-light: #6e5cb9;
+      --primary-dark: #3c2e85;
+      --primary-gradient: linear-gradient(135deg, #5540af, #4d61d8);
+      --secondary-color: #38bdf8;
+      --secondary-gradient: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      --accent-color: #fb7185;
+      --accent-gradient: linear-gradient(135deg, #fb7185, #e11d48);
+      
+      /* Status colors */
+      --status-active: #10b981;
+      --status-training: #3b82f6;
+      --status-pto: #f59e0b;
+      --status-loa: #fb7185;
+      --status-uto: #ef4444;
+      --status-disappeared: #94a3b8;
+      --status-fmla: #8b5cf6;
+      --status-tech: #06b6d4;
+      
+      /* Neutrals */
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-tertiary: #64748b;
+      --text-light: #94a3b8;
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-tertiary: #e2e8f0;
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.1), 0 1px 2px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+      
+      /* Radius */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      
+      /* Transitions */
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+      --transition-slow: 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background-color: var(--bg-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .container {
+      max-width: 100%;
+      padding: 20px;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .title-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-lg);
+      background: var(--primary-gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-weight: 500;
+      font-size: 14px;
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 2px 10px rgba(85, 64, 175, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(85, 64, 175, 0.4);
+    }
+    
+    .btn-outline {
+      background-color: white;
+      border: 1px solid var(--border-medium);
+      color: var(--text-secondary);
+    }
+    
+    .btn-outline:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      background-color: rgba(85, 64, 175, 0.05);
+    }
+    
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .search-bar {
+      position: relative;
+      flex-grow: 1;
+      max-width: 320px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 10px 16px 10px 42px;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-full);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      transition: all var(--transition-fast);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(85, 64, 175, 0.1);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+      font-size: 14px;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .filter-dropdown {
+      position: relative;
+    }
+    
+    .filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background-color: white;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .filter-btn:hover {
+      border-color: var(--text-secondary);
+    }
+    
+    .active-filter {
+      border-color: var(--primary-color);
+      background-color: rgba(85, 64, 175, 0.05);
+      color: var(--primary-color);
+    }
+    
+    .status-bubble {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .status-active {
+      background-color: var(--status-active);
+    }
+    
+    .status-training {
+      background-color: var(--status-training);
+    }
+    
+    .status-pto {
+      background-color: var(--status-pto);
+    }
+    
+    .status-loa {
+      background-color: var(--status-loa);
+    }
+    
+    .status-uto {
+      background-color: var(--status-uto);
+    }
+    
+    .status-disappeared {
+      background-color: var(--status-disappeared);
+    }
+    
+    .status-fmla {
+      background-color: var(--status-fmla);
+    }
+    
+    .status-tech-issues {
+      background-color: var(--status-tech);
+    }
+    
+    .status-early-out {
+      background-color: var(--status-pto);
+    }
+    
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background-color: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      min-width: 200px;
+      z-index: 10;
+      transform-origin: top right;
+      transform: scale(0.95);
+      opacity: 0;
+      pointer-events: none;
+      transition: all var(--transition-fast);
+    }
+    
+    .dropdown-menu.open {
+      transform: scale(1);
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .dropdown-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-light);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+    
+    .dropdown-items {
+      padding: 8px 0;
+    }
+    
+    .dropdown-item {
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .dropdown-item:hover {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    .dropdown-item.selected {
+      background-color: rgba(85, 64, 175, 0.05);
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+    
+    .dropdown-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .dropdown-btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+    }
+    
+    .dropdown-btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .dropdown-btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    /* Team member cards view */
+    .view-toggle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-full);
+      padding: 4px;
+    }
+    
+    .view-option {
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--text-tertiary);
+    }
+    
+    .view-option.active {
+      background-color: white;
+      color: var(--primary-color);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .view-option i {
+      margin-right: 6px;
+    }
+    
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+    
+    .team-card {
+      background-color: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      transition: all var(--transition-normal);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .team-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .card-banner {
+      height: 60px;
+      background: var(--primary-gradient);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card-banner::before {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      top: -60px;
+      right: -20px;
+    }
+    
+    .card-banner::after {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      bottom: -30px;
+      left: 30px;
+    }
+    
+    .card-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: -32px;
+      padding: 0 16px;
+      position: relative;
+    }
+    
+    .card-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      border: 4px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 16px;
+      position: relative;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .status-indicator {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid white;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+    
+    .card-name {
+      font-weight: 600;
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 2px;
+    }
+    
+    .card-role {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-bottom: 8px;
+    }
+    
+    .card-status-badge {
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .badge-active {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--status-active);
+    }
+    
+    .badge-training {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--status-training);
+    }
+    
+    .badge-pto {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--status-pto);
+    }
+    
+    .badge-loa {
+      background-color: rgba(251, 113, 133, 0.1);
+      color: var(--status-loa);
+    }
+    
+    .badge-fmla {
+      background-color: rgba(139, 92, 246, 0.1);
+      color: var(--status-fmla);
+    }
+    
+    .badge-uto {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--status-uto);
+    }
+    
+    .badge-disappeared {
+      background-color: rgba(148, 163, 184, 0.1);
+      color: var(--status-disappeared);
+    }
+    
+    .badge-tech-issues {
+      background-color: rgba(6, 182, 212, 0.1);
+      color: var(--status-tech);
+    }
+    
+    .badge-early-out {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--status-pto);
+    }
+    
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .info-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+    
+    .card-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+    
+    .stat-item {
+      padding: 10px;
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--primary-color);
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+    
+    .card-footer {
+      padding: 12px;
+      border-top: 1px solid var(--border-light);
+      background-color: var(--bg-secondary);
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .card-action {
+      padding: 6px;
+      background-color: white;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      color: var(--text-tertiary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .card-action:hover {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    /* Team member table view */
+    .team-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 24px;
+    }
+    
+    .team-table th,
+    .team-table td {
+      padding: 16px 20px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .team-table th {
+      background-color: var(--bg-secondary);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .team-table th:first-child {
+      border-top-left-radius: var(--radius-lg);
+    }
+    
+    .team-table th:last-child {
+      border-top-right-radius: var(--radius-lg);
+    }
+    
+    .team-table tr {
+      background-color: white;
+      transition: all var(--transition-fast);
+    }
+    
+    .team-table tr:hover {
+      background-color: var(--bg-secondary);
+    }
+    
+    .team-table tr:last-child td:first-child {
+      border-bottom-left-radius: var(--radius-lg);
+    }
+    
+    .team-table tr:last-child td:last-child {
+      border-bottom-right-radius: var(--radius-lg);
+    }
+    
+    .member-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .table-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    
+    .member-info {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .member-name {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    
+    .member-email {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    .table-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .badge-text {
+      line-height: 1;
+    }
+    
+    .table-shift {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .shift-icon {
+      color: var(--primary-color);
+    }
+    
+    .table-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    
+    .skill-tag {
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 500;
+    }
+    
+    .table-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-light);
+      background-color: white;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .action-btn:hover {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+      background-color: rgba(85, 64, 175, 0.05);
+    }
+    
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      background-color: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: var(--text-light);
+    }
+    
+    .empty-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+    
+    .empty-description {
+      max-width: 400px;
+      margin: 0 auto 20px;
+      color: var(--text-secondary);
+    }
+    
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+    }
+    
+    .loading-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(85, 64, 175, 0.1);
+      border-left-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 12px;
+      font-weight: 500;
+      color: var(--primary-color);
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    /* Toast notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background-color: white;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateX(120%);
+      transition: transform var(--transition-normal);
+      z-index: 999;
+      max-width: 320px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    
+    .notification-success .notification-icon {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--status-active);
+    }
+    
+    .notification-error .notification-icon {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--status-uto);
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    
+    .notification-message {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    /* Futuristic elements */
+    .title-icon::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: var(--primary-gradient);
+      border-radius: inherit;
+      filter: blur(6px);
+      opacity: 0.3;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    .hexagon-bg {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      opacity: 0.03;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill='%235540af' fill-opacity='1'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .table-avatar::before,
+    .card-avatar::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: conic-gradient(
+        from 0deg,
+        var(--primary-color),
+        var(--secondary-color),
+        var(--accent-color),
+        var(--secondary-color),
+        var(--primary-color)
+      );
+      border-radius: 50%;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .team-card:hover .card-avatar::before {
+      opacity: 1;
+      animation: rotate 3s linear infinite;
+    }
+    
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .team-table tr:hover .table-avatar::before {
+      opacity: 1;
+      animation: rotate 3s linear infinite;
+    }
+    
+    .status-indicator::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      z-index: -1;
+      opacity: 0.5;
+    }
+    
+    .status-active + .status-indicator::before {
+      background-color: var(--status-active);
+      box-shadow: 0 0 8px var(--status-active);
+    }
+    
+    .status-pto + .status-indicator::before {
+      background-color: var(--status-pto);
+      box-shadow: 0 0 8px var(--status-pto);
+    }
+    
+    .status-training + .status-indicator::before {
+      background-color: var(--status-training);
+      box-shadow: 0 0 8px var(--status-training);
+    }
+    
+    .status-loa + .status-indicator::before {
+      background-color: var(--status-loa);
+      box-shadow: 0 0 8px var(--status-loa);
+    }
+    
+    .status-uto + .status-indicator::before {
+      background-color: var(--status-uto);
+      box-shadow: 0 0 8px var(--status-uto);
+    }
+    
+    .status-disappeared + .status-indicator::before {
+      background-color: var(--status-disappeared);
+      box-shadow: 0 0 8px var(--status-disappeared);
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .search-bar {
+        max-width: 100%;
+        width: 100%;
+      }
+      
+      .filters {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .team-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+      
+      .team-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hexagon-bg"></div>
+  
+  <div class="container">
+    <div class="header">
+      <div class="title">
+        <div class="title-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div>Team Members</div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn btn-outline" id="updateStatusBtn">
+          <i class="fas fa-user-clock"></i> Update Status
+        </button>
+        <button class="btn btn-primary" id="addTeamMemberBtn">
+          <i class="fas fa-plus"></i> Add Team Member
+        </button>
+      </div>
+    </div>
+    
+    <div class="toolbar">
+      <div class="search-bar">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search team members...">
+      </div>
+      
+      <div class="filters">
+        <div class="filter-dropdown" id="statusFilter">
+          <button class="filter-btn" id="statusFilterBtn">
+            <span class="status-bubble status-active"></span>
+            <span>Status: All</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" id="statusDropdown">
+            <div class="dropdown-header">Filter by Status</div>
+            <div class="dropdown-items">
+              <div class="dropdown-item selected" data-status="All">
+                <i class="fas fa-check"></i> All Statuses
+              </div>
+              <div class="dropdown-item" data-status="Active">
+                <span class="status-bubble status-active"></span> Active
+              </div>
+              <div class="dropdown-item" data-status="Training">
+                <span class="status-bubble status-training"></span> Training
+              </div>
+              <div class="dropdown-item" data-status="PTO">
+                <span class="status-bubble status-pto"></span> PTO
+              </div>
+              <div class="dropdown-item" data-status="LOA">
+                <span class="status-bubble status-loa"></span> LOA
+              </div>
+              <div class="dropdown-item" data-status="FMLA">
+                <span class="status-bubble status-fmla"></span> FMLA
+              </div>
+              <div class="dropdown-item" data-status="UTO">
+                <span class="status-bubble status-uto"></span> UTO
+              </div>
+              <div class="dropdown-item" data-status="On shift disappearance">
+                <span class="status-bubble status-disappeared"></span> Disappeared
+              </div>
+              <div class="dropdown-item" data-status="Tech issues">
+                <span class="status-bubble status-tech-issues"></span> Tech Issues
+              </div>
+              <div class="dropdown-item" data-status="Early out">
+                <span class="status-bubble status-pto"></span> Early Out
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="filter-dropdown" id="shiftFilter">
+          <button class="filter-btn" id="shiftFilterBtn">
+            <i class="fas fa-clock"></i>
+            <span>Shift: All</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" id="shiftDropdown">
+            <div class="dropdown-header">Filter by Shift</div>
+            <div class="dropdown-items">
+              <div class="dropdown-item selected" data-shift="All">
+                <i class="fas fa-check"></i> All Shifts
+              </div>
+              <div class="dropdown-item" data-shift="morning">
+                <i class="fas fa-sun"></i> Morning
+              </div>
+              <div class="dropdown-item" data-shift="afternoon">
+                <i class="fas fa-cloud-sun"></i> Afternoon
+              </div>
+              <div class="dropdown-item" data-shift="overnight">
+                <i class="fas fa-moon"></i> Overnight
+              </div>
+              <div class="dropdown-item" data-shift="weekend">
+                <i class="fas fa-calendar-weekend"></i> Weekend
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="view-toggle">
+          <div class="view-option active" data-view="cards">
+            <i class="fas fa-th"></i> Cards
+          </div>
+          <div class="view-option" data-view="table">
+            <i class="fas fa-list"></i> Table
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="teamCardView" class="team-grid"></div>
+    
+    <div id="teamTableView" style="display: none;"></div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading team members...</div>
+  </div>
+  
+  <!-- Notification -->
+  <div id="notification" class="notification">
+    <div class="notification-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">Success!</div>
+      <div class="notification-message">Team member added successfully.</div>
+    </div>
+  </div>
+  
+  <script>
+    // Global variables
+    let teamMembers = [];
+    let currentView = 'cards';
+    let statusFilter = 'All';
+    let shiftFilter = 'All';
+    let searchTerm = '';
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Show loading overlay
+      showLoading(true);
+      
+      // Load team members
+      loadTeamMembers();
+      
+      // Set up event listeners
+      setupEventListeners();
+    });
+    
+    // Set up event listeners
+    function setupEventListeners() {
+      // Add team member button
+      document.getElementById('addTeamMemberBtn').addEventListener('click', function() {
+        google.script.run.showAddTeamMemberForm();
+      });
+      
+      // Update status button
+      document.getElementById('updateStatusBtn').addEventListener('click', function() {
+        google.script.run.showUpdateStatusForm();
+      });
+      
+      // View toggle
+      const viewOptions = document.querySelectorAll('.view-option');
+      viewOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          const view = this.getAttribute('data-view');
+          switchView(view);
+          
+          viewOptions.forEach(opt => opt.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+      
+      // Search input
+      document.getElementById('searchInput').addEventListener('input', function() {
+        searchTerm = this.value.toLowerCase().trim();
+        applyFilters();
+      });
+      
+      // Status filter dropdown
+      const statusFilterBtn = document.getElementById('statusFilterBtn');
+      const statusDropdown = document.getElementById('statusDropdown');
+      
+      statusFilterBtn.addEventListener('click', function(e) {
+        statusDropdown.classList.toggle('open');
+        e.stopPropagation();
+      });
+      
+      // Status filter options
+      const statusItems = statusDropdown.querySelectorAll('.dropdown-item');
+      statusItems.forEach(item => {
+        item.addEventListener('click', function() {
+          statusFilter = this.getAttribute('data-status');
+          
+          // Update button text
+          if (statusFilter === 'All') {
+            statusFilterBtn.innerHTML = `
+              <span class="status-bubble status-active"></span>
+              <span>Status: All</span>
+              <i class="fas fa-chevron-down"></i>
+            `;
+          } else {
+            const statusClass = `status-${statusFilter.toLowerCase().replace(/\s+/g, '-')}`;
+            statusFilterBtn.innerHTML = `
+              <span class="status-bubble ${statusClass}"></span>
+              <span>Status: ${statusFilter}</span>
+              <i class="fas fa-chevron-down"></i>
+            `;
+            statusFilterBtn.classList.add('active-filter');
+          }
+          
+          // Update selected item
+          statusItems.forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          
+          // Close dropdown
+          statusDropdown.classList.remove('open');
+          
+          // Apply filters
+          applyFilters();
+        });
+      });
+      
+      // Shift filter dropdown
+      const shiftFilterBtn = document.getElementById('shiftFilterBtn');
+      const shiftDropdown = document.getElementById('shiftDropdown');
+      
+      shiftFilterBtn.addEventListener('click', function(e) {
+        shiftDropdown.classList.toggle('open');
+        e.stopPropagation();
+      });
+      
+      // Shift filter options
+      const shiftItems = shiftDropdown.querySelectorAll('.dropdown-item');
+      shiftItems.forEach(item => {
+        item.addEventListener('click', function() {
+          shiftFilter = this.getAttribute('data-shift');
+          
+          // Update button text
+          if (shiftFilter === 'All') {
+            shiftFilterBtn.innerHTML = `
+              <i class="fas fa-clock"></i>
+              <span>Shift: All</span>
+              <i class="fas fa-chevron-down"></i>
+            `;
+            shiftFilterBtn.classList.remove('active-filter');
+          } else {
+            let shiftIcon, shiftName;
+            
+            switch(shiftFilter) {
+              case 'morning':
+                shiftIcon = 'fas fa-sun';
+                shiftName = 'Morning';
+                break;
+              case 'afternoon':
+                shiftIcon = 'fas fa-cloud-sun';
+                shiftName = 'Afternoon';
+                break;
+              case 'overnight':
+                shiftIcon = 'fas fa-moon';
+                shiftName = 'Overnight';
+                break;
+              case 'weekend':
+                shiftIcon = 'fas fa-calendar-weekend';
+                shiftName = 'Weekend';
+                break;
+            }
+            
+            shiftFilterBtn.innerHTML = `
+              <i class="${shiftIcon}"></i>
+              <span>Shift: ${shiftName}</span>
+              <i class="fas fa-chevron-down"></i>
+            `;
+            shiftFilterBtn.classList.add('active-filter');
+          }
+          
+          // Update selected item
+          shiftItems.forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          
+          // Close dropdown
+          shiftDropdown.classList.remove('open');
+          
+          // Apply filters
+          applyFilters();
+        });
+      });
+      
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', function() {
+        statusDropdown.classList.remove('open');
+        shiftDropdown.classList.remove('open');
+      });
+    }
+    
+    // Load team members from the server
+    function loadTeamMembers() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          showLoading(false);
+          
+          if (result.success) {
+            teamMembers = result.data;
+            renderTeamMembers();
+          } else {
+            showNotification('Error', result.message || 'Failed to load team members.', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showLoading(false);
+          showNotification('Error', error.message || 'An unexpected error occurred.', 'error');
+        })
+        .getAllTeamMembers();
+    }
+    
+    // Switch between card and table views
+    function switchView(view) {
+      currentView = view;
+      
+      if (view === 'cards') {
+        document.getElementById('teamCardView').style.display = 'grid';
+        document.getElementById('teamTableView').style.display = 'none';
+      } else {
+        document.getElementById('teamCardView').style.display = 'none';
+        document.getElementById('teamTableView').style.display = 'block';
+      }
+      
+      renderTeamMembers();
+    }
+    
+    // Apply filters to team members
+    function applyFilters() {
+      renderTeamMembers();
+    }
+    
+    // Render team members based on current view and filters
+    function renderTeamMembers() {
+      // Filter team members
+      const filteredMembers = teamMembers.filter(member => {
+        // Status filter
+        if (statusFilter !== 'All' && member['Status'] !== statusFilter) {
+          return false;
+        }
+        
+        // Shift filter
+        if (shiftFilter !== 'All' && member['shift'] !== shiftFilter) {
+          return false;
+        }
+        
+        // Search term
+        if (searchTerm) {
+          const firstName = (member['First Name'] || '').toLowerCase();
+          const lastName = (member['Last Name'] || '').toLowerCase();
+          const email = (member['Email'] || '').toLowerCase();
+          const fullName = `${firstName} ${lastName}`;
+          
+          return fullName.includes(searchTerm) || email.includes(searchTerm);
+        }
+        
+        return true;
+      });
+      
+      // Render based on current view
+      if (currentView === 'cards') {
+        renderCardView(filteredMembers);
+      } else {
+        renderTableView(filteredMembers);
+      }
+    }
+    
+    // Render card view
+    function renderCardView(members) {
+      const teamCardView = document.getElementById('teamCardView');
+      
+      if (members.length === 0) {
+        teamCardView.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-users-slash"></i>
+            </div>
+            <h3 class="empty-title">No team members found</h3>
+            <p class="empty-description">
+              There are no team members matching your filters. Try adjusting your search or filters, or add a new team member.
+            </p>
+            <button class="btn btn-primary" id="emptyAddBtn">
+              <i class="fas fa-plus"></i> Add Team Member
+            </button>
+          </div>
+        `;
+        
+        // Add event listener for the add button
+                document.getElementById('emptyAddBtn').addEventListener('click', function() {
+          google.script.run.showAddTeamMemberForm();
+        });
+        
+        return;
+      }
+      
+      // Render team member cards
+      teamCardView.innerHTML = '';
+      
+      members.forEach(member => {
+        const firstName = member['First Name'] || '';
+        const lastName = member['Last Name'] || '';
+        const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+        const status = member['Status'] || 'Active';
+        const statusClass = `status-${status.toLowerCase().replace(/\s+/g, '-')}`;
+        const badgeClass = `badge-${status.toLowerCase().replace(/\s+/g, '-')}`;
+        
+        // Format skills as array
+        const skillsText = member['Skills'] || '';
+        const skills = skillsText.split(',').filter(s => s.trim() !== '').map(s => s.trim());
+        
+        // Create card element
+        const card = document.createElement('div');
+        card.className = 'team-card';
+        card.innerHTML = `
+          <div class="card-banner"></div>
+          <div class="card-header">
+            <div class="card-avatar">
+              ${initials}
+              <span class="status-indicator ${statusClass}"></span>
+            </div>
+            <div class="card-name">${firstName} ${lastName}</div>
+            <div class="card-role">${member['shift'] || 'No Shift Assigned'}</div>
+            <div class="card-status-badge ${badgeClass}">${status}</div>
+          </div>
+          <div class="card-body">
+            <div class="card-info">
+              <div class="info-item">
+                <div class="info-icon">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div>${member['Email'] || 'No email'}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-icon">
+                  <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div>Started ${formatDate(member['Start Date'])}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-icon">
+                  <i class="fas fa-id-card"></i>
+                </div>
+                <div>${member['Team Member ID'] || 'No ID'}</div>
+              </div>
+            </div>
+            
+            <div class="card-stats">
+              <div class="stat-item">
+                <div class="stat-value">95%</div>
+                <div class="stat-label">Answer Rate</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">92%</div>
+                <div class="stat-label">QA Score</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-footer">
+            <button class="card-action" data-action="edit" data-id="${member['Team Member ID']}">
+              <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button class="card-action" data-action="status" data-id="${member['Team Member ID']}">
+              <i class="fas fa-user-clock"></i>
+            </button>
+            <button class="card-action" data-action="one-on-one" data-id="${member['Team Member ID']}">
+              <i class="fas fa-comments"></i>
+            </button>
+            <button class="card-action" data-action="view" data-id="${member['Team Member ID']}">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        `;
+        
+        // Add event listeners to actions
+        const actions = card.querySelectorAll('.card-action');
+        actions.forEach(action => {
+          action.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            const actionType = this.getAttribute('data-action');
+            const memberId = this.getAttribute('data-id');
+            
+            handleAction(actionType, memberId);
+          });
+        });
+        
+        teamCardView.appendChild(card);
+      });
+    }
+    
+    // Render table view
+    function renderTableView(members) {
+      const teamTableView = document.getElementById('teamTableView');
+      
+      if (members.length === 0) {
+        teamTableView.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-users-slash"></i>
+            </div>
+            <h3 class="empty-title">No team members found</h3>
+            <p class="empty-description">
+              There are no team members matching your filters. Try adjusting your search or filters, or add a new team member.
+            </p>
+            <button class="btn btn-primary" id="emptyAddBtn">
+              <i class="fas fa-plus"></i> Add Team Member
+            </button>
+          </div>
+        `;
+        
+        // Add event listener for the add button
+        document.getElementById('emptyAddBtn').addEventListener('click', function() {
+          google.script.run.showAddTeamMemberForm();
+        });
+        
+        return;
+      }
+      
+      // Create table
+      const table = document.createElement('table');
+      table.className = 'team-table';
+      
+      // Create header
+      const thead = document.createElement('thead');
+      thead.innerHTML = `
+        <tr>
+          <th>Team Member</th>
+          <th>Status</th>
+          <th>Shift</th>
+          <th>Skills</th>
+          <th>Start Date</th>
+          <th>Actions</th>
+        </tr>
+      `;
+      table.appendChild(thead);
+      
+      // Create body
+      const tbody = document.createElement('tbody');
+      
+      // Add rows
+      members.forEach(member => {
+        const firstName = member['First Name'] || '';
+        const lastName = member['Last Name'] || '';
+        const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+        const status = member['Status'] || 'Active';
+        const statusClass = `status-${status.toLowerCase().replace(/\s+/g, '-')}`;
+        const badgeClass = `badge-${status.toLowerCase().replace(/\s+/g, '-')}`;
+        
+        // Format skills as array
+        const skillsText = member['Skills'] || '';
+        const skills = skillsText.split(',').filter(s => s.trim() !== '').map(s => s.trim());
+        
+        // Create row
+        const row = document.createElement('tr');
+        
+        // Member cell
+        const memberCell = document.createElement('td');
+        memberCell.innerHTML = `
+          <div class="member-cell">
+            <div class="table-avatar">
+              ${initials}
+              <span class="status-indicator ${statusClass}"></span>
+            </div>
+            <div class="member-info">
+              <div class="member-name">${firstName} ${lastName}</div>
+              <div class="member-email">${member['Email'] || 'No email'}</div>
+            </div>
+          </div>
+        `;
+        row.appendChild(memberCell);
+        
+        // Status cell
+        const statusCell = document.createElement('td');
+        statusCell.innerHTML = `
+          <div class="status-badge ${badgeClass}">
+            <span class="badge-dot ${statusClass}"></span>
+            <span class="badge-text">${status}</span>
+          </div>
+        `;
+        row.appendChild(statusCell);
+        
+        // Shift cell
+        const shiftCell = document.createElement('td');
+        shiftCell.innerHTML = `
+          <div class="table-shift">
+            <i class="fas fa-${getShiftIcon(member['shift'])} shift-icon"></i>
+            <span>${formatShift(member['shift'])}</span>
+          </div>
+        `;
+        row.appendChild(shiftCell);
+        
+        // Skills cell
+        const skillsCell = document.createElement('td');
+        const skillsContainer = document.createElement('div');
+        skillsContainer.className = 'table-skills';
+        
+        if (skills.length > 0) {
+          skills.slice(0, 3).forEach(skill => {
+            const skillTag = document.createElement('span');
+            skillTag.className = 'skill-tag';
+            skillTag.textContent = skill;
+            skillsContainer.appendChild(skillTag);
+          });
+          
+          if (skills.length > 3) {
+            const moreTag = document.createElement('span');
+            moreTag.className = 'skill-tag';
+            moreTag.textContent = `+${skills.length - 3} more`;
+            skillsContainer.appendChild(moreTag);
+          }
+        } else {
+          skillsContainer.innerHTML = '<span class="skill-tag">No skills listed</span>';
+        }
+        
+        skillsCell.appendChild(skillsContainer);
+        row.appendChild(skillsCell);
+        
+        // Start date cell
+        const startDateCell = document.createElement('td');
+        startDateCell.textContent = formatDate(member['Start Date']);
+        row.appendChild(startDateCell);
+        
+        // Actions cell
+        const actionsCell = document.createElement('td');
+        actionsCell.innerHTML = `
+          <div class="table-actions">
+            <button class="action-btn" data-action="edit" data-id="${member['Team Member ID']}" title="Edit">
+              <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button class="action-btn" data-action="status" data-id="${member['Team Member ID']}" title="Update Status">
+              <i class="fas fa-user-clock"></i>
+            </button>
+            <button class="action-btn" data-action="one-on-one" data-id="${member['Team Member ID']}" title="One-on-One">
+              <i class="fas fa-comments"></i>
+            </button>
+            <button class="action-btn" data-action="view" data-id="${member['Team Member ID']}" title="View Details">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        `;
+        row.appendChild(actionsCell);
+        
+        // Add event listeners to actions
+        const actions = actionsCell.querySelectorAll('.action-btn');
+        actions.forEach(action => {
+          action.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            const actionType = this.getAttribute('data-action');
+            const memberId = this.getAttribute('data-id');
+            
+            handleAction(actionType, memberId);
+          });
+        });
+        
+        tbody.appendChild(row);
+      });
+      
+      table.appendChild(tbody);
+      teamTableView.innerHTML = '';
+      teamTableView.appendChild(table);
+    }
+    
+    // Handle action on team member
+    function handleAction(actionType, memberId) {
+      switch (actionType) {
+        case 'edit':
+          // This would be implemented in the future to edit the team member
+          showNotification('Info', 'Edit functionality will be implemented soon.', 'info');
+          break;
+          
+        case 'status':
+          google.script.run.showUpdateStatusForm();
+          break;
+          
+        case 'one-on-one':
+          // Show one-on-one form with this member pre-selected
+          google.script.run.withSuccessHandler(function() {
+            // This callback intentionally left empty as the modal dialog will be shown by the server-side code
+          }).showOneOnOneForm(memberId);
+          break;
+          
+        case 'view':
+          // This would be implemented in the future to view team member details
+          showNotification('Info', 'View functionality will be implemented soon.', 'info');
+          break;
+      }
+    }
+    
+    // Format shift name
+    function formatShift(shift) {
+      if (!shift) return 'No Shift';
+      
+      switch (shift) {
+        case 'morning':
+          return 'Morning';
+        case 'afternoon':
+          return 'Afternoon';
+        case 'overnight':
+          return 'Overnight';
+        case 'weekend':
+          return 'Weekend';
+        default:
+          return shift;
+      }
+    }
+    
+    // Get shift icon
+    function getShiftIcon(shift) {
+      if (!shift) return 'question';
+      
+      switch (shift) {
+        case 'morning':
+          return 'sun';
+        case 'afternoon':
+          return 'cloud-sun';
+        case 'overnight':
+          return 'moon';
+        case 'weekend':
+          return 'calendar-day';
+        default:
+          return 'clock';
+      }
+    }
+    
+    // Format date
+    function formatDate(dateStr) {
+      if (!dateStr) return 'Not set';
+      
+      try {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+      } catch (e) {
+        return dateStr;
+      }
+    }
+    
+    // Show/hide loading overlay
+    function showLoading(show) {
+      const overlay = document.getElementById('loadingOverlay');
+      if (show) {
+        overlay.classList.add('show');
+      } else {
+        overlay.classList.remove('show');
+      }
+    }
+    
+    // Show notification
+    function showNotification(title, message, type = 'success') {
+      const notification = document.getElementById('notification');
+      const iconElement = notification.querySelector('.notification-icon i');
+      
+      // Set notification type
+      notification.className = 'notification notification-' + type;
+      
+      // Set icon
+      if (type === 'success') {
+        iconElement.className = 'fas fa-check';
+      } else if (type === 'error') {
+        iconElement.className = 'fas fa-exclamation-circle';
+      } else {
+        iconElement.className = 'fas fa-info-circle';
+      }
+      
+      // Set content
+      notification.querySelector('.notification-title').textContent = title;
+      notification.querySelector('.notification-message').textContent = message;
+      
+      // Show notification
+      notification.classList.add('show');
+      
+      // Auto hide after 5 seconds
+      setTimeout(function() {
+        notification.classList.remove('show');
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
