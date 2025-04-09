@@ -1,0 +1,165 @@
+# Crisis Services Team Management System for 988 Crisis Line Team Leads
+
+I need a Google Apps Script system specifically designed for 988 crisis services team leads with these key features:
+
+## Core Requirements
+- Create a modular system with separate .gs files for each functional section
+- Design cutting-edge, professional HTML interfaces with interactive elements
+- Maintain consistent data access across all team member components
+- NO hardcoded information - system must be shareable with many leaders
+- Minimize SpreadsheetApp.getUi() calls as they impact performance
+- Create beautiful email templates with rich formatting for all notifications
+- Use consistent naming conventions for all functions, variables, and HTML elements
+
+## Critical Templates & Metrics
+
+### Metrics to Track (Crisis Line Specific)
+- Calls Offered
+- Calls Accepted
+- Answer Rate (Goal: 95% & Higher)
+- Average Talk Time (Goal: 15-20 min)
+- ACW Percentage (Goal: 5 min or less)
+- On Queue Percentage (Goal: 65% and higher)
+- Off Queue Percentage
+- Interacting Time (Goal: 4-6 hrs; ≥ 50%)
+
+### One-on-One Session Types
+1. **Regular One-on-One Template**
+   - Pre-Meeting Preparation (review previous notes, metrics, updates)
+   - Quick Status Sync (5 min: priorities, workload, blockers)
+   - Performance Deep Dive (10 min: metrics, impact assessment)
+   - Strategic Development Planning (7 min: skill mapping, career alignment)
+   - Support and Resource Optimization (5 min: obstacles, leadership support)
+   - Commitment and Action Items (3 min: clear next steps)
+   - Post-Meeting Follow-up (documentation, action tracking)
+
+2. **Priority Coaching Template**
+   - Triggering Event/Situation (what prompted the coaching)
+   - Current Situation Overview (description of challenge/opportunity)
+   - Key Strengths Demonstrated
+   - Growth Areas Discussed
+   - Coaching Approach Used (Inquiry-Based, Direct Guidance, etc.)
+   - Action and Follow-Up Plan
+   - Email follow-up with structured feedback and resource links
+   - Reflection for Team Lead (what worked, what to improve)
+
+### QA Review Template (Crisis-Specific)
+- Call Opening (greeting, timeliness)
+- Risk Assessment (safety screening, rapport building)
+- Communication Skills (active listening, LGBTQ+ inclusive language)
+- Support Effectiveness (resources, coping strategies)
+- Call Closure (summarization, proper ending)
+- Scoring System: 2 points (Fully Met), 1 point (Partially Met), 0 points (Not Met)
+- Calculate total points and percentage for quality status: Excellent (90-100%), Good (75-89%), Needs Improvement (<75%)
+
+## Functional Modules
+1. Team Member Management
+   - Add crisis counselors with auto-generated IDs (counselors use aliases)
+   - Track member status (Active, Training, PTO, LOA, Disappeared, UTO)
+   - Include shift assignment functionality for 24/7 coverage
+   - Maintain comprehensive team roster view with LGBTQ+ crisis line specializations
+   - ALL team member selectors must include both dropdown selection AND manual entry option
+   - When manual entry is used, automatically add that person to the team member sheet
+
+2. One-on-One Management
+   - Implement scrollable tab interface matching template structure
+   - Allow selection of session type (Regular, Priority Coaching) with appropriate template
+   - Store session type with unique templates and follow-up processes
+   - Include follow-up email preview and templates specific to session type
+   - Track action items from sessions with crisis intervention focus
+   - Support filtering, reporting, and analytics
+   - Design a flowing, conversational interface that feels impactful for counselors
+   - Create beautiful email follow-ups to maintain connection
+   - Include both dropdown and manual entry for counselors
+
+3. Manager One-on-One
+   - Create a system for team leads to track meetings with their managers
+   - Include KPI discussion, critical counselor updates, organizational updates
+   - Support task creation with dashboard or Asana integration
+   - Track crisis line performance metrics and team health
+
+4. Metrics Management
+   - Track metrics for entire team and individual members daily
+   - Support filtering by days/weeks/months
+   - Create visualizations with charts, trends, and below-goal flagging
+   - Include specific crisis line metrics as outlined above
+   - Flag concerning trends that might impact crisis response quality
+   - Support both team member selection and manual entry
+
+5. QA Review System
+   - Implement standardized evaluation form with scoring as outlined
+   - Focus on crisis intervention quality and safety assessment
+   - Support comprehensive reporting and analysis
+   - Include follow-up mechanism for development needs
+   - Track improvement on critical crisis intervention skills
+   - Support both team member selection and manual entry
+
+6. Time & Schedule Management
+   - Create time tracking with these specific categories: Primary, Team Meeting, 1:1, Priority Coaching, Manager 1:1, QA Review, Shadow Session, Other
+   - Support three-tab interface: 1) Things to get done 2) Things that got done 3) Things to do next time
+   - Include schedule management with flexible week initialization for 24/7 crisis line coverage
+   - Generate analytics on time usage
+
+7. Task & Action Item System
+   - Manage internal tasks and Asana integration
+   - Track action items with reminders
+   - Support status updates and filtering
+   - Prioritize tasks related to counselor safety and crisis intervention quality
+   - Support both team member selection and manual entry
+   - **Asana Task Creation Features**:
+     - Create tasks in team lead's personal Asana projects
+     - Create tasks in shared projects with managers
+     - Create tasks in team members' individual projects
+     - Create tasks in team-wide projects
+     - Include full task details, due dates, and assignees
+     - Support attaching relevant session details to tasks
+
+8. General Notes
+   - Section for personal notes and team meeting notes
+   - Support for exporting and sharing notes
+   - Organize notes by date, category, and priority
+   - Include crisis-specific categorization (intervention techniques, resource updates)
+
+9. Q&A System
+   - Create email-based Q&A system between team lead and crisis counselors
+   - Store questions and responses in the Google Sheet
+   - Allow counselors to submit questions directly
+   - Track response status and history
+   - Categorize by crisis intervention topic
+   - Support both team member selection and manual entry
+
+10. Settings & Support
+    - System validation and configuration
+    - User preferences for team lead
+    - Help documentation
+    - Sheet validation to ensure proper headers and structure
+    - HTML functionality validation
+    - Use consistent validation naming across all modules
+
+11. First-Time Setup
+    - Guide new team leads through initial configuration
+    - Collect API information (Asana, etc.)
+    - Set team lead information and preferences
+    - Configure Asana workspace connections and projects
+    - Validate sheet structure and create missing sheets if needed
+    - Configure email templates and notification preferences
+    - Show clear step-by-step progress indicators
+
+## Export and Communication
+- Create beautiful export functionality for ALL sections
+- Design interactive, visually appealing email templates
+- Support sending to individuals or entire teams
+- Include data visualizations and metrics in email reports
+- Allow scheduling of automated reports
+- Create formatted coaching feedback emails that promote growth
+
+## Implementation Notes
+- Create beautiful, interactive interfaces that reduce cognitive load for crisis team leads
+- Incorporate extensive visual data representations (charts, graphs, trends)
+- Develop follow-up email functionality for key activities
+- Ensure all forms provide immediate feedback
+- Use consistent naming conventions for all HTML files, IDs, and classes
+- Ensure all team member selectors offer both dropdown and manual entry options
+- Design system to be engaging and reduce overwhelm for team leads managing crisis counselors
+- Make the system comprehensive enough that leaders can "live out of it" while managing 988 crisis line counselors
+- Optimize for mobile usage for on-the-go management
