@@ -1,0 +1,117 @@
+// Global configuration 
+const CONFIG = {
+  VERSION: '1.0.0',
+  SHEETS: {
+    CONFIG: 'SystemConfig',
+    TEAM_MEMBERS: 'TeamMembers',
+    ONE_ON_ONE: 'OneOnOneNotes',
+    QUALITY_REVIEWS: 'QualityReviews',
+    METRICS: 'Metrics',
+    ACTION_ITEMS: 'ActionItems',
+    ACTION_ITEM_TAGS: 'ActionItemTags',
+    ACTION_ITEM_ATTACHMENTS: 'ActionItemAttachments',
+    ACTION_ITEM_REMINDERS: 'ActionItemReminders',
+    REMINDER_SETTINGS: 'ReminderSettings',
+    COACHING: 'CoachingNotes',
+    TIME_TRACKER: 'TimeTracking',
+    SCHEDULE: 'Schedule',
+    MANAGER_ONE_ON_ONE: 'ManagerOneOnOne',
+    GENERAL_NOTES: 'GeneralNotes',
+    TASKS: 'Tasks',
+    ERROR_LOG: 'ErrorLog',
+    USER_PROFILES: 'UserProfiles',
+    NOTIFICATION_PREFS: 'NotificationPreferences',
+    ASANA_INTEGRATION: 'AsanaIntegration',
+    TEAM_LEAD_INFO: 'TeamLeadInfo'
+  },
+  DEFAULT_THEME: 'light',
+  DATE_FORMAT: 'MM/dd/yyyy',
+  TIME_FORMAT: 'HH:mm:ss',
+  MAX_TEAM_SIZE: 50,
+  METRICS: {
+    ANSWER_RATE_TARGET: 0.95,
+    AVG_TALK_TIME_MIN: 15,
+    AVG_TALK_TIME_MAX: 20,
+    ACW_TARGET: 5,
+    ON_QUEUE_TARGET: 0.65,
+    INTERACTING_TIME_TARGET: 0.50
+  }
+};
+
+/**
+ * Runs when the spreadsheet is opened
+ * Creates custom menu and initializes the system if needed
+ */
+function onOpen() {
+  try {
+    const ui = SpreadsheetApp.getUi();
+    
+    // Add a custom menu with emojis
+    ui.createMenu('📊 Dashboard')
+      .addItem('🏠 View Dashboard', 'showDashboard')
+      .addSeparator()
+      .addSubMenu(ui.createMenu('👥 Team Management')
+        .addItem('👤 View Team Members', 'showTeamView')
+        .addItem('➕ Add Team Member', 'showAddTeamMemberForm')
+        .addItem('🔄 Update Status', 'showUpdateStatusForm'))
+      .addSeparator()
+      .addSubMenu(ui.createMenu('📋 One-on-One Notes')
+        .addItem('📝 New Session', 'showOneOnOneForm')
+        .addItem('📊 View Sessions', 'showOneOnOneNotes')
+        .addItem('📈 Dashboard', 'showOneOnOneDashboard')
+        .addItem('📤 Export Options', 'showOneOnOneExport'))
+      .addSeparator()
+      .addSubMenu(ui.createMenu('🤝 Manager One-on-One')
+        .addItem('📝 New Session', 'showManagerOneOnOneForm')
+        .addItem('📊 View Sessions', 'showManagerOneOnOneNotes')
+        .addItem('📈 Dashboard', 'showManagerOneOnOneDashboard'))
+      .addSeparator()
+      .addSubMenu(ui.createMenu('📊 Metrics')
+        .addItem('📊 Daily Metrics', 'showMetricsForm')
+        .addItem('📈 Reports', 'showMetricsReports')
+        .addItem('📉 Dashboard', 'showMetricsDashboard')
+        .addItem('📧 Email Config', 'showMetricsEmailConfig')
+        .addItem('📤 Export', 'showMetricsExport'))
+      .addSeparator()
+      .addSubMenu(ui.createMenu('🧪 QA Reviews')
+        .addItem('📝 New Review', 'showQAReviewForm')
+        .addItem('📊 View Reviews', 'showQAReports')
+        .addItem('📈 Dashboard', 'showQADashboard')
+        .addItem('📤 Export', 'showQAExport'))
+      .addSeparator()
+      .addSubMenu(ui.createMenu('📝 General Notes')
+        .addItem('📝 New Note', 'showGeneralNoteForm')
+        .addItem('📊 View Notes', 'showGeneralNotes')
+        .addItem('📈 Dashboard', 'showGeneralNotesDashboard'))
+      .addSeparator()
+      .addSubMenu(ui.createMenu('⏱️ Time & Schedule')
+        .addItem('⏱️ Time Tracker', 'showTeamLeadTimeTracker')
+        .addItem('📊 Time Reports', 'showTimeReports')
+        .addItem('📅 Manage Schedule', 'showScheduleManager')
+        .addItem('🔄 Initialize Week', 'showInitializeWeekForm')
+        .addItem('📈 Schedule Reports', 'showScheduleReports'))
+      .addSeparator()
+      .addSubMenu(ui.createMenu('✅ Tasks')
+        .addItem('✅ Add Task', 'showTaskForm')
+        .addItem('🌐 Add Asana Task', 'showAsanaTaskForm')
+        .addItem('📋 View Tasks', 'showTasksList'))
+      .addSeparator()
+      .addSubMenu(ui.createMenu('📌 Action Items')
+        .addItem('📝 Create Action Item', 'showActionItemsForm')
+        .addItem('📋 View Action Items', 'showActionItemsView')
+        .addItem('🔔 Manage Reminders', 'showActionItemsReminders'))
+      .addSeparator()
+      .addSubMenu(ui.createMenu('⚙️ Settings & Support')
+        .addItem('⚙️ System Settings', 'showSettings')
+       .addItem('👤 User Preferences', 'showUserPreferences')
+       .addItem('❓ Help & Support', 'showHelp')
+       .addItem('🔧 First Time Setup', 'showFirstTimeSetup')) // Add this line
+      .addToUi();
+
+    // Check if initialization is needed
+    initializeSystemIfNeeded();
+    
+  } catch (error) {
+    logError('onOpen', error);
+  }
+}
