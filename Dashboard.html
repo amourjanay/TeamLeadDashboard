@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Lead Dashboard</title>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Inter Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  
+  <!-- Manrope Font for Headings -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+  
+  <!-- Luxon for date handling -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@2.3.1/build/global/luxon.min.js"></script>
+  
+  <style>
+    :root {
+      /* Base colors palette - professional yet modern */
+      --primary-color: #5540af;
+      --primary-light: #6e5cb9;
+      --primary-dark: #3c2e85;
+      --primary-gradient: linear-gradient(135deg, #5540af, #4d61d8);
+      --secondary-color: #38bdf8;
+      --secondary-gradient: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      --accent-color: #fb7185;
+      --accent-gradient: linear-gradient(135deg, #fb7185, #e11d48);
+      
+      /* Semantic colors */
+      --success-color: #10b981;
+      --success-light: rgba(16, 185, 129, 0.1);
+      --success-gradient: linear-gradient(135deg, #10b981, #059669);
+      --warning-color: #f59e0b;
+      --warning-light: rgba(245, 158, 11, 0.1);
+      --warning-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+      --danger-color: #ef4444;
+      --danger-light: rgba(239, 68, 68, 0.1);
+      --danger-gradient: linear-gradient(135deg, #ef4444, #b91c1c);
+      --info-color: #3b82f6;
+      --info-light: rgba(59, 130, 246, 0.1);
+      --info-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      
+      /* Neutrals for text and backgrounds */
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-tertiary: #64748b;
+      --text-light: #94a3b8;
+      
+      /* Background colors */
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-tertiary: #e2e8f0;
+      --bg-card: #ffffff;
+      
+      /* Border colors */
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.1), 0 1px 2px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+      
+      /* Hero section gradient */
+      --hero-gradient: linear-gradient(135deg, #5540af, #38bdf8);
+      
+      /* Card variants */
+      --card-blue-gradient: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(37, 99, 235, 0.1));
+      --card-purple-gradient: linear-gradient(135deg, rgba(85, 64, 175, 0.05), rgba(76, 29, 149, 0.1));
+      --card-success-gradient: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.1));
+      --card-warning-gradient: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(217, 119, 6, 0.1));
+      --card-danger-gradient: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(185, 28, 28, 0.1));
+      
+      /* Transitions & animations */
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+      --transition-slow: 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+      --transition-bounce: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+      
+      /* Border radius */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+      
+      /* Spacing */
+      --spacing-1: 4px;
+      --spacing-2: 8px;
+      --spacing-3: 12px;
+      --spacing-4: 16px;
+      --spacing-5: 24px;
+      --spacing-6: 32px;
+      --spacing-7: 48px;
+      --spacing-8: 64px;
+    }
+
+    /* Core styling */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background-color: var(--bg-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      text-rendering: optimizeLegibility;
+    }
+    
+    a {
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+    
+    a:hover {
+      color: var(--primary-light);
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1600px;
+      padding: 0 24px;
+      margin: 0 auto;
+    }
+    
+    /* Advanced layout styling */
+    .dashboard-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: var(--spacing-4) 0;
+      gap: var(--spacing-6);
+    }
+    
+    .header {
+      position: relative;
+      padding-bottom: var(--spacing-5);
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-5);
+    }
+    
+    .dashboard-title {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+    }
+    
+    .dashboard-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: var(--hero-gradient);
+      color: white;
+      font-size: 32px;
+      box-shadow: 0 12px 20px -10px rgba(85, 64, 175, 0.4);
+    }
+    
+    .title-content h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: var(--hero-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--spacing-1);
+      font-family: 'Manrope', sans-serif;
+    }
+    
+    .subtitle {
+      font-size: 15px;
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+    
+    .actions {
+      display: flex;
+      gap: var(--spacing-3);
+      align-items: center;
+    }
+    
+    /* Dashboard Grid System */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    
+    .col-span-3 {
+      grid-column: span 3;
+    }
+    
+    .col-span-4 {
+      grid-column: span 4;
+    }
+    
+    .col-span-6 {
+      grid-column: span 6;
+    }
+    
+    .col-span-8 {
+      grid-column: span 8;
+    }
+    
+    .col-span-9 {
+      grid-column: span 9;
+    }
+    
+    .col-span-12 {
+      grid-column: span 12;
+    }
+    
+    /* Advanced Card Styling */
+    .card {
+      background-color: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .card-header {
+      padding: var(--spacing-5);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .card-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+    
+    .card-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      background: var(--hero-gradient);
+      color: white;
+      font-size: 18px;
+    }
+    
+    .card-actions {
+      display: flex;
+      gap: var(--spacing-2);
+    }
+    
+    .card-action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-light);
+      background-color: white;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .card-action-btn:hover {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    .card-body {
+      padding: var(--spacing-5);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .card-footer {
+      padding: var(--spacing-4) var(--spacing-5);
+      border-top: 1px solid var(--border-light);
+      background-color: var(--bg-secondary);
+    }
+    
+    /* Welcome card */
+    .welcome-card {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .welcome-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--hero-gradient);
+      clip-path: ellipse(150% 70% at 95% 10%);
+      z-index: 0;
+      opacity: 0.8;
+    }
+    
+    .welcome-content {
+      position: relative;
+      z-index: 1;
+      padding: var(--spacing-6);
+      color: white;
+    }
+    
+    .welcome-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .welcome-message {
+      max-width: 70%;
+      margin-bottom: var(--spacing-4);
+      font-size: 15px;
+      opacity: 0.9;
+    }
+    
+    .welcome-metrics {
+      display: flex;
+      gap: var(--spacing-4);
+      margin-top: var(--spacing-4);
+    }
+    
+    .welcome-metric {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      padding: var(--spacing-4);
+      border-radius: var(--radius-lg);
+      min-width: 140px;
+    }
+    
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-1);
+    }
+    
+    .metric-label {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+    
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spacing-4);
+    }
+    
+    .stat-card {
+      background-color: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-5);
+      box-shadow: var(--shadow-md);
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--primary-gradient);
+    }
+    
+    .stat-card.success::after {
+      background: var(--success-gradient);
+    }
+    
+    .stat-card.warning::after {
+      background: var(--warning-gradient);
+    }
+    
+    .stat-card.danger::after {
+      background: var(--danger-gradient);
+    }
+    
+    .stat-card.info::after {
+      background: var(--info-gradient);
+    }
+    
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: var(--spacing-3);
+      position: relative;
+    }
+    
+    .stat-icon::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      opacity: 0.15;
+      z-index: 0;
+    }
+    
+    .stat-icon i {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .stat-primary .stat-icon {
+      color: var(--primary-color);
+    }
+    
+    .stat-primary .stat-icon::before {
+      background-color: var(--primary-color);
+    }
+    
+    .stat-success .stat-icon {
+      color: var(--success-color);
+    }
+    
+    .stat-success .stat-icon::before {
+      background-color: var(--success-color);
+    }
+    
+    .stat-warning .stat-icon {
+      color: var(--warning-color);
+    }
+    
+    .stat-warning .stat-icon::before {
+      background-color: var(--warning-color);
+    }
+    
+    .stat-danger .stat-icon {
+      color: var(--danger-color);
+    }
+    
+    .stat-danger .stat-icon::before {
+      background-color: var(--danger-color);
+    }
+    
+    .stat-info .stat-icon {
+      color: var(--info-color);
+    }
+    
+    .stat-info .stat-icon::before {
+      background-color: var(--info-color);
+    }
+    
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-1);
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+    
+    .stat-change {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-1);
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: var(--spacing-2);
+    }
+    
+    .stat-change.positive {
+      color: var(--success-color);
+    }
+    
+    .stat-change.negative {
+      color: var(--danger-color);
+    }
+    
+    /* Date Range Picker */
+    .date-range-picker {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      padding: var(--spacing-2) var(--spacing-4);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+      background-color: white;
+    }
+    
+    .date-range-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+    }
+    
+    .date-range-select {
+      border: none;
+      appearance: none;
+      background: transparent;
+      padding: var(--spacing-1) var(--spacing-2);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--primary-color);
+      cursor: pointer;
+    }
+    
+    /* View toggle */
+    .view-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      padding: var(--spacing-2);
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-full);
+    }
+    
+    .view-option {
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .view-option.active {
+      background-color: white;
+      box-shadow: var(--shadow-sm);
+      color: var(--primary-color);
+    }
+    
+    /* Chart container */
+    .chart-container {
+      width: 100%;
+      height: 100%;
+      min-height: 250px;
+      position: relative;
+    }
+    
+    /* Activity Feed */
+    .activity-feed {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-4);
+    }
+    
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-3);
+      padding-bottom: var(--spacing-4);
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .activity-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+      flex-shrink: 0;
+    }
+    
+    .activity-primary .activity-icon {
+      background: var(--primary-gradient);
+    }
+    
+    .activity-success .activity-icon {
+      background: var(--success-gradient);
+    }
+    
+    .activity-warning .activity-icon {
+      background: var(--warning-gradient);
+    }
+    
+    .activity-danger .activity-icon {
+      background: var(--danger-gradient);
+    }
+    
+    .activity-info .activity-icon {
+      background: var(--info-gradient);
+    }
+    
+    .activity-content {
+      flex: 1;
+    }
+    
+    .activity-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-1);
+    }
+    
+    .activity-message {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .activity-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    .activity-time {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .activity-time i {
+      font-size: 14px;
+    }
+    
+    /* 1-on-1 Sessions */
+    .sessions-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-3);
+    }
+    
+    .session-card {
+      padding: var(--spacing-4);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      transition: all var(--transition-fast);
+      cursor: pointer;
+    }
+    
+    .session-card:hover {
+      border-color: var(--primary-color);
+      background-color: var(--primary-light);
+      background-color: rgba(85, 64, 175, 0.05);
+    }
+    
+    .session-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .team-member {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+    
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      background: var(--hero-gradient);
+      font-size: 14px;
+    }
+    
+    .team-member-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .session-date {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .session-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: var(--spacing-2);
+    }
+    
+    .topic-tag {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background-color: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    /* Action Items */
+    .action-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-3);
+    }
+    
+    .action-item {
+      padding: var(--spacing-4);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--primary-color);
+      background-color: white;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+    }
+    
+    .action-item:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateX(4px);
+    }
+    
+    .action-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .action-item-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .priority-badge {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+    
+    .priority-high {
+      background-color: var(--danger-light);
+      color: var(--danger-color);
+    }
+    
+    .priority-medium {
+      background-color: var(--warning-light);
+      color: var(--warning-color);
+    }
+    
+    .priority-low {
+      background-color: var(--success-light);
+      color: var(--success-color);
+    }
+    
+    .action-item-due {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .action-item-due.overdue {
+      color: var(--danger-color);
+    }
+    
+    .action-item-assignee {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    /* Team member cards */
+    .team-member-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--spacing-4);
+    }
+    
+    .team-member-card {
+      background-color: var(--bg-card);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--spacing-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all var(--transition-normal);
+      cursor: pointer;
+    }
+    
+    .team-member-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .team-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--hero-gradient);
+      color: white;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-3);
+      position: relative;
+    }
+    
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid white;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+    
+    .status-active {
+      background-color: var(--success-color);
+    }
+    
+    .status-away {
+      background-color: var(--warning-color);
+    }
+    
+    .status-offline {
+      background-color: var(--text-light);
+    }
+    
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(85, 64, 175, 0.1);
+      border-radius: 50%;
+      border-left-color: var(--primary-color);
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Toast notifications */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .toast {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      box-shadow: var(--shadow-lg);
+      border-radius: var(--radius-md);
+      max-width: 350px;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    
+    .toast-info .toast-icon {
+      color: var(--info-color);
+    }
+    
+    .toast-success .toast-icon {
+      color: var(--success-color);
+    }
+    
+    .toast-error .toast-icon {
+      color: var(--danger-color);
+    }
+    
+    .toast-warning .toast-icon {
+      color: var(--warning-color);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      gap: var(--spacing-2);
+      border: none;
+    }
+    
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 4px 10px rgba(85, 64, 175, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(85, 64, 175, 0.4);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 5px rgba(85, 64, 175, 0.3);
+    }
+    
+    .btn-secondary {
+      background-color: white;
+      color: var(--primary-color);
+      border: 1px solid var(--border-light);
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-medium);
+    }
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(8, 1fr);
+      }
+      
+      .col-span-3, .col-span-4 {
+        grid-column: span 4;
+      }
+      
+      .col-span-6 {
+        grid-column: span 8;
+      }
+      
+      .col-span-8, .col-span-9, .col-span-12 {
+        grid-column: span 8;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      .col-span-3, .col-span-4, .col-span-6, .col-span-8, .col-span-9, .col-span-12 {
+        grid-column: span 4;
+      }
+      
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      
+      .welcome-metrics {
+        flex-wrap: wrap;
+      }
+      
+      .welcome-message {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+  
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+  
+  <div class="container">
+    <div class="dashboard-container">
+      <header class="dashboard-header">
+        <div class="dashboard-title">
+          <div class="dashboard-icon">
+            <i class="fas fa-tachometer-alt"></i>
+          </div>
+          <div class="title-content">
+            <h1>Team Lead Dashboard</h1>
+            <p class="subtitle" id="teamNameSubtitle">Loading your dashboard...</p>
+          </div>
+        </div>
+        
+        <div class="actions">
+          <div class="view-toggle">
+            <div class="view-option active" data-view="team">Team View</div>
+            <div class="view-option" data-view="individual">Individual View</div>
+          </div>
+          
+          <div class="date-range-picker">
+            <span class="date-range-label">Period:</span>
+            <select id="dateRange" class="date-range-select">
+              <option value="today">Today</option>
+              <option value="week" selected>This Week</option>
+              <option value="month">This Month</option>
+              <option value="quarter">This Quarter</option>
+              <option value="year">This Year</option>
+              <option value="custom">Custom Range</option>
+            </select>
+          </div>
+          
+          <button id="refreshBtn" class="card-action-btn">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Team member selector (hidden by default, shown in individual view) -->
+      <div id="teamMemberSelector" style="display: none;">
+        <div style="
+          background-color: white;
+          padding: 16px;
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-md);
+          margin-bottom: 24px;
+        ">
+          <label for="selectedTeamMember" style="
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+          ">Select Team Member:</label>
+          
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <select id="selectedTeamMember" style="
+              flex: 1;
+              padding: 10px;
+              border-radius: var(--radius-md);
+              border: 1px solid var(--border-medium);
+              font-size: 14px;
+            ">
+              <option value="">Loading team members...</option>
+            </select>
+            
+            <button id="viewTeamMemberBtn" class="btn btn-primary">
+              <i class="fas fa-user"></i> View
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Welcome Card -->
+      <div class="dashboard-grid">
+        <div class="col-span-12">
+          <div class="card welcome-card">
+            <div class="welcome-content">
+              <h2 class="welcome-title">Welcome back, <span id="teamLeadName">Team Lead</span>! 👋</h2>
+              <p class="welcome-message">
+                Here's your team's performance overview for the selected period. Your team is making progress across all key areas.
+              </p>
+              
+              <div class="welcome-metrics">
+                <div class="welcome-metric">
+                  <div class="metric-value" id="totalTeamMembers">--</div>
+                  <div class="metric-label">Team Members</div>
+                </div>
+                
+                <div class="welcome-metric">
+                  <div class="metric-value" id="answerRate">--</div>
+                  <div class="metric-label">Answer Rate</div>
+                </div>
+                
+                <div class="welcome-metric">
+                  <div class="metric-value" id="avgTalkTime">--</div>
+                  <div class="metric-label">Avg Talk Time</div>
+                </div>
+                
+                <div class="welcome-metric">
+                  <div class="metric-value" id="onQueuePercentage">--</div>
+                  <div class="metric-label">On Queue %</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats Cards -->
+      <h3 style="
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+        font-family: 'Manrope', sans-serif;
+      ">📈 Performance Metrics</h3>
+      
+      <div class="stats-grid">
+        <div class="stat-card stat-primary">
+          <div class="stat-icon">
+            <i class="fas fa-headset"></i>
+          </div>
+          <div class="stat-label">Calls Offered</div>
+          <div class="stat-value" id="callsOffered">--</div>
+          <div class="stat-change positive" id="callsOfferedChange">
+            <i class="fas fa-arrow-up"></i> <span>--</span>
+          </div>
+        </div>
+        
+        <div class="stat-card stat-success">
+          <div class="stat-icon">
+            <i class="fas fa-phone-alt"></i>
+          </div>
+          <div class="stat-label">Calls Accepted</div>
+          <div class="stat-value" id="callsAccepted">--</div>
+          <div class="stat-change positive" id="callsAcceptedChange">
+            <i class="fas fa-arrow-up"></i> <span>--</span>
+          </div>
+        </div>
+        
+        <div class="stat-card stat-info">
+          <div class="stat-icon">
+            <i class="fas fa-stopwatch"></i>
+          </div>
+          <div class="stat-label">ACW Percentage</div>
+          <div class="stat-value" id="acwPercentage">--</div>
+          <div class="stat-change positive" id="acwPercentageChange">
+            <i class="fas fa-arrow-down"></i> <span>--</span>
+          </div>
+        </div>
+        
+        <div class="stat-card stat-warning">
+          <div class="stat-icon">
+            <i class="fas fa-user-clock"></i>
+          </div>
+          <div class="stat-label">Interacting Time</div>
+          <div class="stat-value" id="interactingTime">--</div>
+          <div class="stat-change" id="interactingTimeChange">
+            <i class="fas fa-arrow-up"></i> <span>--</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dashboard-grid">
+        <!-- Performance Chart -->
+        <div class="col-span-8">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-icon">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <span>Performance Trends</span>
+              </div>
+              
+              <div class="card-actions">
+                <select id="chartMetric" class="date-range-select">
+                  <option value="answerRate">Answer Rate</option>
+                  <option value="talkTime">Talk Time</option>
+                  <option value="acw">ACW</option>
+                  <option value="onQueue">On Queue %</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                                    <span style="font-weight: 500; color: var(--text-secondary);">Target: </span>
+                  <span id="targetValue" style="color: var(--primary-color); font-weight: 600;">95%</span>
+                </div>
+                <div>
+                  <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                    <i class="fas fa-external-link-alt"></i> Detailed Report
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Upcoming 1-on-1s -->
+        <div class="col-span-4">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-icon">
+                  <i class="fas fa-calendar-alt"></i>
+                </div>
+                <span>Upcoming One-on-Ones</span>
+              </div>
+              
+              <div class="card-actions">
+                <button id="addOneOnOneBtn" class="card-action-btn" title="Schedule new one-on-one">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <div class="sessions-list" id="upcomingOneOnOnes">
+                <!-- Sessions will be populated dynamically -->
+                <div class="session-card">
+                  <div class="session-header">
+                    <div class="team-member">
+                      <div class="avatar">JS</div>
+                      <div class="team-member-name">John Smith</div>
+                    </div>
+                    <div class="session-date">
+                      <i class="fas fa-clock"></i> Tomorrow, 10:00 AM
+                    </div>
+                  </div>
+                  <div class="session-topics">
+                    <div class="topic-tag">Performance</div>
+                    <div class="topic-tag">Development</div>
+                    <div class="topic-tag">Follow-up</div>
+                  </div>
+                </div>
+                
+                <div class="session-card">
+                  <div class="session-header">
+                    <div class="team-member">
+                      <div class="avatar">LD</div>
+                      <div class="team-member-name">Lisa Davis</div>
+                    </div>
+                    <div class="session-date">
+                      <i class="fas fa-clock"></i> Apr 8, 11:30 AM
+                    </div>
+                  </div>
+                  <div class="session-topics">
+                    <div class="topic-tag">Quarterly Review</div>
+                    <div class="topic-tag">Goals</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <button class="btn btn-secondary" style="width: 100%;">
+                <i class="fas fa-calendar"></i> View All Scheduled Sessions
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- QA Reviews Chart -->
+        <div class="col-span-6">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-icon">
+                  <i class="fas fa-star"></i>
+                </div>
+                <span>Quality Reviews</span>
+              </div>
+              
+              <div class="card-actions">
+                <button id="addQAReviewBtn" class="card-action-btn" title="Add new QA review">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <select id="qaChartView" class="date-range-select">
+                  <option value="overall">Overall Scores</option>
+                  <option value="category">By Category</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="qaChart"></canvas>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <span style="font-weight: 500; color: var(--text-secondary);">Team Average: </span>
+                  <span id="qaTeamAverage" style="color: var(--primary-color); font-weight: 600;">92%</span>
+                </div>
+                <div>
+                  <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                    <i class="fas fa-external-link-alt"></i> View All Reviews
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Items -->
+        <div class="col-span-6">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-icon">
+                  <i class="fas fa-tasks"></i>
+                </div>
+                <span>Action Items</span>
+              </div>
+              
+              <div class="card-actions">
+                <button id="addActionItemBtn" class="card-action-btn" title="Add new action item">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <select id="actionItemFilter" class="date-range-select">
+                  <option value="upcoming">Upcoming</option>
+                  <option value="overdue">Overdue</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <div class="action-items-list" id="actionItemsList">
+                <!-- Action items will be populated dynamically -->
+                <div class="action-item">
+                  <div class="action-item-header">
+                    <div class="action-item-title">Review call recordings for John</div>
+                    <div class="priority-badge priority-high">High Priority</div>
+                  </div>
+                  <div class="action-item-due overdue">
+                    <i class="fas fa-calendar-day"></i> Due yesterday
+                  </div>
+                </div>
+                
+                <div class="action-item">
+                  <div class="action-item-header">
+                    <div class="action-item-title">Schedule coaching session with Lisa</div>
+                    <div class="priority-badge priority-medium">Medium Priority</div>
+                  </div>
+                  <div class="action-item-due">
+                    <i class="fas fa-calendar-day"></i> Due tomorrow
+                  </div>
+                </div>
+                
+                <div class="action-item">
+                  <div class="action-item-header">
+                    <div class="action-item-title">Prepare monthly performance report</div>
+                    <div class="priority-badge priority-medium">Medium Priority</div>
+                  </div>
+                  <div class="action-item-due">
+                    <i class="fas fa-calendar-day"></i> Due in 3 days
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <button class="btn btn-secondary" style="width: 100%;">
+                <i class="fas fa-clipboard-list"></i> View All Action Items
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Team Members -->
+        <div class="col-span-12">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <span>Team Members</span>
+              </div>
+              
+              <div class="card-actions">
+                <button id="addTeamMemberBtn" class="card-action-btn" title="Add team member">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <select id="teamMemberFilter" class="date-range-select">
+                  <option value="all">All</option>
+                  <option value="active">Active</option>
+                  <option value="away">Away</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <div class="team-member-cards" id="teamMembersList">
+                <!-- Team members will be populated dynamically -->
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <span style="font-weight: 500; color: var(--text-secondary);">Total Team Members: </span>
+                  <span id="teamMemberCount" style="color: var(--primary-color); font-weight: 600;">0</span>
+                </div>
+                <div>
+                  <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" id="viewTeamDetailsBtn">
+                    <i class="fas fa-users"></i> Manage Team
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Global variables
+    let currentView = 'team'; // 'team' or 'individual'
+    let selectedTeamMember = null;
+    let teamMembers = [];
+    let dashboardData = {};
+    let performanceChart = null;
+    let qaChart = null;
+    
+    // Initialize the dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      // Show loading overlay
+      showLoading();
+      
+      // Load initial data
+      loadDashboardData();
+      
+      // Set up event listeners
+      setupEventListeners();
+    });
+    
+    // Set up event listeners
+    function setupEventListeners() {
+      // View toggle
+      const viewOptions = document.querySelectorAll('.view-option');
+      viewOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          const view = this.getAttribute('data-view');
+          switchView(view);
+          
+          // Update UI
+          viewOptions.forEach(opt => opt.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+      
+      // Date range selector
+      document.getElementById('dateRange').addEventListener('change', function() {
+        loadDashboardData();
+      });
+      
+      // Refresh button
+      document.getElementById('refreshBtn').addEventListener('click', function() {
+        this.classList.add('fa-spin');
+        loadDashboardData().finally(() => {
+          setTimeout(() => {
+            this.classList.remove('fa-spin');
+          }, 500);
+        });
+      });
+      
+      // Chart metric selector
+      document.getElementById('chartMetric').addEventListener('change', function() {
+        updatePerformanceChart();
+      });
+      
+      // QA chart view selector
+      document.getElementById('qaChartView').addEventListener('change', function() {
+        updateQAChart();
+      });
+      
+      // Action item filter
+      document.getElementById('actionItemFilter').addEventListener('change', function() {
+        loadActionItems();
+      });
+      
+      // Team member filter
+      document.getElementById('teamMemberFilter').addEventListener('change', function() {
+        filterTeamMembers();
+      });
+      
+      // Button actions
+      document.getElementById('addOneOnOneBtn').addEventListener('click', function() {
+        google.script.run.showOneOnOneForm();
+      });
+      
+      document.getElementById('addQAReviewBtn').addEventListener('click', function() {
+        google.script.run.showQAReviewForm();
+      });
+      
+      document.getElementById('addActionItemBtn').addEventListener('click', function() {
+        google.script.run.showActionItemsForm();
+      });
+      
+      document.getElementById('addTeamMemberBtn').addEventListener('click', function() {
+        google.script.run.showAddTeamMemberForm();
+      });
+      
+      document.getElementById('viewTeamDetailsBtn').addEventListener('click', function() {
+        google.script.run.showTeamView();
+      });
+      
+      // Team member selector in individual view
+      document.getElementById('selectedTeamMember').addEventListener('change', function() {
+        selectedTeamMember = this.value;
+      });
+      
+      document.getElementById('viewTeamMemberBtn').addEventListener('click', function() {
+        if (selectedTeamMember) {
+          loadIndividualData(selectedTeamMember);
+        } else {
+          showToast('Please select a team member', 'error');
+        }
+      });
+    }
+    
+    // Switch between team and individual views
+    function switchView(view) {
+      currentView = view;
+      
+      // Show/hide team member selector
+      const teamMemberSelector = document.getElementById('teamMemberSelector');
+      teamMemberSelector.style.display = view === 'individual' ? 'block' : 'none';
+      
+      // Update page title
+      const titleElement = document.querySelector('.title-content h1');
+      titleElement.textContent = view === 'team' ? 'Team Lead Dashboard' : 'Individual Dashboard';
+      
+      // Reload data
+      if (view === 'team') {
+        loadDashboardData();
+      } else {
+        // If switching to individual view, populate the team member dropdown
+        loadTeamMembersForDropdown();
+      }
+    }
+    
+    // Load team members for dropdown in individual view
+    function loadTeamMembersForDropdown() {
+      showLoading();
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          
+          if (result.success) {
+            teamMembers = result.data;
+            const dropdown = document.getElementById('selectedTeamMember');
+            dropdown.innerHTML = '';
+            
+            // Add placeholder option
+            const placeholderOption = document.createElement('option');
+            placeholderOption.value = '';
+            placeholderOption.textContent = 'Select a team member...';
+            dropdown.appendChild(placeholderOption);
+            
+            // Add team members
+            teamMembers.forEach(member => {
+              const option = document.createElement('option');
+              option.value = member['Team Member ID'];
+              option.textContent = `${member['First Name']} ${member['Last Name']}`;
+              dropdown.appendChild(option);
+            });
+          } else {
+            showToast('Failed to load team members: ' + result.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showToast('Error: ' + error.message, 'error');
+        })
+        .getAllTeamMembers();
+    }
+    
+    // Load dashboard data
+    function loadDashboardData() {
+      showLoading();
+      
+      const dateRange = document.getElementById('dateRange').value;
+      
+      return new Promise((resolve, reject) => {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            hideLoading();
+            
+            if (result.success) {
+              dashboardData = result.data;
+              
+              // Update UI
+              updateDashboardUI(dashboardData);
+              resolve(dashboardData);
+            } else {
+              showToast('Failed to load dashboard data: ' + result.message, 'error');
+              reject(new Error(result.message));
+            }
+          })
+          .withFailureHandler(function(error) {
+            hideLoading();
+            showToast('Error: ' + error.message, 'error');
+            reject(error);
+          })
+          .getDashboardData({
+            viewMode: currentView,
+            dateRange: dateRange,
+            teamMemberId: selectedTeamMember
+          });
+      });
+    }
+    
+    // Load individual team member data
+    function loadIndividualData(teamMemberId) {
+      showLoading();
+      
+      selectedTeamMember = teamMemberId;
+      const dateRange = document.getElementById('dateRange').value;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          
+          if (result.success) {
+            dashboardData = result.data;
+            
+            // Update UI
+            updateIndividualDashboardUI(dashboardData);
+          } else {
+            showToast('Failed to load team member data: ' + result.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showToast('Error: ' + error.message, 'error');
+        })
+        .getDashboardData({
+          viewMode: 'individual',
+          dateRange: dateRange,
+          teamMemberId: teamMemberId
+        });
+    }
+    
+    // Update dashboard UI with data
+    function updateDashboardUI(data) {
+      // Update title and subtitle
+      document.getElementById('teamLeadName').textContent = data.teamLead?.name || 'Team Lead';
+      document.getElementById('teamNameSubtitle').textContent = data.team?.name || 'Your Team';
+      
+      // Update welcome card metrics
+      document.getElementById('totalTeamMembers').textContent = data.team?.memberCount || '--';
+      document.getElementById('answerRate').textContent = formatPercentage(data.metrics?.answerRate) || '--';
+      document.getElementById('avgTalkTime').textContent = formatTime(data.metrics?.avgTalkTime) || '--';
+      document.getElementById('onQueuePercentage').textContent = formatPercentage(data.metrics?.onQueuePercentage) || '--';
+      
+      // Update stat cards
+      document.getElementById('callsOffered').textContent = data.metrics?.callsOffered || '--';
+      document.getElementById('callsAccepted').textContent = data.metrics?.callsAccepted || '--';
+      document.getElementById('acwPercentage').textContent = formatPercentage(data.metrics?.acwPercentage) || '--';
+      document.getElementById('interactingTime').textContent = formatPercentage(data.metrics?.interactingTime) || '--';
+      
+      // Update charts
+      updatePerformanceChart();
+      updateQAChart();
+      
+      // Update action items
+      loadActionItems();
+      
+      // Update team members list
+      loadTeamMembers();
+    }
+    
+    // Update individual dashboard UI with data
+    function updateIndividualDashboardUI(data) {
+      // Update title and subtitle
+      const teamMember = teamMembers.find(m => m['Team Member ID'] === selectedTeamMember);
+      const memberName = teamMember ? `${teamMember['First Name']} ${teamMember['Last Name']}` : 'Team Member';
+      
+      document.getElementById('teamLeadName').textContent = memberName;
+      document.getElementById('teamNameSubtitle').textContent = `Individual Performance`;
+      
+      // Update welcome card metrics
+      document.getElementById('totalTeamMembers').textContent = data.teamMember?.status || 'Active';
+      document.getElementById('answerRate').textContent = formatPercentage(data.metrics?.answerRate) || '--';
+      document.getElementById('avgTalkTime').textContent = formatTime(data.metrics?.avgTalkTime) || '--';
+      document.getElementById('onQueuePercentage').textContent = formatPercentage(data.metrics?.onQueuePercentage) || '--';
+      
+      // Update stat cards
+      document.getElementById('callsOffered').textContent = data.metrics?.callsOffered || '--';
+      document.getElementById('callsAccepted').textContent = data.metrics?.callsAccepted || '--';
+      document.getElementById('acwPercentage').textContent = formatPercentage(data.metrics?.acwPercentage) || '--';
+      document.getElementById('interactingTime').textContent = formatPercentage(data.metrics?.interactingTime) || '--';
+      
+      // Update charts
+      updatePerformanceChart();
+      updateQAChart();
+      
+      // Update action items
+      loadActionItems();
+    }
+    
+    // Update performance chart
+    function updatePerformanceChart() {
+      const chartMetric = document.getElementById('chartMetric').value;
+      
+      // Get target value based on metric
+      let targetValue = 0;
+      let metricLabel = '';
+      
+      switch (chartMetric) {
+        case 'answerRate':
+          targetValue = 95;
+          metricLabel = 'Answer Rate (%)';
+          break;
+        case 'talkTime':
+          targetValue = 15;
+          metricLabel = 'Talk Time (minutes)';
+          break;
+        case 'acw':
+          targetValue = 5;
+          metricLabel = 'ACW (minutes)';
+          break;
+        case 'onQueue':
+          targetValue = 65;
+          metricLabel = 'On Queue (%)';
+          break;
+      }
+      
+      // Update target value display
+      document.getElementById('targetValue').textContent = chartMetric === 'talkTime' || chartMetric === 'acw' 
+        ? `${targetValue} min` 
+        : `${targetValue}%`;
+      
+      // Prepare chart data
+      const labels = dashboardData.charts?.dates || [];
+      const data = dashboardData.charts?.[chartMetric] || [];
+      
+      // Create or update chart
+      const ctx = document.getElementById('performanceChart').getContext('2d');
+      
+      if (performanceChart) {
+        performanceChart.data.labels = labels;
+        performanceChart.data.datasets[0].data = data;
+        performanceChart.data.datasets[0].label = metricLabel;
+        performanceChart.options.plugins.title.text = `${metricLabel} Over Time`;
+        
+        // Update target line
+        performanceChart.data.datasets[1].data = Array(labels.length).fill(targetValue);
+        
+        performanceChart.update();
+      } else {
+        performanceChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: metricLabel,
+                data: data,
+                borderColor: '#5540af',
+                backgroundColor: 'rgba(85, 64, 175, 0.1)',
+                borderWidth: 3,
+                tension: 0.3,
+                fill: true,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#5540af',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Target',
+                data: Array(labels.length).fill(targetValue),
+                borderColor: 'rgba(239, 68, 68, 0.7)',
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                borderDash: [6, 6],
+                tension: 0,
+                fill: false,
+                pointRadius: 0
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: `${metricLabel} Over Time`,
+                font: {
+                  size: 16,
+                  family: "'Inter', sans-serif",
+                  weight: '500'
+                },
+                padding: {
+                  bottom: 20
+                },
+                color: '#1e293b'
+              },
+              legend: {
+                position: 'top',
+                align: 'end',
+                labels: {
+                  boxWidth: 12,
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  font: {
+                    size: 12,
+                    family: "'Inter', sans-serif"
+                  },
+                  color: '#64748b'
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleColor: '#1e293b',
+                bodyColor: '#1e293b',
+                titleFont: {
+                  size: 13,
+                  family: "'Inter', sans-serif",
+                  weight: '600'
+                },
+                bodyFont: {
+                  size: 12,
+                  family: "'Inter', sans-serif"
+                },
+                padding: 12,
+                borderColor: '#e2e8f0',
+                borderWidth: 1,
+                displayColors: false,
+                callbacks: {
+                  title: function(tooltipItems) {
+                    return tooltipItems[0].label;
+                  },
+                  label: function(context) {
+                    let value = context.raw;
+                    if (chartMetric === 'answerRate' || chartMetric === 'onQueue') {
+                      return `${metricLabel}: ${value}%`;
+                    } else {
+                      return `${metricLabel}: ${value} min`;
+                    }
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  color: '#f1f5f9',
+                  drawBorder: false
+                },
+                ticks: {
+                  font: {
+                    size: 12,
+                    family: "'Inter', sans-serif"
+                  },
+                  color: '#64748b',
+                  callback: function(value) {
+                    if (chartMetric === 'answerRate' || chartMetric === 'onQueue') {
+                      return value + '%';
+                    } else {
+                      return value + ' min';
+                    }
+                  }
+                }
+              },
+              x: {
+                grid: {
+                  color: '#f1f5f9',
+                  drawBorder: false
+                },
+                ticks: {
+                  font: {
+                    size: 12,
+                    family: "'Inter', sans-serif"
+                  },
+                  color: '#64748b'
+                }
+              }
+            },
+            interaction: {
+              mode: 'index',
+              intersect: false
+            }
+          }
+        });
+      }
+    }
+    
+    // Update QA chart
+    function updateQAChart() {
+      const chartView = document.getElementById('qaChartView').value;
+      const ctx = document.getElementById('qaChart').getContext('2d');
+      
+      // Prepare chart data
+      const labels = dashboardData.qa?.labels || [];
+      const data = dashboardData.qa?.scores || [];
+      
+      // Create or update chart
+      if (qaChart) {
+        qaChart.destroy();
+      }
+      
+      if (chartView === 'overall') {
+        // Bar chart for overall scores
+        qaChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Overall Score (%)',
+              data: data,
+              backgroundColor: 'rgba(16, 185, 129, 0.7)',
+              borderColor: 'rgba(16, 185, 129, 1)',
+              borderWidth: 1,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: false
+              },
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleColor: '#1e293b',
+                bodyColor: '#1e293b',
+                titleFont: {
+                  size: 13,
+                  family: "'Inter', sans-serif",
+                  weight: '600'
+                },
+                bodyFont: {
+                  size: 12,
+                  family: "'Inter', sans-serif"
+                },
+                padding: 12,
+                borderColor: '#e2e8f0',
+                borderWidth: 1,
+                displayColors: false,
+                callbacks: {
+                  label: function(context) {
+                    return `Score: ${context.raw}%`;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                grid: {
+                  color: '#f1f5f9',
+                  drawBorder: false
+                },
+                ticks: {
+                  font: {
+                    size: 12,
+                    family: "'Inter', sans-serif"
+                  },
+                  color: '#64748b',
+                  callback: function(value) {
+                    return value + '%';
+                  }
+                }
+              },
+              x: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  font: {
+                    size: 11,
+                    family: "'Inter', sans-serif"
+                  },
+                  color: '#64748b'
+                }
+              }
+            }
+          }
+        });
+      } else {
+        // Radar chart for category scores
+        qaChart = new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: ['Opening', 'Risk Assessment', 'Communication', 'Support', 'Closure'],
+            datasets: [{
+              label: 'Score (%)',
+              data: dashboardData.qa?.categoryScores || [90, 85, 92, 88, 95],
+              backgroundColor: 'rgba(85, 64, 175, 0.2)',
+              borderColor: 'rgba(85, 64, 175, 0.7)',
+              borderWidth: 2,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: 'rgba(85, 64, 175, 0.7)',
+              pointBorderWidth: 2,
+              pointRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              r: {
+                angleLines: {
+                  display: true,
+                  color: '#e2e8f0'
+                },
+                grid: {
+                  color: '#e2e8f0'
+                },
+                pointLabels: {
+                  font: {
+                    size: 12,
+                    family: "'Inter', sans-serif"
+                  },
+                  color: '#1e293b'
+                },
+                suggestedMin: 0,
+                suggestedMax: 100,
+                ticks: {
+                  stepSize: 20,
+                  font: {
+                    size: 10
+                  },
+                  color: '#64748b'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleColor: '#1e293b',
+                bodyColor: '#1e293b',
+                titleFont: {
+                  size: 13,
+                  family: "'Inter', sans-serif",
+                  weight: '600'
+                },
+                bodyFont: {
+                  size: 12,
+                  family: "'Inter', sans-serif"
+                },
+                padding: 12,
+                borderColor: '#e2e8f0',
+                borderWidth: 1,
+                displayColors: false,
+                callbacks: {
+                  title: function(tooltipItems) {
+                    return tooltipItems[0].label;
+                  },
+                  label: function(context) {
+                    return `Score: ${context.raw}%`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      // Update team average
+      document.getElementById('qaTeamAverage').textContent = dashboardData.qa?.teamAverage || '--';
+    }
+    
+    // Load action items
+    function loadActionItems() {
+      const filter = document.getElementById('actionItemFilter').value;
+      const actionItemsList = document.getElementById('actionItemsList');
+      
+      // Clear current items
+      actionItemsList.innerHTML = '';
+      
+      // Filter action items based on selection
+      const actionItems = (dashboardData.actionItems || [])
+        .filter(item => {
+          if (filter === 'upcoming') return item.status === 'Open' && !item.isOverdue;
+          if (filter === 'overdue') return item.status === 'Open' && item.isOverdue;
+          if (filter === 'completed') return item.status === 'Completed';
+          return true;
+        })
+        .slice(0, 3); // Limit to 3 items for dashboard
+      
+      if (actionItems.length === 0) {
+        actionItemsList.innerHTML = `
+          <div style="text-align: center; padding: 20px; color: var(--text-tertiary);">
+            <i class="fas fa-check-circle" style="font-size: 24px; margin-bottom: 8px;"></i>
+            <p>No ${filter} action items found.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Create action item elements
+      actionItems.forEach(item => {
+        const actionItem = document.createElement('div');
+        actionItem.className = 'action-item';
+        
+        const priorityClass = item.priority === 'High' ? 'priority-high' : 
+                             item.priority === 'Medium' ? 'priority-medium' : 'priority-low';
+        
+        actionItem.innerHTML = `
+          <div class="action-item-header">
+            <div class="action-item-title">${item.description}</div>
+            <div class="priority-badge ${priorityClass}">${item.priority} Priority</div>
+          </div>
+          <div class="action-item-due${item.isOverdue ? ' overdue' : ''}">
+            <i class="fas fa-calendar-day"></i> ${item.dueDateFormatted}
+          </div>
+          <div class="action-item-assignee">
+            <i class="fas fa-user"></i> ${item.assigneeName}
+          </div>
+        `;
+        
+        actionItemsList.appendChild(actionItem);
+      });
+    }
+    
+    // Load team members
+    function loadTeamMembers() {
+      const teamMembersList = document.getElementById('teamMembersList');
+      
+      // Clear current members
+      teamMembersList.innerHTML = '';
+      
+      // Get filter
+      const filter = document.getElementById('teamMemberFilter').value;
+      
+      // Filter team members
+      const members = (dashboardData.teamMembers || [])
+        .filter(member => {
+          if (filter === 'active') return member.status === 'Active';
+          if (filter === 'away') return member.status !== 'Active';
+          return true;
+        })
+        .slice(0, 6); // Limit to 6 members for dashboard
+      
+      // Update count
+      document.getElementById('teamMemberCount').textContent = dashboardData.teamMembers?.length || '0';
+      
+      if (members.length === 0) {
+        teamMembersList.innerHTML = `
+          <div style="text-align: center; padding: 20px; color: var(--text-tertiary); grid-column: 1 / -1;">
+            <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px;"></i>
+            <p>No team members found. Add your first team member to get started.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Create team member cards
+      members.forEach(member => {
+        const card = document.createElement('div');
+        card.className = 'team-member-card';
+        card.dataset.id = member.id;
+        
+        // Get initials
+        const initials = `${member.firstName.charAt(0)}${member.lastName.charAt(0)}`;
+        
+        // Get status class
+        const statusClass = member.status === 'Active' ? 'status-active' : 'status-away';
+        
+        card.innerHTML = `
+          <div class="team-avatar">
+            ${initials}
+            <div class="status-indicator ${statusClass}"></div>
+          </div>
+          <div class="member-name">${member.firstName} ${member.lastName}</div>
+          <div class="member-role">${member.role || 'Team Member'}</div>
+          <div class="member-stats">
+            <div class="member-stat">
+              <div class="stat-number">${member.metrics?.answerRate || '--'}</div>
+              <div class="stat-text">Answer %</div>
+            </div>
+            <div class="member-stat">
+              <div class="stat-number">${member.metrics?.qaScore || '--'}</div>
+              <div class="stat-text">QA Score</div>
+            </div>
+          </div>
+        `;
+        
+        // Add click event to view individual dashboard
+        card.addEventListener('click', function() {
+          switchView('individual');
+          
+          // Select the team member in the dropdown
+          const dropdown = document.getElementById('selectedTeamMember');
+          dropdown.value = member.id;
+          
+          // Load individual data
+          loadIndividualData(member.id);
+          
+          // Update view toggle buttons
+          document.querySelectorAll('.view-option').forEach(opt => {
+            opt.classList.toggle('active', opt.getAttribute('data-view') === 'individual');
+          });
+        });
+        
+        teamMembersList.appendChild(card);
+      });
+    }
+    
+    // Filter team members based on selection
+    function filterTeamMembers() {
+      loadTeamMembers();
+    }
+    
+    // Show toast notification
+    function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toast-container');
+      
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `
+        <div class="toast-icon">
+          <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                            type === 'error' ? 'exclamation-circle' : 
+                            type === 'warning' ? 'exclamation-triangle' :
+                            'info-circle'}"></i>
+        </div>
+        <div class="toast-message">${message}</div>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      // Animate in
+      setTimeout(() => toast.classList.add('show'), 10);
+      
+      // Auto dismiss
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+    
+    // Show loading overlay
+    function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+    
+    // Hide loading overlay
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+    }
+    
+    // Format percentage
+    function formatPercentage(value) {
+      if (value === undefined || value === null) return '--';
+      return `${Math.round(value)}%`;
+    }
+    
+    // Format time (minutes)
+    function formatTime(minutes) {
+      if (minutes === undefined || minutes === null) return '--';
+      
+      const mins = Math.floor(minutes);
+      const secs = Math.round((minutes - mins) * 60);
+      
+      if (mins === 0) {
+        return `${secs}s`;
+      } else if (secs === 0) {
+        return `${mins}m`;
+      } else {
+        return `${mins}m ${secs}s`;
+      }
+    }
+  </script>
+</body>
+</html>
