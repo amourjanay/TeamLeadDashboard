@@ -1,0 +1,2177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>988 Crisis Line Metrics Input</title>
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #4285F4;
+      --primary-light: #E8F0FE;
+      --primary-dark: #3367D6;
+      --secondary: #34A853;
+      --secondary-light: #E6F4EA;
+      --warning: #FBBC05;
+      --warning-light: #FEF7E0;
+      --error: #EA4335;
+      --error-light: #FDEDED;
+      --text-primary: #202124;
+      --text-secondary: #5F6368;
+      --surface: #FFFFFF;
+      --background: #F8F9FA;
+      --border: #DADCE0;
+      --shadow-light: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px rgba(60, 64, 67, 0.15);
+      --shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px rgba(60, 64, 67, 0.15);
+      --shadow-hover: 0 8px 16px rgba(60, 64, 67, 0.18), 0 4px 8px rgba(60, 64, 67, 0.15);
+      --transition: 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* === Main Container === */
+    .metrics-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    
+    /* === Header === */
+    .metrics-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      animation: fadeInDown 0.8s ease;
+    }
+    
+    .metrics-header-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .metrics-header-title h1 {
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .metrics-icon-container {
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow-light);
+      transform-origin: center;
+      animation: pulseOnce 1.2s ease-out;
+    }
+    
+    .metrics-header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    /* === Tabs === */
+    .metrics-view-selector {
+      position: relative;
+      display: flex;
+      background-color: var(--background);
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: var(--shadow-light);
+      margin-bottom: 2rem;
+      max-width: 350px;
+      padding: 0.375rem;
+      animation: fadeInUp 0.8s ease;
+    }
+    
+    .metrics-view-button {
+      flex: 1;
+      padding: 0.625rem 1.25rem;
+      border: none;
+      background: transparent;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.875rem;
+      transition: all var(--transition);
+      z-index: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .metrics-view-button.active {
+      color: white;
+    }
+    
+    .metrics-view-slider {
+      position: absolute;
+      height: calc(100% - 0.75rem);
+      border-radius: 50px;
+      background-color: var(--primary);
+      top: 0.375rem;
+      bottom: 0.375rem;
+      left: 0.375rem;
+      transition: transform var(--transition);
+      box-shadow: var(--shadow-light);
+    }
+    
+    /* === Card === */
+    .metrics-card {
+      background-color: var(--surface);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeInUp 0.8s ease 0.2s both;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .metrics-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    /* === Card Header === */
+    .metrics-card-header {
+      padding: 1.5rem 2rem;
+      background-color: var(--primary-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .metrics-card-header h2 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--primary-dark);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .metrics-card-header h2 i {
+      font-size: 1.5rem;
+    }
+    
+    .date-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background-color: var(--surface);
+      border-radius: 50px;
+      padding: 0.375rem 1rem;
+      box-shadow: var(--shadow-light);
+    }
+    
+    .date-selector label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    
+    .date-input {
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      padding: 0.25rem;
+      width: 135px;
+    }
+    
+    /* === Card Body === */
+    .metrics-card-body {
+      padding: 2rem;
+    }
+    
+    /* === Input Section === */
+    .metrics-section {
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.4s ease;
+    }
+    
+    .metrics-section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .metrics-section-title h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      margin: 0;
+    }
+    
+    .metrics-section-title i {
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+    
+    /* === Input Grid === */
+    .metrics-input-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    
+    .metrics-input-grid.columns-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .metrics-input-group {
+      position: relative;
+      opacity: 0;
+      animation: fadeInUp 0.3s ease forwards;
+    }
+    
+    /* Animation delay for staggered appearance */
+    .metrics-input-group:nth-child(1) { animation-delay: 0s; }
+    .metrics-input-group:nth-child(2) { animation-delay: 0.05s; }
+    .metrics-input-group:nth-child(3) { animation-delay: 0.1s; }
+    .metrics-input-group:nth-child(4) { animation-delay: 0.15s; }
+    .metrics-input-group:nth-child(5) { animation-delay: 0.2s; }
+    .metrics-input-group:nth-child(6) { animation-delay: 0.25s; }
+    .metrics-input-group:nth-child(7) { animation-delay: 0.3s; }
+    .metrics-input-group:nth-child(8) { animation-delay: 0.35s; }
+    .metrics-input-group:nth-child(9) { animation-delay: 0.4s; }
+    
+    .metrics-input-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    
+    .metrics-input-wrapper {
+      position: relative;
+    }
+    
+    .metrics-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background-color: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text-primary);
+      transition: all var(--transition);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .metrics-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+      background-color: var(--surface);
+    }
+    
+    .metrics-input-group:focus-within label {
+      color: var(--primary);
+    }
+    
+    .metrics-input-suffix {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-weight: 500;
+      pointer-events: none;
+    }
+    
+    .metrics-input-info {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      transition: opacity var(--transition);
+      opacity: 0.8;
+    }
+    
+    .metrics-input-info i {
+      font-size: 1rem;
+    }
+    
+    .metrics-input-group:hover .metrics-input-info {
+      opacity: 1;
+    }
+    
+    .metrics-input-goal {
+      color: var(--secondary);
+    }
+    
+    /* === Auto Calculate Badge === */
+    .auto-calculate-badge {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.65rem;
+      font-weight: 500;
+      padding: 0.125rem 0.375rem;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    
+    .metrics-input-group:hover .auto-calculate-badge {
+      opacity: 1;
+    }
+    
+    /* === Team Member Selector === */
+    .team-member-selector {
+      position: relative;
+    }
+    
+    .team-selector-input-wrapper {
+      position: relative;
+    }
+    
+    .team-selector-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      padding-right: 3rem;
+      background-color: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text-primary);
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+    
+    .team-selector-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+      background-color: var(--surface);
+    }
+    
+    .team-selector-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      transition: transform var(--transition);
+    }
+    
+    .team-selector-input:focus + .team-selector-icon {
+      transform: translateY(-50%) rotate(180deg);
+      color: var(--primary);
+    }
+    
+    .team-member-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 0.25rem;
+      max-height: 0;
+      overflow: hidden;
+      background-color: var(--surface);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      z-index: 10;
+      transition: max-height var(--transition);
+      opacity: 0;
+    }
+    
+    .team-member-dropdown.active {
+      max-height: 350px;
+      opacity: 1;
+    }
+    
+    .team-member-search {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .team-member-search input {
+      width: 100%;
+      padding: 0.625rem 1rem;
+      background-color: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      transition: all var(--transition);
+    }
+    
+    .team-member-search input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
+    }
+    
+    .team-member-list {
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 0.5rem 0;
+    }
+    
+    .team-member-option {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: background-color var(--transition);
+    }
+    
+    .team-member-option:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .team-member-avatar {
+      width: 2rem;
+      height: 2rem;
+      background-color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+    
+    .team-member-info {
+      flex: 1;
+    }
+    
+    .team-member-name {
+      font-weight: 500;
+      margin-bottom: 0.125rem;
+    }
+    
+    .team-member-role {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .team-member-status {
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.125rem 0.5rem;
+      border-radius: 50px;
+    }
+    
+    .team-member-status.active {
+      background-color: var(--secondary-light);
+      color: var(--secondary);
+    }
+    
+    .team-member-status.inactive {
+      background-color: var(--error-light);
+      color: var(--error);
+    }
+    
+    .team-member-option.selected {
+      background-color: var(--primary-light);
+    }
+    
+    .team-member-option.selected::after {
+      content: 'check';
+      font-family: 'Material Icons Round';
+      color: var(--primary);
+      margin-left: auto;
+    }
+    
+    .team-member-add-new {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--primary);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: background-color var(--transition);
+    }
+    
+    .team-member-add-new:hover {
+      background-color: var(--primary-light);
+    }
+    
+    /* === Textarea === */
+    .metrics-textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background-color: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text-primary);
+      transition: all var(--transition);
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .metrics-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+      background-color: var(--surface);
+    }
+    
+    /* === Card Footer === */
+    .metrics-card-footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .metrics-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    
+    .metrics-status.visible {
+      opacity: 1;
+    }
+    
+    .metrics-status.success {
+      color: var(--secondary);
+    }
+    
+    .metrics-status.error {
+      color: var(--error);
+    }
+    
+    .metrics-status.warning {
+      color: var(--warning);
+    }
+    
+    .metrics-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    /* === Buttons === */
+    .btn {
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1) translate(-50%, -50%);
+      transform-origin: 50% 50%;
+    }
+    
+    .btn:active::after {
+      transform: scale(20) translate(-50%, -50%);
+      opacity: 1;
+      transition: transform 0.6s, opacity 0.4s;
+    }
+    
+    .btn i {
+      font-size: 1.25rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 1px 2px rgba(66, 133, 244, 0.5);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      box-shadow: 0 2px 5px rgba(66, 133, 244, 0.5);
+      transform: translateY(-1px);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+    
+    .btn-secondary {
+      background-color: var(--surface);
+      color: var(--primary);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--primary-light);
+      border-color: var(--primary-light);
+    }
+    
+    .btn-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* === Toast Notification === */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+    }
+    
+    .toast {
+      background-color: var(--surface);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      max-width: 350px;
+      pointer-events: auto;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    
+    .toast-icon {
+      font-size: 1.5rem;
+    }
+    
+    .toast.success .toast-icon {
+      color: var(--secondary);
+    }
+    
+    .toast.error .toast-icon {
+      color: var(--error);
+    }
+    
+    .toast.warning .toast-icon {
+      color: var(--warning);
+    }
+    
+    .toast-content {
+      flex: 1;
+    }
+    
+    .toast-title {
+      font-weight: 500;
+      font-size: 0.875rem;
+      margin-bottom: 0.125rem;
+    }
+    
+    .toast-message {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .toast-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background-color var(--transition);
+    }
+    
+    .toast-close:hover {
+      background-color: var(--background);
+    }
+    
+    /* === Loading Overlay === */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .loading-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--primary-light);
+      border-radius: 50%;
+      display: inline-block;
+      position: relative;
+      box-sizing: border-box;
+      animation: rotation 1s linear infinite;
+    }
+    
+    .loader::after {
+      content: '';  
+      box-sizing: border-box;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-bottom-color: var(--primary);
+    }
+    
+    .loading-text {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    /* === Animations === */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes rotation {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    @keyframes pulseOnce {
+      0% {
+        transform: scale(0.95);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    /* === Media Queries === */
+    @media (max-width: 768px) {
+      .metrics-container {
+        padding: 1rem;
+      }
+      
+      .metrics-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .metrics-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+      }
+      
+      .metrics-input-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+      
+      .metrics-card-footer {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+        padding: 1rem 1.5rem;
+      }
+      
+      .metrics-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      
+      .date-selector {
+        width: 100%;
+      }
+    }
+    
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .metrics-input-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="metrics-container">
+    <!-- Header -->
+    <div class="metrics-header">
+      <div class="metrics-header-title">
+        <div class="metrics-icon-container">
+          <i class="material-icons-round">bar_chart</i>
+        </div>
+        <h1>988 Crisis Line Metrics</h1>
+      </div>
+      
+      <div class="metrics-header-actions">
+        <button id="helpBtn" class="btn btn-secondary" title="Help">
+          <i class="material-icons-round">help_outline</i>
+          Help
+        </button>
+        <button id="dashboardBtn" class="btn btn-secondary" title="Dashboard">
+          <i class="material-icons-round">dashboard</i>
+          Dashboard
+        </button>
+      </div>
+    </div>
+    
+    <!-- View Selector -->
+    <div class="metrics-view-selector">
+      <button id="teamMetricsBtn" class="metrics-view-button active">
+        <i class="material-icons-round">groups</i>
+        Team Metrics
+      </button>
+      <button id="individualMetricsBtn" class="metrics-view-button">
+        <i class="material-icons-round">person</i>
+        Individual Metrics
+      </button>
+      <div class="metrics-view-slider" style="width: 50%;"></div>
+    </div>
+    
+    <!-- Team Metrics Form -->
+    <div id="teamMetricsForm" class="metrics-card">
+      <div class="metrics-card-header">
+        <h2><i class="material-icons-round">groups</i> Team Performance Metrics</h2>
+        
+        <div class="date-selector">
+          <label for="teamMetricsDate">Date:</label>
+          <input type="date" id="teamMetricsDate" class="date-input">
+        </div>
+      </div>
+      
+      <div class="metrics-card-body">
+        <!-- Call Volume Metrics -->
+        <div class="metrics-section">
+          <div class="metrics-section-title">
+            <i class="material-icons-round">call</i>
+            <h3>Call Volume Metrics</h3>
+          </div>
+          
+          <div class="metrics-input-grid">
+            <div class="metrics-input-group">
+              <label for="callsOffered">Calls Offered</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="callsOffered" class="metrics-input" min="0">
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                Total calls received by the system
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="callsAccepted">Calls Accepted</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="callsAccepted" class="metrics-input" min="0">
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                Total calls answered by counselors
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="answerRate">Answer Rate</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="answerRate" class="metrics-input" min="0" max="100" step="0.01" readonly>
+                <span class="metrics-input-suffix">%</span>
+                <div class="auto-calculate-badge">
+                  <i class="material-icons-round" style="font-size: 0.75rem;">auto_fix</i>
+                  Auto
+                </div>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">95% or higher</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Time Metrics -->
+        <div class="metrics-section">
+          <div class="metrics-section-title">
+            <i class="material-icons-round">timer</i>
+            <h3>Time Metrics</h3>
+          </div>
+          
+          <div class="metrics-input-grid">
+            <div class="metrics-input-group">
+              <label for="averageTalkTime">Average Talk Time</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="averageTalkTime" class="metrics-input" min="0" step="0.1">
+                <span class="metrics-input-suffix">min</span>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">15-20 minutes</span></span>
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="acwPercentage">ACW Time</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="acwPercentage" class="metrics-input" min="0" step="0.1">
+                <span class="metrics-input-suffix">min</span>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">5 minutes or less</span></span>
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="interactingTime">Interacting Time</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="interactingTime" class="metrics-input" min="0" step="0.1">
+                <span class="metrics-input-suffix">hrs</span>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">4-6 hours; ≥ 50%</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Queue Metrics -->
+        <div class="metrics-section">
+          <div class="metrics-section-title">
+            <i class="material-icons-round">headset_mic</i>
+            <h3>Queue Metrics</h3>
+          </div>
+          
+          <div class="metrics-input-grid columns-2">
+            <div class="metrics-input-group">
+              <label for="onQueuePercentage">On Queue Percentage</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="onQueuePercentage" class="metrics-input" min="0" max="100" step="0.01">
+                <span class="metrics-input-suffix">%</span>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">65% and higher</span></span>
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="offQueuePercentage">Off Queue Percentage</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="offQueuePercentage" class="metrics-input" min="0" max="100" step="0.01" readonly>
+                <span class="metrics-input-suffix">%</span>
+                <div class="auto-calculate-badge">
+                  <i class="material-icons-round" style="font-size: 0.75rem;">auto_fix</i>
+                  Auto
+                </div>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Calculated automatically (100% - On Queue %)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Additional Information -->
+        <div class="metrics-section">
+          <div class="metrics-section-title">
+            <i class="material-icons-round">note_add</i>
+            <h3>Additional Information</h3>
+          </div>
+          
+          <div class="metrics-input-grid columns-2">
+            <div class="metrics-input-group">
+              <label for="staffCount">Staff Count</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="staffCount" class="metrics-input" min="1">
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                Number of counselors on shift
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="teamNotes">Notes</label>
+              <textarea id="teamNotes" class="metrics-textarea" placeholder="Add any additional context or notes here..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="metrics-card-footer">
+        <div id="teamMetricsStatus" class="metrics-status">
+          <i class="material-icons-round">check_circle</i>
+          <span>Metrics saved successfully!</span>
+        </div>
+        
+        <div class="metrics-actions">
+          <button id="resetTeamMetricsBtn" class="btn btn-secondary">
+            <i class="material-icons-round">refresh</i>
+            Reset Form
+          </button>
+          <button id="saveTeamMetricsBtn" class="btn btn-primary">
+            <i class="material-icons-round">save</i>
+            Save Metrics
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Individual Metrics Form -->
+    <div id="individualMetricsForm" class="metrics-card" style="display: none;">
+      <div class="metrics-card-header">
+        <h2><i class="material-icons-round">person</i> Individual Performance Metrics</h2>
+        
+        <div class="date-selector">
+          <label for="individualMetricsDate">Date:</label>
+          <input type="date" id="individualMetricsDate" class="date-input">
+        </div>
+      </div>
+      
+      <div class="metrics-card-body">
+        <!-- Team Member Selection -->
+        <div class="metrics-section">
+          <div class="metrics-section-title">
+            <i class="material-icons-round">person_search</i>
+            <h3>Team Member Selection</h3>
+          </div>
+          
+          <div class="team-member-selector">
+            <div class="team-selector-input-wrapper">
+              <input type="text" id="selectedTeamMember" class="team-selector-input" readonly placeholder="Select a team member" data-toggle="dropdown">
+              <i class="material-icons-round team-selector-icon">arrow_drop_down</i>
+            </div>
+            
+            <div id="teamMemberDropdown" class="team-member-dropdown">
+              <div class="team-member-search">
+                <input type="text" placeholder="Search team members..." id="teamMemberSearch">
+              </div>
+              
+              <div class="team-member-list" id="teamMemberList">
+                <!-- Team members will be populated dynamically -->
+              </div>
+              
+              <div class="team-member-add-new" id="addNewTeamMember">
+                <i class="material-icons-round">add_circle</i>
+                <span>Add New Team Member</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Call Volume Metrics -->
+        <div class="metrics-section">
+          <div class="metrics-section-title">
+            <i class="material-icons-round">call</i>
+            <h3>Call Metrics</h3>
+          </div>
+          
+          <div class="metrics-input-grid">
+            <div class="metrics-input-group">
+              <label for="indCallsAccepted">Calls Accepted</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="indCallsAccepted" class="metrics-input" min="0">
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                Calls answered by this counselor
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="indAnswerRate">Answer Rate</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="indAnswerRate" class="metrics-input" min="0" max="100" step="0.01">
+                <span class="metrics-input-suffix">%</span>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">95% or higher</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Time Metrics -->
+        <div class="metrics-section">
+          <div class="metrics-section-title">
+            <i class="material-icons-round">timer</i>
+            <h3>Time Metrics</h3>
+          </div>
+          
+          <div class="metrics-input-grid">
+            <div class="metrics-input-group">
+              <label for="indAverageTalkTime">Average Talk Time</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="indAverageTalkTime" class="metrics-input" min="0" step="0.1">
+                <span class="metrics-input-suffix">min</span>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">15-20 minutes</span></span>
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="indAcwPercentage">ACW Time</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="indAcwPercentage" class="metrics-input" min="0" step="0.1">
+                <span class="metrics-input-suffix">min</span>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">5 minutes or less</span></span>
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="indInteractingTime">Interacting Time</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="indInteractingTime" class="metrics-input" min="0" step="0.1">
+                <span class="metrics-input-suffix">hrs</span>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">4-6 hours; ≥ 50%</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Queue Metrics -->
+        <div class="metrics-section">
+          <div class="metrics-section-title">
+            <i class="material-icons-round">headset_mic</i>
+            <h3>Queue Metrics</h3>
+          </div>
+          
+          <div class="metrics-input-grid columns-2">
+            <div class="metrics-input-group">
+              <label for="indOnQueuePercentage">On Queue Percentage</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="indOnQueuePercentage" class="metrics-input" min="0" max="100" step="0.01">
+                <span class="metrics-input-suffix">%</span>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Goal: <span class="metrics-input-goal">65% and higher</span></span>
+              </div>
+            </div>
+            
+            <div class="metrics-input-group">
+              <label for="indOffQueuePercentage">Off Queue Percentage</label>
+              <div class="metrics-input-wrapper">
+                <input type="number" id="indOffQueuePercentage" class="metrics-input" min="0" max="100" step="0.01" readonly>
+                <span class="metrics-input-suffix">%</span>
+                <div class="auto-calculate-badge">
+                  <i class="material-icons-round" style="font-size: 0.75rem;">auto_fix</i>
+                  Auto
+                </div>
+              </div>
+              <div class="metrics-input-info">
+                <i class="material-icons-round">info</i>
+                <span>Calculated automatically (100% - On Queue %)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Additional Information -->
+        <div class="metrics-section">
+          <div class="metrics-section-title">
+            <i class="material-icons-round">note_add</i>
+            <h3>Additional Information</h3>
+          </div>
+          
+          <div class="metrics-input-grid">
+            <div class="metrics-input-group">
+              <label for="individualNotes">Notes</label>
+              <textarea id="individualNotes" class="metrics-textarea" placeholder="Add any additional context or notes for this team member..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="metrics-card-footer">
+        <div id="individualMetricsStatus" class="metrics-status">
+          <i class="material-icons-round">check_circle</i>
+          <span>Metrics saved successfully!</span>
+        </div>
+        
+        <div class="metrics-actions">
+          <button id="resetIndividualMetricsBtn" class="btn btn-secondary">
+            <i class="material-icons-round">refresh</i>
+            Reset Form
+          </button>
+          <button id="saveIndividualMetricsBtn" class="btn btn-primary">
+            <i class="material-icons-round">save</i>
+            Save Metrics
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loader-container">
+      <span class="loader"></span>
+      <p class="loading-text" id="loadingText">Saving metrics...</p>
+    </div>
+  </div>
+  
+  <!-- JavaScript -->
+  <script>
+    // Initialize the metrics form application
+    document.addEventListener('DOMContentLoaded', function() {
+      // Default to today's date
+      setDefaultDates();
+      
+      // Set up view toggle
+      setupViewToggle();
+      
+      // Load team members for dropdown
+      loadTeamMembers();
+      
+      // Set up team metrics form
+      setupTeamMetricsForm();
+      
+      // Set up individual metrics form
+      setupIndividualMetricsForm();
+      
+      // Set up team member dropdown
+      setupTeamMemberDropdown();
+      
+      // Set up buttons
+      setupButtons();
+    });
+    
+    /**
+     * Set default dates for all date inputs
+     */
+    function setDefaultDates() {
+      const today = new Date();
+      const formattedDate = formatDateForInput(today);
+      
+      document.getElementById('teamMetricsDate').value = formattedDate;
+      document.getElementById('individualMetricsDate').value = formattedDate;
+    }
+    
+    /**
+     * Format a date for an input field
+     * @param {Date} date - The date to format
+     * @return {string} Formatted date string (YYYY-MM-DD)
+     */
+    function formatDateForInput(date) {
+      return date.toISOString().split('T')[0];
+    }
+    
+    /**
+     * Set up view toggle between team and individual metrics
+     */
+    function setupViewToggle() {
+      const teamBtn = document.getElementById('teamMetricsBtn');
+      const individualBtn = document.getElementById('individualMetricsBtn');
+      const teamForm = document.getElementById('teamMetricsForm');
+      const individualForm = document.getElementById('individualMetricsForm');
+      const slider = document.querySelector('.metrics-view-slider');
+      
+      teamBtn.addEventListener('click', function() {
+        teamBtn.classList.add('active');
+        individualBtn.classList.remove('active');
+        teamForm.style.display = 'block';
+        individualForm.style.display = 'none';
+        slider.style.transform = 'translateX(0)';
+        
+        // Reset any visible status messages
+        resetStatusMessages();
+      });
+      
+      individualBtn.addEventListener('click', function() {
+        individualBtn.classList.add('active');
+        teamBtn.classList.remove('active');
+        individualForm.style.display = 'block';
+        teamForm.style.display = 'none';
+        slider.style.transform = 'translateX(100%)';
+        
+        // Reset any visible status messages
+        resetStatusMessages();
+      });
+    }
+    
+    /**
+     * Reset all visible status messages
+     */
+    function resetStatusMessages() {
+      document.getElementById('teamMetricsStatus').classList.remove('visible');
+      document.getElementById('individualMetricsStatus').classList.remove('visible');
+    }
+    
+    /**
+     * Set up team metrics form functionality
+     */
+    function setupTeamMetricsForm() {
+      // Auto-calculate answer rate when calls offered or accepted changes
+      const callsOfferedInput = document.getElementById('callsOffered');
+      const callsAcceptedInput = document.getElementById('callsAccepted');
+      const answerRateInput = document.getElementById('answerRate');
+      
+      [callsOfferedInput, callsAcceptedInput].forEach(input => {
+        input.addEventListener('input', calculateAnswerRate);
+      });
+      
+      // Auto-calculate off queue percentage when on queue percentage changes
+      const onQueueInput = document.getElementById('onQueuePercentage');
+      const offQueueInput = document.getElementById('offQueuePercentage');
+      
+      onQueueInput.addEventListener('input', function() {
+        calculateOffQueuePercentage(onQueueInput, offQueueInput);
+      });
+      
+      // Reset form button
+      document.getElementById('resetTeamMetricsBtn').addEventListener('click', function() {
+        resetForm('team');
+      });
+      
+      // Save form button
+      document.getElementById('saveTeamMetricsBtn').addEventListener('click', function() {
+        saveTeamMetrics();
+      });
+    }
+    
+    /**
+     * Calculate answer rate based on calls offered and accepted
+     */
+    function calculateAnswerRate() {
+      const offered = parseInt(document.getElementById('callsOffered').value) || 0;
+      const accepted = parseInt(document.getElementById('callsAccepted').value) || 0;
+      const answerRateInput = document.getElementById('answerRate');
+      
+      if (offered > 0) {
+        // Calculate and display answer rate as percentage
+        const rate = (accepted / offered) * 100;
+        answerRateInput.value = rate.toFixed(2);
+        
+        // Set color based on goal achievement
+        if (rate >= 95) {
+          answerRateInput.style.color = 'var(--secondary)';
+        } else if (rate >= 90) {
+          answerRateInput.style.color = 'var(--warning)';
+        } else {
+          answerRateInput.style.color = 'var(--error)';
+        }
+      } else {
+        answerRateInput.value = '';
+        answerRateInput.style.color = '';
+      }
+    }
+    
+    /**
+     * Calculate off queue percentage based on on queue percentage
+     * @param {HTMLElement} onQueueInput - On queue percentage input element
+     * @param {HTMLElement} offQueueInput - Off queue percentage input element
+     */
+    function calculateOffQueuePercentage(onQueueInput, offQueueInput) {
+      const onQueue = parseFloat(onQueueInput.value) || 0;
+      
+      if (onQueue >= 0 && onQueue <= 100) {
+        // Calculate and display off queue percentage
+        const offQueue = (100 - onQueue).toFixed(2);
+        offQueueInput.value = offQueue;
+        
+        // Set color based on value
+        if (onQueue >= 65) {
+          onQueueInput.style.color = 'var(--secondary)';
+          offQueueInput.style.color = '';
+        } else {
+          onQueueInput.style.color = 'var(--error)';
+          offQueueInput.style.color = '';
+        }
+      } else {
+        offQueueInput.value = '';
+        onQueueInput.style.color = '';
+        offQueueInput.style.color = '';
+      }
+    }
+    
+    /**
+     * Set up individual metrics form functionality
+     */
+    function setupIndividualMetricsForm() {
+      // Auto-calculate off queue percentage when on queue percentage changes
+      const indOnQueueInput = document.getElementById('indOnQueuePercentage');
+      const indOffQueueInput = document.getElementById('indOffQueuePercentage');
+      
+      indOnQueueInput.addEventListener('input', function() {
+        calculateOffQueuePercentage(indOnQueueInput, indOffQueueInput);
+      });
+      
+      // Reset form button
+      document.getElementById('resetIndividualMetricsBtn').addEventListener('click', function() {
+        resetForm('individual');
+      });
+      
+      // Save form button
+      document.getElementById('saveIndividualMetricsBtn').addEventListener('click', function() {
+        saveIndividualMetrics();
+      });
+    }
+    
+    /**
+     * Set up team member dropdown functionality
+     */
+    function setupTeamMemberDropdown() {
+      const dropdown = document.getElementById('teamMemberDropdown');
+      const input = document.getElementById('selectedTeamMember');
+      const searchInput = document.getElementById('teamMemberSearch');
+      
+      // Toggle dropdown when input is clicked
+      input.addEventListener('click', function() {
+        dropdown.classList.toggle('active');
+        
+        if (dropdown.classList.contains('active')) {
+          searchInput.focus();
+        }
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(event) {
+        if (!event.target.closest('.team-member-selector')) {
+          dropdown.classList.remove('active');
+        }
+      });
+      
+      // Handle search input
+      searchInput.addEventListener('input', function() {
+        filterTeamMembers(this.value);
+      });
+      
+      // Handle clicking "Add New Team Member"
+      document.getElementById('addNewTeamMember').addEventListener('click', function() {
+        promptAddNewTeamMember();
+      });
+    }
+    
+    /**
+     * Filter team members based on search term
+     * @param {string} searchTerm - The search term
+     */
+    function filterTeamMembers(searchTerm) {
+      const options = document.querySelectorAll('.team-member-option');
+      const term = searchTerm.toLowerCase();
+      
+      options.forEach(option => {
+        const name = option.querySelector('.team-member-name').textContent.toLowerCase();
+        if (name.includes(term)) {
+          option.style.display = 'flex';
+        } else {
+          option.style.display = 'none';
+        }
+      });
+    }
+    
+    /**
+     * Prompt user to add a new team member
+     */
+    function promptAddNewTeamMember() {
+      // Here you would normally show a modal, but for simplicity:
+      const name = prompt('Enter the name of the new team member:');
+      
+      if (name && name.trim()) {
+        // Add team member
+        addTeamMember(name.trim());
+      }
+    }
+    
+    /**
+     * Add a new team member
+     * @param {string} name - The name of the team member
+     */
+    function addTeamMember(name) {
+      showLoading('Adding team member...');
+      
+      // Call the server function to add a team member
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          
+          if (result && result.success) {
+            // Reload team members list
+            loadTeamMembers();
+            
+            // Show success toast
+            showToast('Team Member Added', `${name} has been added successfully.`, 'success');
+            
+            // Select the newly added team member
+            setTimeout(() => {
+              selectTeamMember(name);
+            }, 500);
+          } else {
+            // Show error toast
+            showToast('Error', result.message || 'Failed to add team member.', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          showToast('Error', 'Failed to add team member.', 'error');
+          console.error('Error adding team member:', error);
+        })
+        .addTeamMember({
+          name: name,
+          role: 'Crisis Counselor',
+          status: 'Active',
+          startDate: new Date()
+        });
+    }
+    
+    /**
+     * Load team members into dropdown
+     */
+    function loadTeamMembers() {
+      const teamMemberList = document.getElementById('teamMemberList');
+      
+      // Show loading in the list
+      teamMemberList.innerHTML = '<div class="team-member-option">Loading team members...</div>';
+      
+      // Call server function to get team members
+      google.script.run
+        .withSuccessHandler(function(teamMembers) {
+          // Clear loading message
+          teamMemberList.innerHTML = '';
+          
+          if (!teamMembers || teamMembers.length === 0) {
+            teamMemberList.innerHTML = '<div class="team-member-option">No team members found</div>';
+            return;
+          }
+          
+          // Add team members to the list
+          teamMembers.forEach(member => {
+            const option = document.createElement('div');
+            option.className = 'team-member-option';
+            option.setAttribute('data-name', member.name);
+            
+            // Get initials for avatar
+            const initials = getInitials(member.name);
+            
+            // Create HTML structure for team member option
+            option.innerHTML = `
+              <div class="team-member-avatar">${initials}</div>
+              <div class="team-member-info">
+                <div class="team-member-name">${member.name}</div>
+                <div class="team-member-role">${member.role || 'Crisis Counselor'}</div>
+              </div>
+              <div class="team-member-status ${member.status === 'Active' ? 'active' : 'inactive'}">${member.status || 'Active'}</div>
+            `;
+            
+            // Add click event to select this team member
+            option.addEventListener('click', function() {
+              selectTeamMember(member.name);
+            });
+            
+            teamMemberList.appendChild(option);
+          });
+        })
+        .withFailureHandler(function(error) {
+          teamMemberList.innerHTML = '<div class="team-member-option">Error loading team members</div>';
+          console.error('Error loading team members:', error);
+          
+          // Show error toast
+          showToast('Error', 'Failed to load team members.', 'error');
+        })
+        .getTeamMembers();
+    }
+    
+    /**
+     * Get initials from a name
+     * @param {string} name - The full name
+     * @return {string} Initials (up to 2 characters)
+     */
+    function getInitials(name) {
+      if (!name) return '?';
+      
+      const parts = name.split(' ');
+      if (parts.length === 1) {
+        return parts[0].charAt(0).toUpperCase();
+      }
+      
+      return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    }
+    
+    /**
+     * Select a team member
+     * @param {string} name - The name of the team member
+     */
+    function selectTeamMember(name) {
+      // Update the input value
+      document.getElementById('selectedTeamMember').value = name;
+      
+      // Update the selected state in dropdown
+      const options = document.querySelectorAll('.team-member-option');
+      options.forEach(option => {
+        if (option.getAttribute('data-name') === name) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      });
+      
+      // Close the dropdown
+      document.getElementById('teamMemberDropdown').classList.remove('active');
+    }
+    
+    /**
+     * Set up utility buttons
+     */
+    function setupButtons() {
+      // Dashboard button
+      document.getElementById('dashboardBtn').addEventListener('click', function() {
+        navigateToDashboard();
+      });
+      
+      // Help button
+      document.getElementById('helpBtn').addEventListener('click', function() {
+        showHelpInformation();
+      });
+    }
+    
+    /**
+     * Navigate back to dashboard
+     */
+    function navigateToDashboard() {
+      google.script.run.showDashboard();
+    }
+    
+    /**
+     * Show help information
+     */
+    function showHelpInformation() {
+      const helpHtml = `
+        <div style="max-width: 500px;">
+          <h3 style="margin-bottom: 1rem;">Metrics Input Help</h3>
+          
+          <p style="margin-bottom: 0.75rem;">This form allows you to enter performance metrics for your 988 crisis line team. You can track both team-wide and individual counselor metrics.</p>
+          
+          <h4 style="margin: 1rem 0 0.5rem;">Key Metrics and Goals</h4>
+          <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li><strong>Answer Rate:</strong> Goal is 95% or higher</li>
+            <li><strong>Average Talk Time:</strong> Goal is between 15-20 minutes</li>
+                        <li><strong>ACW Time:</strong> Goal is 5 minutes or less</li>
+            <li><strong>On Queue Percentage:</strong> Goal is 65% or higher</li>
+            <li><strong>Interacting Time:</strong> Goal is 4-6 hours; at least 50% of shift</li>
+          </ul>
+          
+          <h4 style="margin: 1rem 0 0.5rem;">Auto-Calculated Fields</h4>
+          <p style="margin-bottom: 0.75rem;">Some fields are automatically calculated based on your inputs:</p>
+          <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+            <li><strong>Answer Rate:</strong> Calculated as (Calls Accepted / Calls Offered) × 100%</li>
+            <li><strong>Off Queue Percentage:</strong> Calculated as 100% - On Queue Percentage</li>
+          </ul>
+          
+          <h4 style="margin: 1rem 0 0.5rem;">Need More Help?</h4>
+          <p>Contact your system administrator or refer to the 988 Crisis Line Team Lead Handbook for detailed metrics definitions and guidelines.</p>
+        </div>
+      `;
+      
+      // Show help dialog - modify this to use your preferred dialog system
+      showDialog('Metrics Help', helpHtml);
+    }
+    
+    /**
+     * Show a dialog with custom content
+     * @param {string} title - Dialog title
+     * @param {string} content - Dialog HTML content
+     */
+    function showDialog(title, content) {
+      // Call Google Apps Script to show a modal dialog
+      google.script.run.showModalDialog(content, title);
+    }
+    
+    /**
+     * Reset form to default state
+     * @param {string} formType - 'team' or 'individual'
+     */
+    function resetForm(formType) {
+      if (formType === 'team') {
+        // Reset team metrics form
+        document.getElementById('teamMetricsInputForm')?.reset();
+        document.getElementById('teamMetricsDate').value = formatDateForInput(new Date());
+        document.getElementById('callsOffered').value = '';
+        document.getElementById('callsAccepted').value = '';
+        document.getElementById('answerRate').value = '';
+        document.getElementById('averageTalkTime').value = '';
+        document.getElementById('acwPercentage').value = '';
+        document.getElementById('onQueuePercentage').value = '';
+        document.getElementById('offQueuePercentage').value = '';
+        document.getElementById('interactingTime').value = '';
+        document.getElementById('staffCount').value = '';
+        document.getElementById('teamNotes').value = '';
+        
+        // Reset any status messages
+        document.getElementById('teamMetricsStatus').classList.remove('visible', 'success', 'error');
+        
+        // Reset input colors
+        document.getElementById('answerRate').style.color = '';
+        document.getElementById('onQueuePercentage').style.color = '';
+        document.getElementById('offQueuePercentage').style.color = '';
+        
+        // Show toast
+        showToast('Form Reset', 'Team metrics form has been reset to default values.', 'info');
+      } else if (formType === 'individual') {
+        // Reset individual metrics form
+        document.getElementById('individualMetricsDate').value = formatDateForInput(new Date());
+        document.getElementById('selectedTeamMember').value = '';
+        document.getElementById('indCallsAccepted').value = '';
+        document.getElementById('indAnswerRate').value = '';
+        document.getElementById('indAverageTalkTime').value = '';
+        document.getElementById('indAcwPercentage').value = '';
+        document.getElementById('indOnQueuePercentage').value = '';
+        document.getElementById('indOffQueuePercentage').value = '';
+        document.getElementById('indInteractingTime').value = '';
+        document.getElementById('individualNotes').value = '';
+        
+        // Reset any status messages
+        document.getElementById('individualMetricsStatus').classList.remove('visible', 'success', 'error');
+        
+        // Reset selected team member in dropdown
+        const options = document.querySelectorAll('.team-member-option');
+        options.forEach(option => option.classList.remove('selected'));
+        
+        // Reset input colors
+        document.getElementById('indOnQueuePercentage').style.color = '';
+        document.getElementById('indOffQueuePercentage').style.color = '';
+        
+        // Show toast
+        showToast('Form Reset', 'Individual metrics form has been reset to default values.', 'info');
+      }
+    }
+    
+    /**
+     * Save team metrics
+     */
+    function saveTeamMetrics() {
+      // Validate the form
+      if (!validateTeamMetricsForm()) {
+        return;
+      }
+      
+      // Show loading overlay
+      showLoading('Saving team metrics...');
+      
+      // Get form values
+      const metricsData = {
+        date: new Date(document.getElementById('teamMetricsDate').value),
+        callsOffered: parseInt(document.getElementById('callsOffered').value) || 0,
+        callsAccepted: parseInt(document.getElementById('callsAccepted').value) || 0,
+        answerRate: parseFloat(document.getElementById('answerRate').value) / 100 || 0,
+        averageTalkTime: parseFloat(document.getElementById('averageTalkTime').value) || 0,
+        acwPercentage: parseFloat(document.getElementById('acwPercentage').value) || 0,
+        onQueuePercentage: parseFloat(document.getElementById('onQueuePercentage').value) / 100 || 0,
+        offQueuePercentage: parseFloat(document.getElementById('offQueuePercentage').value) / 100 || 0,
+        interactingTime: parseFloat(document.getElementById('interactingTime').value) || 0,
+        staffCount: parseInt(document.getElementById('staffCount').value) || 0,
+        notes: document.getElementById('teamNotes').value || ''
+      };
+      
+      // Call server function to save metrics
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          
+          if (result && result.success) {
+            // Show success message
+            const statusElement = document.getElementById('teamMetricsStatus');
+            statusElement.innerHTML = '<i class="material-icons-round">check_circle</i><span>' + result.message + '</span>';
+            statusElement.classList.add('visible', 'success');
+            statusElement.classList.remove('error', 'warning');
+            
+            // Show toast
+            showToast('Success', 'Team metrics saved successfully', 'success');
+            
+            // Reset the form after brief delay
+            setTimeout(() => {
+              resetForm('team');
+            }, 2000);
+          } else {
+            // Show error message
+            const statusElement = document.getElementById('teamMetricsStatus');
+            statusElement.innerHTML = '<i class="material-icons-round">error</i><span>' + (result.message || 'Error saving metrics') + '</span>';
+            statusElement.classList.add('visible', 'error');
+            statusElement.classList.remove('success', 'warning');
+            
+            // Show toast
+            showToast('Error', result.message || 'Failed to save team metrics', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          
+          // Show error message
+          const statusElement = document.getElementById('teamMetricsStatus');
+          statusElement.innerHTML = '<i class="material-icons-round">error</i><span>Error: ' + error + '</span>';
+          statusElement.classList.add('visible', 'error');
+          statusElement.classList.remove('success', 'warning');
+          
+          // Show toast
+          showToast('Error', 'Failed to save team metrics: ' + error, 'error');
+        })
+        .saveTeamMetrics(metricsData);
+    }
+    
+    /**
+     * Validate team metrics form
+     * @return {boolean} True if valid
+     */
+    function validateTeamMetricsForm() {
+      // Check required fields
+      const date = document.getElementById('teamMetricsDate').value;
+      if (!date) {
+        showToast('Validation Error', 'Please select a date', 'error');
+        return false;
+      }
+      
+      const callsOffered = document.getElementById('callsOffered').value;
+      if (!callsOffered) {
+        showToast('Validation Error', 'Please enter Calls Offered', 'error');
+        document.getElementById('callsOffered').focus();
+        return false;
+      }
+      
+      const callsAccepted = document.getElementById('callsAccepted').value;
+      if (!callsAccepted) {
+        showToast('Validation Error', 'Please enter Calls Accepted', 'error');
+        document.getElementById('callsAccepted').focus();
+        return false;
+      }
+      
+      // Check that calls accepted is not greater than calls offered
+      if (parseInt(callsAccepted) > parseInt(callsOffered)) {
+        showToast('Validation Error', 'Calls Accepted cannot be greater than Calls Offered', 'error');
+        document.getElementById('callsAccepted').focus();
+        return false;
+      }
+      
+      return true;
+    }
+    
+    /**
+     * Save individual metrics
+     */
+    function saveIndividualMetrics() {
+      // Validate the form
+      if (!validateIndividualMetricsForm()) {
+        return;
+      }
+      
+      // Show loading overlay
+      showLoading('Saving individual metrics...');
+      
+      // Get form values
+      const metricsData = {
+        date: new Date(document.getElementById('individualMetricsDate').value),
+        teamMember: document.getElementById('selectedTeamMember').value,
+        callsAccepted: parseInt(document.getElementById('indCallsAccepted').value) || 0,
+        answerRate: parseFloat(document.getElementById('indAnswerRate').value) / 100 || 0,
+        averageTalkTime: parseFloat(document.getElementById('indAverageTalkTime').value) || 0,
+        acwPercentage: parseFloat(document.getElementById('indAcwPercentage').value) || 0,
+        onQueuePercentage: parseFloat(document.getElementById('indOnQueuePercentage').value) / 100 || 0,
+        offQueuePercentage: parseFloat(document.getElementById('indOffQueuePercentage').value) / 100 || 0,
+        interactingTime: parseFloat(document.getElementById('indInteractingTime').value) || 0,
+        notes: document.getElementById('individualNotes').value || ''
+      };
+      
+      // Call server function to save individual metrics
+      google.script.run
+        .withSuccessHandler(function(result) {
+          hideLoading();
+          
+          if (result && result.success) {
+            // Show success message
+            const statusElement = document.getElementById('individualMetricsStatus');
+            statusElement.innerHTML = '<i class="material-icons-round">check_circle</i><span>' + result.message + '</span>';
+            statusElement.classList.add('visible', 'success');
+            statusElement.classList.remove('error', 'warning');
+            
+            // Show toast
+            showToast('Success', 'Individual metrics saved successfully', 'success');
+            
+            // Keep the selected team member but reset other fields after brief delay
+            const selectedTeamMember = document.getElementById('selectedTeamMember').value;
+            setTimeout(() => {
+              resetForm('individual');
+              document.getElementById('selectedTeamMember').value = selectedTeamMember;
+              
+              // Re-select in the dropdown
+              const options = document.querySelectorAll('.team-member-option');
+              options.forEach(option => {
+                if (option.getAttribute('data-name') === selectedTeamMember) {
+                  option.classList.add('selected');
+                }
+              });
+            }, 2000);
+          } else {
+            // Show error message
+            const statusElement = document.getElementById('individualMetricsStatus');
+            statusElement.innerHTML = '<i class="material-icons-round">error</i><span>' + (result.message || 'Error saving metrics') + '</span>';
+            statusElement.classList.add('visible', 'error');
+            statusElement.classList.remove('success', 'warning');
+            
+            // Show toast
+            showToast('Error', result.message || 'Failed to save individual metrics', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          hideLoading();
+          
+          // Show error message
+          const statusElement = document.getElementById('individualMetricsStatus');
+          statusElement.innerHTML = '<i class="material-icons-round">error</i><span>Error: ' + error + '</span>';
+          statusElement.classList.add('visible', 'error');
+          statusElement.classList.remove('success', 'warning');
+          
+          // Show toast
+          showToast('Error', 'Failed to save individual metrics: ' + error, 'error');
+        })
+        .saveIndividualMetrics(metricsData);
+    }
+    
+    /**
+     * Validate individual metrics form
+     * @return {boolean} True if valid
+     */
+    function validateIndividualMetricsForm() {
+      // Check required fields
+      const date = document.getElementById('individualMetricsDate').value;
+      if (!date) {
+        showToast('Validation Error', 'Please select a date', 'error');
+        return false;
+      }
+      
+      const teamMember = document.getElementById('selectedTeamMember').value;
+      if (!teamMember) {
+        showToast('Validation Error', 'Please select a team member', 'error');
+        // Flash the team member selector to draw attention
+        const selector = document.querySelector('.team-selector-input');
+        selector.classList.add('pulse-highlight');
+        setTimeout(() => {
+          selector.classList.remove('pulse-highlight');
+        }, 1000);
+        return false;
+      }
+      
+      const callsAccepted = document.getElementById('indCallsAccepted').value;
+      if (!callsAccepted) {
+        showToast('Validation Error', 'Please enter Calls Accepted', 'error');
+        document.getElementById('indCallsAccepted').focus();
+        return false;
+      }
+      
+      return true;
+    }
+    
+    /**
+     * Show a toast notification
+     * @param {string} title - Toast title
+     * @param {string} message - Toast message
+     * @param {string} type - Toast type: 'success', 'error', 'warning', 'info' (default)
+     */
+    function showToast(title, message, type = 'info') {
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      // Set toast icon based on type
+      let icon = 'info';
+      switch (type) {
+        case 'success': icon = 'check_circle'; break;
+        case 'error': icon = 'error'; break;
+        case 'warning': icon = 'warning'; break;
+      }
+      
+      // Create toast content
+      toast.innerHTML = `
+        <div class="toast-icon material-icons-round">${icon}</div>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close"><i class="material-icons-round">close</i></button>
+      `;
+      
+      // Add toast to container
+      const container = document.getElementById('toastContainer');
+      container.appendChild(toast);
+      
+      // Setup close button
+      const closeBtn = toast.querySelector('.toast-close');
+      closeBtn.addEventListener('click', function() {
+        removeToast(toast);
+      });
+      
+      // Show toast with animation
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+      
+      // Auto remove after delay
+      setTimeout(() => {
+        removeToast(toast);
+      }, 5000);
+      
+      return toast;
+    }
+    
+    /**
+     * Remove a toast element
+     * @param {HTMLElement} toast - The toast element to remove
+     */
+    function removeToast(toast) {
+      toast.classList.remove('show');
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 300);
+    }
+    
+    /**
+     * Show loading overlay
+     * @param {string} message - Message to display
+     */
+    function showLoading(message = 'Loading...') {
+      document.getElementById('loadingText').textContent = message;
+      document.getElementById('loadingOverlay').classList.add('active');
+    }
+    
+    /**
+     * Hide loading overlay
+     */
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
