@@ -1,0 +1,3537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>988 Crisis Line Metrics Configuration</title>
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #4285F4;
+      --primary-light: #E8F0FE;
+      --primary-dark: #3367D6;
+      --secondary: #34A853;
+      --secondary-light: #E6F4EA;
+      --warning: #FBBC05;
+      --warning-light: #FEF7E0;
+      --error: #EA4335;
+      --error-light: #FDEDED;
+      --surface: #FFFFFF;
+      --background: #F8F9FA;
+      --border: #DADCE0;
+      --text-primary: #202124;
+      --text-secondary: #5F6368;
+      --shadow-light: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px rgba(60, 64, 67, 0.15);
+      --shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px rgba(60, 64, 67, 0.15);
+      --shadow-hover: 0 8px 16px rgba(60, 64, 67, 0.18), 0 4px 8px rgba(60, 64, 67, 0.15);
+      --transition: 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* === Main Container === */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    
+    /* === Header === */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      animation: fadeIn 0.8s ease;
+    }
+    
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .header-title h1 {
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .header-icon {
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow-light);
+      transform-origin: center;
+      animation: pulseOnce 1.2s ease-out;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    /* === Tabs === */
+    .tabs {
+      position: relative;
+      display: flex;
+      background-color: var(--primary-light);
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      padding: 0.375rem;
+      animation: fadeInUp 0.8s ease;
+      box-shadow: var(--shadow-light);
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      transition: color var(--transition);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .tab i {
+      font-size: 1.125rem;
+    }
+    
+    .tab.active {
+      color: var(--text-primary);
+    }
+    
+    .tab-slider {
+      position: absolute;
+      top: 0.375rem;
+      left: 0.375rem;
+      bottom: 0.375rem;
+      width: calc(50% - 0.375rem);
+      background-color: var(--surface);
+      border-radius: 6px;
+      transition: transform var(--transition);
+      box-shadow: var(--shadow-light);
+    }
+    
+    /* === Config Card === */
+    .config-card {
+      background-color: var(--surface);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.8s ease 0.1s both;
+    }
+    
+    .config-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .config-card-title {
+      font-size: 1.125rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .config-card-title i {
+      color: var(--primary);
+    }
+    
+    .config-card-body {
+      padding: 1.5rem;
+    }
+    
+    /* === Form Groups === */
+    .form-group {
+      margin-bottom: 1.25rem;
+      animation: fadeInUp 0.5s ease forwards;
+      opacity: 0;
+    }
+    
+    .form-group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    
+    .form-group-title {
+      font-size: 1rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .form-group-title i {
+      color: var(--primary);
+      font-size: 1.25rem;
+    }
+    
+    .form-group-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    /* Animation delay for staggered appearance */
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    .form-group:nth-child(5) { animation-delay: 0.5s; }
+    
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .form-field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-field label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    
+    .form-field label i {
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      background-color: var(--background);
+      transition: all var(--transition);
+      font-family: inherit;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: var(--surface);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+    }
+    
+    .form-field:focus-within label {
+      color: var(--primary);
+    }
+    
+    .form-input-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+      transition: color var(--transition);
+    }
+    
+    .form-input:focus + .form-input-icon {
+      color: var(--primary);
+    }
+    
+    .form-field-hint {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .form-field-hint i {
+      font-size: 0.875rem;
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      background-color: var(--background);
+      transition: all var(--transition);
+      font-family: inherit;
+      appearance: none;
+      cursor: pointer;
+    }
+    
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: var(--surface);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+    }
+    
+    .select-wrapper {
+      position: relative;
+    }
+    
+    .select-wrapper::after {
+      content: 'arrow_drop_down';
+      font-family: 'Material Icons Round';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+      transition: transform var(--transition);
+    }
+    
+    .select-wrapper:focus-within::after {
+      transform: translateY(-50%) rotate(180deg);
+      color: var(--primary);
+    }
+    
+    /* === Switch === */
+    .switch-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+    }
+    
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      border-radius: 12px;
+      background-color: var(--border);
+      transition: background-color var(--transition);
+    }
+    
+    .switch::after {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: white;
+      box-shadow: var(--shadow-light);
+      transition: transform var(--transition);
+    }
+    
+    .switch.active {
+      background-color: var(--primary);
+    }
+    
+    .switch.active::after {
+      transform: translateX(20px);
+    }
+    
+    .switch-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    
+    .switch-container:hover .switch-label {
+      color: var(--primary);
+    }
+    
+    /* === Recipients List === */
+    .recipients-container {
+      margin-top: 1rem;
+    }
+    
+    .recipients-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    
+    .recipients-title {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .recipients-list {
+      background-color: var(--background);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: border-color var(--transition);
+    }
+    
+    .recipient-item {
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      transition: background-color var(--transition);
+    }
+    
+    .recipient-item:last-child {
+      border-bottom: none;
+    }
+    
+    .recipient-item:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .recipient-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .recipient-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+    
+    .recipient-details {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .recipient-name {
+      font-weight: 500;
+      margin-bottom: 0.125rem;
+    }
+    
+    .recipient-email {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+    
+    .recipient-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .add-recipient-btn {
+      margin-top: 0.75rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: 2px dashed var(--border);
+      background-color: var(--background);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .add-recipient-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background-color: var(--primary-light);
+    }
+    
+    /* === Schedule Options === */
+    .schedule-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .schedule-option {
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--background);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .schedule-option:hover {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+    
+    .schedule-option.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+    
+    .schedule-option-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--surface);
+      border-radius: 8px;
+      color: var(--primary);
+      transition: all var(--transition);
+    }
+    
+    .schedule-option:hover .schedule-option-icon,
+    .schedule-option.selected .schedule-option-icon {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .schedule-option-title {
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .schedule-option-desc {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    
+    .custom-schedule {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background-color: var(--primary-light);
+      border-radius: 8px;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .custom-schedule.active {
+      display: block;
+    }
+    
+    .day-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    .day-option {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background-color: var(--surface);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .day-option:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+    
+    .day-option.selected {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    /* === Chip === */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      border-radius: 50px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      max-width: 100%;
+    }
+    
+    .chip-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: white;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background-color var(--transition);
+    }
+    
+    .chip-close:hover {
+      background-color: var(--error);
+    }
+    
+    /* === Email Template Preview === */
+    .template-preview {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .template-preview-header {
+      padding: 0.75rem 1rem;
+      background-color: var(--primary-light);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    
+    .template-preview-body {
+      padding: 1.25rem;
+      background-color: white;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    /* === Chart Preview === */
+    .chart-preview {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .chart-item {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .chart-item-header {
+      padding: 0.75rem 1rem;
+      background-color: var(--primary-light);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .chart-item-body {
+      padding: 1rem;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .chart-placeholder {
+      width: 100%;
+      height: 100%;
+      background-color: var(--background);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    
+    .chart-checkbox {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 2px solid var(--border);
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+    
+    .chart-checkbox.checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .chart-checkbox.checked::after {
+      content: 'check';
+      font-family: 'Material Icons Round';
+      font-size: 16px;
+    }
+    
+    /* === Export Options === */
+    .export-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .export-option {
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--background);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .export-option:hover {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+    
+    .export-option.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+    
+    .export-option-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--surface);
+      border-radius: 8px;
+      color: var(--primary);
+      transition: all var(--transition);
+    }
+    
+    .export-option:hover .export-option-icon,
+    .export-option.selected .export-option-icon {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .export-option-title {
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .export-option-desc {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    
+    /* === Action Buttons === */
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    /* === Buttons === */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      border: none;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn i {
+      font-size: 1.25rem;
+    }
+    
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1) translate(-50%, -50%);
+      transform-origin: 50% 50%;
+    }
+    
+    .btn:active::after {
+      transform: scale(20) translate(-50%, -50%);
+      opacity: 1;
+      transition: transform 0.6s, opacity 0.4s;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: var(--shadow-light);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background-color: var(--background);
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--primary-light);
+      border-color: var(--primary-light);
+    }
+    
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-icon i {
+      font-size: 1.125rem;
+    }
+    
+    /* === Modal === */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      backdrop-filter: blur(2px);
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal {
+      width: 500px;
+      max-width: 90%;
+      background-color: var(--surface);
+      border-radius: 12px;
+      box-shadow: var(--shadow-hover);
+      transform: scale(0.9);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    
+    .modal-overlay.active .modal {
+      transform: scale(1);
+      opacity: 1;
+    }
+    
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .modal-title i {
+      color: var(--primary);
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition);
+    }
+    
+    .modal-close:hover {
+      background-color: var(--background);
+      color: var(--text-primary);
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+    
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    
+    /* === Toast === */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      z-index: 1000;
+    }
+    
+    .toast {
+      min-width: 300px;
+      max-width: 450px;
+      padding: 1rem;
+      background-color: var(--surface);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    
+    .toast-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .toast-success .toast-icon {
+      background-color: var(--secondary-light);
+      color: var(--secondary);
+    }
+    
+    .toast-error .toast-icon {
+      background-color: var(--error-light);
+      color: var(--error);
+    }
+    
+    .toast-warning .toast-icon {
+      background-color: var(--warning-light);
+      color: var(--warning);
+    }
+    
+    .toast-content {
+      flex: 1;
+    }
+    
+    .toast-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    
+    .toast-message {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .toast-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition);
+      flex-shrink: 0;
+    }
+    
+    .toast-close:hover {
+      background-color: var(--background);
+      color: var(--text-primary);
+    }
+    
+    /* === Email Template === */
+    .email-template {
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+    
+    .email-header {
+      background-color: #4285F4;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .email-logo {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .email-content {
+      padding: 30px 20px;
+      background-color: #f8f9fa;
+    }
+    
+    .email-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #202124;
+    }
+    
+    .email-section {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3);
+    }
+    
+    .email-section-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #4285F4;
+    }
+    
+    .email-metrics {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .email-metric {
+      flex: 1;
+      min-width: 120px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .email-metric-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #4285F4;
+    }
+    
+    .email-metric-label {
+      font-size: 12px;
+      color: #5F6368;
+    }
+    
+    .email-chart {
+      height: 200px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      color: #5F6368;
+    }
+    
+    .email-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    
+    .email-table th {
+      background-color: #f1f3f4;
+      padding: 10px;
+      text-align: left;
+      font-size: 12px;
+      color: #5F6368;
+    }
+    
+    .email-table td {
+      padding: 10px;
+      border-top: 1px solid #dadce0;
+      font-size: 13px;
+    }
+    
+    .email-table tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    
+    .email-footer {
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #5F6368;
+    }
+    
+    /* === Animations === */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes pulseOnce {
+      0% {
+        transform: scale(0.95);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    /* === Media Queries === */
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .schedule-options,
+      .export-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .chart-preview {
+        flex-direction: column;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .schedule-options,
+      .export-options {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title">
+        <div class="header-icon">
+          <i class="material-icons-round">settings</i>
+        </div>
+        <h1>Metrics Configuration</h1>
+      </div>
+      
+      <div class="header-actions">
+        <button id="helpBtn" class="btn btn-secondary">
+          <i class="material-icons-round">help_outline</i>
+          Help
+        </button>
+        <button id="dashboardBtn" class="btn btn-secondary">
+          <i class="material-icons-round">dashboard</i>
+          Dashboard
+        </button>
+      </div>
+    </header>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="email">
+        <i class="material-icons-round">mail</i>
+        Email Reporting
+      </div>
+      <div class="tab" data-tab="export">
+        <i class="material-icons-round">download</i>
+        Data Export
+      </div>
+      <div class="tab-slider"></div>
+    </div>
+    
+    <!-- Email Reporting Tab -->
+    <div id="emailTab" class="tab-content">
+      <!-- Email Settings Card -->
+      <div class="config-card">
+        <div class="config-card-header">
+          <h2 class="config-card-title">
+            <i class="material-icons-round">settings</i>
+            Email Report Configuration
+          </h2>
+        </div>
+        
+        <div class="config-card-body">
+          <!-- Email Settings -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">mail_outline</i>
+                Report Settings
+              </h3>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="reportName">
+                  <i class="material-icons-round">title</i>
+                  Report Name
+                </label>
+                <div class="input-wrapper">
+                  <input type="text" id="reportName" class="form-input" placeholder="988 Crisis Line Weekly Metrics" value="988 Crisis Line Weekly Metrics">
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  Name will appear in email subject and header
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="reportType">
+                  <i class="material-icons-round">category</i>
+                  Report Type
+                </label>
+                <div class="select-wrapper">
+                  <select id="reportType" class="form-select">
+                    <option value="team">Team Overview</option>
+                    <option value="individual">Individual Performance</option>
+                    <option value="comprehensive">Comprehensive (Team + Individual)</option>
+                  </select>
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  Determines the metrics included in the report
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="reportFormat">
+                  <i class="material-icons-round">view_quilt</i>
+                  Email Format
+                </label>
+                <div class="select-wrapper">
+                  <select id="reportFormat" class="form-select">
+                    <option value="rich">Rich HTML (Charts & Tables)</option>
+                    <option value="simple">Simple HTML (Tables Only)</option>
+                    <option value="text">Plain Text</option>
+                  </select>
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  How the email report will be formatted
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="attachmentType">
+                  <i class="material-icons-round">attach_file</i>
+                  Include Attachment
+                </label>
+                <div class="select-wrapper">
+                  <select id="attachmentType" class="form-select">
+                    <option value="none">No Attachment</option>
+                    <option value="pdf">PDF Report</option>
+                    <option value="spreadsheet">Spreadsheet</option>
+                    <option value="both">PDF & Spreadsheet</option>
+                  </select>
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  File(s) to include with the email report
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="fromName">
+                  <i class="material-icons-round">person</i>
+                  From Name
+                </label>
+                <div class="input-wrapper">
+                  <input type="text" id="fromName" class="form-input" placeholder="988 Crisis Line Analytics">
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  Sender name that will appear in recipients' inbox
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="replyToEmail">
+                  <i class="material-icons-round">reply</i>
+                  Reply-To Email (Optional)
+                </label>
+                <div class="input-wrapper">
+                  <input type="email" id="replyToEmail" class="form-input" placeholder="team@example.com">
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  Email address for recipients to reply to
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recipients -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">people</i>
+                Recipients
+              </h3>
+            </div>
+            
+            <div class="recipients-container">
+              <div class="recipients-header">
+                <div class="recipients-title">
+                  <i class="material-icons-round">contact_mail</i>
+                  Who will receive this report?
+                </div>
+                
+                <div class="switch-container" id="includeMyself">
+                  <div class="switch active"></div>
+                  <span class="switch-label">Include myself</span>
+                </div>
+              </div>
+              
+              <div class="recipients-list" id="recipientsList">
+                <!-- Example Recipients -->
+                <div class="recipient-item" data-id="1">
+                  <div class="recipient-info">
+                    <div class="recipient-avatar">SL</div>
+                    <div class="recipient-details">
+                      <div class="recipient-name">Sarah Lopez</div>
+                      <div class="recipient-email">sarah.lopez@example.com</div>
+                    </div>
+                  </div>
+                  <div class="recipient-actions">
+                    <button class="btn btn-icon btn-secondary edit-recipient" title="Edit Recipient">
+                      <i class="material-icons-round">edit</i>
+                    </button>
+                    <button class="btn btn-icon btn-secondary remove-recipient" title="Remove Recipient">
+                      <i class="material-icons-round">delete</i>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="recipient-item" data-id="2">
+                  <div class="recipient-info">
+                    <div class="recipient-avatar">JW</div>
+                    <div class="recipient-details">
+                      <div class="recipient-name">James Wilson</div>
+                      <div class="recipient-email">james.wilson@example.com</div>
+                    </div>
+                  </div>
+                  <div class="recipient-actions">
+                    <button class="btn btn-icon btn-secondary edit-recipient" title="Edit Recipient">
+                      <i class="material-icons-round">edit</i>
+                    </button>
+                    <button class="btn btn-icon btn-secondary remove-recipient" title="Remove Recipient">
+                      <i class="material-icons-round">delete</i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <button id="addRecipientBtn" class="add-recipient-btn">
+                <i class="material-icons-round">add</i>
+                Add Recipient
+              </button>
+            </div>
+          </div>
+          
+          <!-- Schedule -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">schedule</i>
+                Schedule
+              </h3>
+            </div>
+            
+            <div class="switch-container" id="enableSchedule" style="margin-bottom: 1rem;">
+              <div class="switch active"></div>
+              <span class="switch-label">Enable automatic email scheduling</span>
+            </div>
+            
+            <div class="schedule-options">
+              <div class="schedule-option selected" data-schedule="weekly">
+                <div class="schedule-option-icon">
+                  <i class="material-icons-round">view_week</i>
+                </div>
+                <div class="schedule-option-title">Weekly</div>
+                <div class="schedule-option-desc">Every Monday at 8:00 AM</div>
+              </div>
+              
+              <div class="schedule-option" data-schedule="monthly">
+                <div class="schedule-option-icon">
+                  <i class="material-icons-round">calendar_month</i>
+                </div>
+                <div class="schedule-option-title">Monthly</div>
+                <div class="schedule-option-desc">1st of each month at 8:00 AM</div>
+              </div>
+              
+              <div class="schedule-option" data-schedule="custom">
+                <div class="schedule-option-icon">
+                  <i class="material-icons-round">calendar_today</i>
+                </div>
+                <div class="schedule-option-title">Custom</div>
+                <div class="schedule-option-desc">Set your own schedule</div>
+              </div>
+            </div>
+            
+            <div class="custom-schedule" id="customSchedule">
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="scheduleFrequency">
+                    <i class="material-icons-round">repeat</i>
+                    Frequency
+                  </label>
+                  <div class="select-wrapper">
+                    <select id="scheduleFrequency" class="form-select">
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-field">
+                  <label for="scheduleTime">
+                    <i class="material-icons-round">schedule</i>
+                    Time
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="time" id="scheduleTime" class="form-input" value="08:00">
+                  </div>
+                </div>
+              </div>
+              
+              <div id="weeklyOptions">
+                <label style="display: block; margin: 0.75rem 0 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary);">
+                  <i class="material-icons-round" style="font-size: 1rem; vertical-align: middle; margin-right: 0.375rem;">today</i>
+                  Days of Week
+                </label>
+                <div class="day-selector">
+                  <div class="day-option" data-day="1">M</div>
+                  <div class="day-option" data-day="2">T</div>
+                  <div class="day-option" data-day="3">W</div>
+                  <div class="day-option" data-day="4">T</div>
+                  <div class="day-option" data-day="5">F</div>
+                  <div class="day-option" data-day="6">S</div>
+                  <div class="day-option" data-day="0">S</div>
+                </div>
+              </div>
+              
+              <div id="monthlyOptions" style="display: none;">
+                <div class="form-row" style="margin-top: 0.75rem;">
+                  <div class="form-field">
+                    <label for="monthlyDay">
+                      <i class="material-icons-round">event</i>
+                      Day of Month
+                    </label>
+                    <div class="input-wrapper">
+                      <input type="number" id="monthlyDay" class="form-input" min="1" max="31" value="1">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Content Customization -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">format_paint</i>
+                Content Customization
+              </h3>
+              
+              <button class="btn btn-secondary" id="previewEmailBtn">
+                <i class="material-icons-round">visibility</i>
+                Preview Email
+              </button>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="emailSubject">
+                  <i class="material-icons-round">short_text</i>
+                  Email Subject
+                </label>
+                <div class="input-wrapper">
+                  <input type="text" id="emailSubject" class="form-input" placeholder="Weekly Metrics Report: [DATE_RANGE]" value="Weekly Metrics Report: [DATE_RANGE]">
+                  <i class="material-icons-round form-input-icon">subject</i>
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  Use [DATE_RANGE] to automatically include the report date range
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="dateRange">
+                  <i class="material-icons-round">date_range</i>
+                  Date Range
+                </label>
+                <div class="select-wrapper">
+                  <select id="dateRange" class="form-select">
+                    <option value="pastWeek">Past Week</option>
+                    <option value="past2Weeks">Past 2 Weeks</option>
+                    <option value="pastMonth">Past Month</option>
+                    <option value="custom">Custom Range</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="introMessage">
+                  <i class="material-icons-round">chat</i>
+                  Introduction Message
+                </label>
+                <div class="input-wrapper">
+                  <textarea id="introMessage" class="form-input" rows="3" placeholder="Here's the latest metrics report for the 988 Crisis Line team.">Here's the latest metrics report for the 988 Crisis Line team. This report covers key performance indicators and trends for the period.</textarea>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label>
+                  <i class="material-icons-round">bar_chart</i>
+                  Include Metrics
+                </label>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
+                  <div class="chip">
+                    <span>Answer Rate</span>
+                    <span class="chip-close">×</span>
+                  </div>
+                  <div class="chip">
+                    <span>Talk Time</span>
+                    <span class="chip-close">×</span>
+                  </div>
+                  <div class="chip">
+                    <span>After Call Work</span>
+                    <span class="chip-close">×</span>
+                  </div>
+                  <div class="chip">
+                    <span>On Queue Time</span>
+                    <span class="chip-close">×</span>
+                  </div>
+                  <div class="chip">
+                    <span>Calls Handled</span>
+                    <span class="chip-close">×</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label>
+                  <i class="material-icons-round">insert_chart</i>
+                  Include Charts
+                </label>
+                
+                <div class="chart-preview">
+                  <div class="chart-item">
+                    <div class="chart-item-header">Call Volume</div>
+                    <div class="chart-item-body">
+                      <div class="chart-placeholder">Call Volume Chart</div>
+                    </div>
+                    <div class="chart-checkbox checked"></div>
+                  </div>
+                  
+                  <div class="chart-item">
+                    <div class="chart-item-header">Answer Rate</div>
+                    <div class="chart-item-body">
+                      <div class="chart-placeholder">Answer Rate Chart</div>
+                    </div>
+                    <div class="chart-checkbox checked"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button id="cancelEmailConfigBtn" class="btn btn-secondary">
+              <i class="material-icons-round">cancel</i>
+              Cancel
+            </button>
+            <button id="testEmailBtn" class="btn btn-secondary">
+              <i class="material-icons-round">send</i>
+              Send Test Email
+            </button>
+            <button id="saveEmailConfigBtn" class="btn btn-primary">
+              <i class="material-icons-round">save</i>
+              Save Configuration
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Export Tab -->
+    <div id="exportTab" class="tab-content" style="display: none;">
+      <!-- Export Settings Card -->
+      <div class="config-card">
+        <div class="config-card-header">
+          <h2 class="config-card-title">
+            <i class="material-icons-round">download</i>
+            Data Export Configuration
+          </h2>
+        </div>
+        
+        <div class="config-card-body">
+          <!-- Export Settings -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">settings</i>
+                Export Settings
+              </h3>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="exportName">
+                  <i class="material-icons-round">title</i>
+                  Export Name
+                </label>
+                <div class="input-wrapper">
+                  <input type="text" id="exportName" class="form-input" placeholder="988 Crisis Line Metrics Export" value="988 Crisis Line Metrics Export">
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  Name will be used for the exported file
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="exportType">
+                  <i class="material-icons-round">category</i>
+                  Export Type
+                </label>
+                <div class="select-wrapper">
+                  <select id="exportType" class="form-select">
+                    <option value="team">Team Metrics</option>
+                    <option value="individual">Individual Metrics</option>
+                    <option value="comprehensive">Comprehensive (All Metrics)</option>
+                    <option value="raw">Raw Data</option>
+                  </select>
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  Determines what data will be included
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="dateRangeExport">
+                  <i class="material-icons-round">date_range</i>
+                  Date Range
+                </label>
+                <div class="select-wrapper">
+                  <select id="dateRangeExport" class="form-select">
+                    <option value="pastWeek">Past Week</option>
+                    <option value="pastMonth">Past Month</option>
+                    <option value="pastQuarter">Past Quarter</option>
+                    <option value="pastYear">Past Year</option>
+                    <option value="allTime">All Time</option>
+                    <option value="custom">Custom Range</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="groupBy">
+                  <i class="material-icons-round">view_module</i>
+                  Group By
+                </label>
+                <div class="select-wrapper">
+                  <select id="groupBy" class="form-select">
+                    <option value="day">Day</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    <option value="team_member">Team Member</option>
+                    <option value="none">No Grouping</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div id="customDateRange" style="display: none;">
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="startDate">
+                    <i class="material-icons-round">event</i>
+                    Start Date
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="date" id="startDate" class="form-input">
+                  </div>
+                </div>
+                
+                <div class="form-field">
+                  <label for="endDate">
+                    <i class="material-icons-round">event</i>
+                    End Date
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="date" id="endDate" class="form-input">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Export Format -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">description</i>
+                Export Format
+              </h3>
+            </div>
+            
+            <div class="export-options">
+              <div class="export-option selected" data-format="spreadsheet">
+                <div class="export-option-icon">
+                  <i class="material-icons-round">grid_on</i>
+                </div>
+                <div class="export-option-title">Spreadsheet</div>
+                <div class="export-option-desc">Excel/Google Sheets format</div>
+              </div>
+              
+              <div class="export-option" data-format="csv">
+                <div class="export-option-icon">
+                  <i class="material-icons-round">text_snippet</i>
+                </div>
+                <div class="export-option-title">CSV</div>
+                <div class="export-option-desc">Comma-separated values</div>
+              </div>
+              
+              <div class="export-option" data-format="pdf">
+                <div class="export-option-icon">
+                  <i class="material-icons-round">picture_as_pdf</i>
+                </div>
+                <div class="export-option-title">PDF Report</div>
+                <div class="export-option-desc">Formatted report with charts</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Custom Fields -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">view_list</i>
+                Include Fields
+              </h3>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
+              <div class="chip">
+                <span>Answer Rate</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Talk Time</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>After Call Work</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>On Queue Time</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Off Queue Time</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Calls Offered</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Calls Accepted</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                                <span>Interacting Time</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Staff Count</span>
+                <span class="chip-close">×</span>
+              </div>
+            </div>
+            
+            <div class="form-row" style="margin-top: 1rem;">
+              <div class="form-field">
+                <button id="addFieldBtn" class="btn btn-secondary">
+                  <i class="material-icons-round">add</i>
+                  Add Custom Field
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Advanced Options -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">tune</i>
+                Advanced Options
+              </h3>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field" style="flex: 1;">
+                <div class="switch-container" id="includeComparisons">
+                  <div class="switch active"></div>
+                  <span class="switch-label">Include period-over-period comparisons</span>
+                </div>
+              </div>
+              
+              <div class="form-field" style="flex: 1;">
+                <div class="switch-container" id="highlightIssues">
+                  <div class="switch active"></div>
+                  <span class="switch-label">Highlight metrics below targets</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field" style="flex: 1;">
+                <div class="switch-container" id="includeTeamAverage">
+                  <div class="switch active"></div>
+                  <span class="switch-label">Include team average metrics</span>
+                </div>
+              </div>
+              
+              <div class="form-field" style="flex: 1;">
+                <div class="switch-container" id="ccSupervisors">
+                  <div class="switch"></div>
+                  <span class="switch-label">CC managers and supervisors</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-field" style="margin-top: 1rem;">
+              <label for="emailFooterText">
+                <i class="material-icons-round">format_quote</i>
+                Footer Text (Optional)
+              </label>
+              <div class="input-wrapper">
+                <textarea id="emailFooterText" class="form-input" rows="2" placeholder="Add custom footer text for your email reports..."></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button id="cancelEmailConfigBtn" class="btn btn-secondary">
+              <i class="material-icons-round">cancel</i>
+              Cancel
+            </button>
+            <button id="testEmailBtn" class="btn btn-secondary">
+              <i class="material-icons-round">send</i>
+              Send Test Email
+            </button>
+            <button id="saveEmailConfigBtn" class="btn btn-primary">
+              <i class="material-icons-round">save</i>
+              Save Configuration
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Export Tab -->
+    <div id="exportTab" class="tab-content" style="display: none;">
+      <!-- Export Settings Card -->
+      <div class="config-card">
+        <div class="config-card-header">
+          <h2 class="config-card-title">
+            <i class="material-icons-round">download</i>
+            Data Export Configuration
+          </h2>
+        </div>
+        
+        <div class="config-card-body">
+          <!-- Export Settings -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">settings</i>
+                Export Settings
+              </h3>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="exportName">
+                  <i class="material-icons-round">title</i>
+                  Export Name
+                </label>
+                <div class="input-wrapper">
+                  <input type="text" id="exportName" class="form-input" placeholder="988 Crisis Line Metrics Export" value="988 Crisis Line Metrics Export">
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  Name will be used for the exported file
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="exportType">
+                  <i class="material-icons-round">category</i>
+                  Export Type
+                </label>
+                <div class="select-wrapper">
+                  <select id="exportType" class="form-select">
+                    <option value="team">Team Metrics</option>
+                    <option value="individual">Individual Metrics</option>
+                    <option value="comprehensive">Comprehensive (All Metrics)</option>
+                    <option value="raw">Raw Data</option>
+                  </select>
+                </div>
+                <div class="form-field-hint">
+                  <i class="material-icons-round">info</i>
+                  Determines what data will be included
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field">
+                <label for="dateRangeExport">
+                  <i class="material-icons-round">date_range</i>
+                  Date Range
+                </label>
+                <div class="select-wrapper">
+                  <select id="dateRangeExport" class="form-select">
+                    <option value="pastWeek">Past Week</option>
+                    <option value="pastMonth">Past Month</option>
+                    <option value="pastQuarter">Past Quarter</option>
+                    <option value="pastYear">Past Year</option>
+                    <option value="allTime">All Time</option>
+                    <option value="custom">Custom Range</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="groupBy">
+                  <i class="material-icons-round">view_module</i>
+                  Group By
+                </label>
+                <div class="select-wrapper">
+                  <select id="groupBy" class="form-select">
+                    <option value="day">Day</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    <option value="team_member">Team Member</option>
+                    <option value="none">No Grouping</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div id="customDateRange" style="display: none;">
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="startDate">
+                    <i class="material-icons-round">event</i>
+                    Start Date
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="date" id="startDate" class="form-input">
+                  </div>
+                </div>
+                
+                <div class="form-field">
+                  <label for="endDate">
+                    <i class="material-icons-round">event</i>
+                    End Date
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="date" id="endDate" class="form-input">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Export Format -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">description</i>
+                Export Format
+              </h3>
+            </div>
+            
+            <div class="export-options">
+              <div class="export-option selected" data-format="spreadsheet">
+                <div class="export-option-icon">
+                  <i class="material-icons-round">grid_on</i>
+                </div>
+                <div class="export-option-title">Spreadsheet</div>
+                <div class="export-option-desc">Excel/Google Sheets format</div>
+              </div>
+              
+              <div class="export-option" data-format="csv">
+                <div class="export-option-icon">
+                  <i class="material-icons-round">text_snippet</i>
+                </div>
+                <div class="export-option-title">CSV</div>
+                <div class="export-option-desc">Comma-separated values</div>
+              </div>
+              
+              <div class="export-option" data-format="pdf">
+                <div class="export-option-icon">
+                  <i class="material-icons-round">picture_as_pdf</i>
+                </div>
+                <div class="export-option-title">PDF Report</div>
+                <div class="export-option-desc">Formatted report with charts</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Custom Fields -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">view_list</i>
+                Include Fields
+              </h3>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
+              <div class="chip">
+                <span>Answer Rate</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Talk Time</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>After Call Work</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>On Queue Time</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Off Queue Time</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Calls Offered</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Calls Accepted</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Interacting Time</span>
+                <span class="chip-close">×</span>
+              </div>
+              <div class="chip">
+                <span>Staff Count</span>
+                <span class="chip-close">×</span>
+              </div>
+            </div>
+            
+            <div class="form-row" style="margin-top: 1rem;">
+              <div class="form-field">
+                <button id="addFieldBtn" class="btn btn-secondary">
+                  <i class="material-icons-round">add</i>
+                  Add Custom Field
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Advanced Options -->
+          <div class="form-group">
+            <div class="form-group-header">
+              <h3 class="form-group-title">
+                <i class="material-icons-round">tune</i>
+                Advanced Options
+              </h3>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field" style="flex: 1;">
+                <div class="switch-container" id="includeCharts">
+                  <div class="switch active"></div>
+                  <span class="switch-label">Include charts in PDF exports</span>
+                </div>
+              </div>
+              
+              <div class="form-field" style="flex: 1;">
+                <div class="switch-container" id="includeRawData">
+                  <div class="switch active"></div>
+                  <span class="switch-label">Include raw data in spreadsheets</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-field" style="flex: 1;">
+                <div class="switch-container" id="includeComparisons">
+                  <div class="switch active"></div>
+                  <span class="switch-label">Include period-over-period comparisons</span>
+                </div>
+              </div>
+              
+              <div class="form-field" style="flex: 1;">
+                <div class="switch-container" id="scheduleExport">
+                  <div class="switch"></div>
+                  <span class="switch-label">Schedule recurring exports</span>
+                </div>
+              </div>
+            </div>
+            
+            <div id="scheduleOptions" style="display: none; margin-top: 1rem; padding: 1rem; background-color: var(--primary-light); border-radius: 8px;">
+              <div class="form-row">
+                <div class="form-field">
+                  <label>Export Frequency</label>
+                  <div class="select-wrapper">
+                    <select id="exportFrequency" class="form-select">
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-field">
+                  <label>Day of Week/Month</label>
+                  <div class="select-wrapper">
+                    <select id="exportDay" class="form-select">
+                      <option value="1">Monday</option>
+                      <option value="2">Tuesday</option>
+                      <option value="3">Wednesday</option>
+                      <option value="4">Thursday</option>
+                      <option value="5">Friday</option>
+                      <option value="6">Saturday</option>
+                      <option value="0">Sunday</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-field" style="margin-top: 1rem;">
+              <label for="exportNotes">
+                <i class="material-icons-round">notes</i>
+                Export Notes
+              </label>
+              <div class="input-wrapper">
+                <textarea id="exportNotes" class="form-input" rows="2" placeholder="Notes or comments about this export configuration (optional)"></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <div class="action-buttons">
+            <button id="cancelExportConfigBtn" class="btn btn-secondary">
+              <i class="material-icons-round">cancel</i>
+              Cancel
+            </button>
+            <button id="generateNowBtn" class="btn btn-secondary">
+              <i class="material-icons-round">download</i>
+              Generate Now
+            </button>
+            <button id="saveExportConfigBtn" class="btn btn-primary">
+              <i class="material-icons-round">save</i>
+              Save Configuration
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Add/Edit Recipient Modal -->
+  <div class="modal-overlay" id="recipientModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="material-icons-round">person_add</i>
+          <span id="recipientModalTitle">Add Recipient</span>
+        </h3>
+        <button class="modal-close" id="closeRecipientModal">
+          <i class="material-icons-round">close</i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="recipientName">
+              <i class="material-icons-round">person</i>
+              Name
+            </label>
+            <div class="input-wrapper">
+              <input type="text" id="recipientName" class="form-input" placeholder="John Smith">
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label for="recipientEmail">
+              <i class="material-icons-round">email</i>
+              Email Address
+            </label>
+            <div class="input-wrapper">
+              <input type="email" id="recipientEmail" class="form-input" placeholder="john.smith@example.com">
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label for="recipientRole">
+              <i class="material-icons-round">work</i>
+              Role
+            </label>
+            <div class="select-wrapper">
+              <select id="recipientRole" class="form-select">
+                <option value="team_lead">Team Lead</option>
+                <option value="manager">Manager</option>
+                <option value="supervisor">Supervisor</option>
+                <option value="director">Director</option>
+                <option value="stakeholder">Stakeholder</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelRecipientBtn">Cancel</button>
+        <button class="btn btn-primary" id="saveRecipientBtn">Save</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Email Preview Modal -->
+  <div class="modal-overlay" id="emailPreviewModal">
+    <div class="modal" style="width: 700px; max-width: 95%;">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="material-icons-round">visibility</i>
+          Email Preview
+        </h3>
+        <button class="modal-close" id="closeEmailPreviewModal">
+          <i class="material-icons-round">close</i>
+        </button>
+      </div>
+      
+      <div class="modal-body" style="padding: 0;">
+        <div class="template-preview">
+          <div class="template-preview-header">
+            <i class="material-icons-round" style="color: var(--text-secondary);">email</i>
+            <span style="font-weight: 500;">Weekly Metrics Report: April 5 - April 11, 2025</span>
+          </div>
+          
+          <div class="template-preview-body">
+            <div class="email-template">
+              <div class="email-header">
+                <div class="email-logo">988 Crisis Line Metrics</div>
+              </div>
+              
+              <div class="email-content">
+                <div class="email-title">Weekly Metrics Report: April 5 - April 11, 2025</div>
+                
+                <p style="margin-bottom: 20px;">Here's the latest metrics report for the 988 Crisis Line team. This report covers key performance indicators and trends for the period.</p>
+                
+                <div class="email-section">
+                  <div class="email-section-title">Key Performance Indicators</div>
+                  
+                  <div class="email-metrics">
+                    <div class="email-metric">
+                      <div class="email-metric-value">92%</div>
+                      <div class="email-metric-label">Answer Rate</div>
+                    </div>
+                    <div class="email-metric">
+                      <div class="email-metric-value">17.2</div>
+                      <div class="email-metric-label">Talk Time (min)</div>
+                    </div>
+                    <div class="email-metric">
+                      <div class="email-metric-value">4.2</div>
+                      <div class="email-metric-label">ACW (min)</div>
+                    </div>
+                    <div class="email-metric">
+                      <div class="email-metric-value">67%</div>
+                      <div class="email-metric-label">On Queue Rate</div>
+                    </div>
+                  </div>
+                  
+                  <div class="email-chart">
+                    [Call Volume Chart]
+                  </div>
+                </div>
+                
+                <div class="email-section">
+                  <div class="email-section-title">Team Performance</div>
+                  
+                  <table class="email-table">
+                    <thead>
+                      <tr>
+                        <th>Team Member</th>
+                        <th>Calls Handled</th>
+                        <th>Answer Rate</th>
+                        <th>Talk Time</th>
+                        <th>Score</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Sarah Johnson</td>
+                        <td>342</td>
+                        <td>98.4%</td>
+                        <td>17.3 min</td>
+                        <td>95</td>
+                      </tr>
+                      <tr>
+                        <td>Michael Chen</td>
+                        <td>298</td>
+                        <td>96.1%</td>
+                        <td>15.8 min</td>
+                        <td>92</td>
+                      </tr>
+                      <tr>
+                        <td>Jessica Williams</td>
+                        <td>275</td>
+                        <td>95.3%</td>
+                        <td>21.2 min</td>
+                        <td>87</td>
+                      </tr>
+                      <tr>
+                        <td>David Rodriguez</td>
+                        <td>312</td>
+                        <td>91.5%</td>
+                        <td>18.5 min</td>
+                        <td>85</td>
+                      </tr>
+                      <tr>
+                        <td>Emma Davis</td>
+                        <td>256</td>
+                        <td>90.2%</td>
+                        <td>16.9 min</td>
+                        <td>78</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div class="email-section">
+                  <div class="email-section-title">Weekly Trend</div>
+                  <div class="email-chart">
+                    [Answer Rate Trend Chart]
+                  </div>
+                </div>
+              </div>
+              
+              <div class="email-footer">
+                <p>This is an automated report from the 988 Crisis Line Metrics System.</p>
+                <p style="margin-top: 10px;">Generated on April 12, 2025 at 08:00 AM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="closePreviewBtn">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Field Selection Modal -->
+  <div class="modal-overlay" id="fieldSelectionModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="material-icons-round">playlist_add</i>
+          Add Custom Field
+        </h3>
+        <button class="modal-close" id="closeFieldSelectionModal">
+          <i class="material-icons-round">close</i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-field">
+          <label>Available Fields</label>
+          <div style="margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <div class="field-option">
+              <input type="checkbox" id="field_abandoned_rate">
+              <label for="field_abandoned_rate">Abandoned Rate</label>
+            </div>
+            <div class="field-option">
+              <input type="checkbox" id="field_avg_wait">
+              <label for="field_avg_wait">Average Wait Time</label>
+            </div>
+            <div class="field-option">
+              <input type="checkbox" id="field_peak_hour">
+              <label for="field_peak_hour">Peak Hour Volume</label>
+            </div>
+            <div class="field-option">
+              <input type="checkbox" id="field_avg_speed">
+              <label for="field_avg_speed">Average Speed Answer</label>
+            </div>
+            <div class="field-option">
+              <input type="checkbox" id="field_longest_wait">
+              <label for="field_longest_wait">Longest Wait Time</label>
+            </div>
+            <div class="field-option">
+              <input type="checkbox" id="field_service_level">
+              <label for="field_service_level">Service Level</label>
+            </div>
+            <div class="field-option">
+              <input type="checkbox" id="field_call_outcome">
+              <label for="field_call_outcome">Call Outcome Ratio</label>
+            </div>
+            <div class="field-option">
+              <input type="checkbox" id="field_handling_time">
+              <label for="field_handling_time">Total Handling Time</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-field" style="margin-top: 1.5rem;">
+          <label for="customFieldName">Custom Field Name</label>
+          <div class="input-wrapper">
+            <input type="text" id="customFieldName" class="form-input" placeholder="Enter custom field name">
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelFieldBtn">Cancel</button>
+        <button class="btn btn-primary" id="addFieldsBtn">Add Selected Fields</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+  
+  <script>
+    // Document Ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize components
+      initTabs();
+      initSwitches();
+      initScheduleOptions();
+      initExportOptions();
+      initRecipientActions();
+      initFieldActions();
+      initChartCheckboxes();
+      initModalActions();
+      initDateRangeExport();
+      initActionButtons();
+      
+      // Set current date for any date fields
+      setDefaultDates();
+      
+      // Enhancement: Add sparkle animation to the configuration header
+      addSparkleAnimation();
+    });
+    
+    /**
+     * Add sparkle animation to header icon
+     */
+    function addSparkleAnimation() {
+      const headerIcon = document.querySelector('.header-icon');
+      
+      // Add sparkle effect on hover
+      headerIcon.addEventListener('mouseover', function() {
+        // Create sparkle elements
+        for (let i = 0; i < 12; i++) {
+          createSparkle(headerIcon);
+        }
+      });
+    }
+    
+    /**
+     * Create a single sparkle element
+     * @param {Element} parent - Parent element to attach sparkles to
+     */
+    function createSparkle(parent) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      
+      // Random position around the parent
+      const size = Math.random() * 8 + 4;
+      sparkle.style.width = `${size}px`;
+      sparkle.style.height = `${size}px`;
+      sparkle.style.backgroundColor = `hsl(${Math.random() * 60 + 200}, 100%, 70%)`;
+      sparkle.style.position = 'absolute';
+      sparkle.style.borderRadius = '50%';
+      sparkle.style.pointerEvents = 'none';
+      
+      // Position relative to parent
+      const rect = parent.getBoundingClientRect();
+      const parentCenterX = rect.width / 2;
+      const parentCenterY = rect.height / 2;
+      
+      // Random angle and distance from center
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * 30 + 20;
+      
+      // Calculate position
+      sparkle.style.left = `${parentCenterX + Math.cos(angle) * distance}px`;
+      sparkle.style.top = `${parentCenterY + Math.sin(angle) * distance}px`;
+      
+      // Animation
+      sparkle.style.opacity = '0';
+      sparkle.style.transform = 'scale(0)';
+      sparkle.style.transition = 'all 0.6s ease-out';
+      
+      parent.appendChild(sparkle);
+      
+      // Trigger animation
+      setTimeout(() => {
+        sparkle.style.opacity = '1';
+        sparkle.style.transform = `scale(1) translate(${Math.cos(angle) * 10}px, ${Math.sin(angle) * 10}px)`;
+      }, Math.random() * 200);
+      
+      // Remove after animation completes
+      setTimeout(() => {
+        sparkle.style.opacity = '0';
+        sparkle.style.transform = `scale(0) translate(${Math.cos(angle) * 20}px, ${Math.sin(angle) * 20}px)`;
+        setTimeout(() => sparkle.remove(), 600);
+      }, 600 + Math.random() * 400);
+    }
+    
+    /**
+     * Initialize tab functionality
+     */
+    function initTabs() {
+      const tabs = document.querySelectorAll('.tab');
+      const slider = document.querySelector('.tab-slider');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+          // Update active tab
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          
+          // Move slider
+          slider.style.transform = `translateX(${index * 100}%)`;
+          
+          // Show appropriate content
+          const tabId = tab.getAttribute('data-tab');
+          tabContents.forEach(content => {
+            content.style.display = content.id === tabId + 'Tab' ? 'block' : 'none';
+          });
+        });
+      });
+    }
+    
+    /**
+     * Initialize switch toggles
+     */
+    function initSwitches() {
+      document.querySelectorAll('.switch-container').forEach(container => {
+        const switchEl = container.querySelector('.switch');
+        
+        container.addEventListener('click', () => {
+          switchEl.classList.toggle('active');
+          
+          // Handle specific switch logic
+          const switchId = container.id;
+          if (switchId === 'enableSchedule') {
+            const scheduleOptions = document.querySelector('.schedule-options');
+            const customSchedule = document.getElementById('customSchedule');
+            
+            if (switchEl.classList.contains('active')) {
+              scheduleOptions.style.opacity = '1';
+              scheduleOptions.style.pointerEvents = 'auto';
+              
+              // If custom is selected, show custom options
+              if (document.querySelector('.schedule-option.selected').getAttribute('data-schedule') === 'custom') {
+                customSchedule.style.display = 'block';
+              }
+            } else {
+              scheduleOptions.style.opacity = '0.5';
+              scheduleOptions.style.pointerEvents = 'none';
+              customSchedule.style.display = 'none';
+            }
+          }
+          
+          if (switchId === 'scheduleExport') {
+            const scheduleOptions = document.getElementById('scheduleOptions');
+            
+            if (switchEl.classList.contains('active')) {
+              scheduleOptions.style.display = 'block';
+              // Use a gentle slide down animation
+              scheduleOptions.style.maxHeight = '0';
+              scheduleOptions.style.transition = 'max-height 0.3s ease-in-out';
+              setTimeout(() => {
+                scheduleOptions.style.maxHeight = '200px';
+              }, 10);
+            } else {
+              scheduleOptions.style.maxHeight = '0';
+              setTimeout(() => {
+                scheduleOptions.style.display = 'none';
+              }, 300);
+            }
+            
+            // Show toast
+            showToast('Schedule Export', switchEl.classList.contains('active') ? 
+              '✅ Recurring export scheduling enabled' : '❌ Recurring export scheduling disabled', 
+              switchEl.classList.contains('active') ? 'success' : 'info');
+          }
+        });
+      });
+    }
+    
+    /**
+     * Initialize schedule options
+     */
+    function initScheduleOptions() {
+      const scheduleOptions = document.querySelectorAll('.schedule-option');
+      const customSchedule = document.getElementById('customSchedule');
+      const scheduleFrequency = document.getElementById('scheduleFrequency');
+      const weeklyOptions = document.getElementById('weeklyOptions');
+      const monthlyOptions = document.getElementById('monthlyOptions');
+      
+      // Set up schedule options
+      scheduleOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          // Update selected state
+          scheduleOptions.forEach(opt => opt.classList.remove('selected'));
+          option.classList.add('selected');
+          
+          // Handle custom schedule
+          const scheduleType = option.getAttribute('data-schedule');
+          if (scheduleType === 'custom') {
+            customSchedule.style.display = 'block';
+            
+            // Default to weekly
+            scheduleFrequency.value = 'weekly';
+            weeklyOptions.style.display = 'block';
+            monthlyOptions.style.display = 'none';
+          } else {
+            customSchedule.style.display = 'none';
+          }
+        });
+      });
+      
+      // Handle schedule frequency changes
+      scheduleFrequency.addEventListener('change', () => {
+        const frequency = scheduleFrequency.value;
+        
+        if (frequency === 'weekly') {
+          weeklyOptions.style.display = 'block';
+          monthlyOptions.style.display = 'none';
+        } else if (frequency === 'monthly') {
+          weeklyOptions.style.display = 'none';
+          monthlyOptions.style.display = 'block';
+        } else {
+          weeklyOptions.style.display = 'none';
+          monthlyOptions.style.display = 'none';
+        }
+      });
+      
+      // Set up day selector
+      document.querySelectorAll('.day-option').forEach(day => {
+        day.addEventListener('click', () => {
+          day.classList.toggle('selected');
+        });
+      });
+      
+      // Select Monday by default
+      document.querySelector('.day-option[data-day="1"]').classList.add('selected');
+    }
+    
+    /**
+     * Initialize export options
+     */
+    function initExportOptions() {
+      const exportOptions = document.querySelectorAll('.export-option');
+      
+      exportOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          // Update selected state
+          exportOptions.forEach(opt => opt.classList.remove('selected'));
+          option.classList.add('selected');
+          
+          // Get format and show appropriate options
+          const format = option.getAttribute('data-format');
+          const includeCharts = document.getElementById('includeCharts');
+          
+          // PDF exports should show chart option
+          if (format === 'pdf') {
+            includeCharts.style.opacity = '1';
+            includeCharts.style.pointerEvents = 'auto';
+          } else {
+            includeCharts.style.opacity = '0.5';
+            includeCharts.style.pointerEvents = 'none';
+          }
+        });
+      });
+    }
+    
+    /**
+     * Initialize recipient actions
+     */
+    function initRecipientActions() {
+      // Add recipient
+      document.getElementById('addRecipientBtn').addEventListener('click', () => {
+        showRecipientModal();
+      });
+      
+      // Existing recipient actions
+      document.querySelectorAll('.edit-recipient').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const recipientItem = e.target.closest('.recipient-item');
+          const recipientId = recipientItem.getAttribute('data-id');
+          const name = recipientItem.querySelector('.recipient-name').textContent;
+          const email = recipientItem.querySelector('.recipient-email').textContent;
+          
+          editRecipient(recipientId, name, email);
+          e.stopPropagation();
+        });
+      });
+      
+      document.querySelectorAll('.remove-recipient').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const recipientItem = e.target.closest('.recipient-item');
+          const recipientId = recipientItem.getAttribute('data-id');
+          const name = recipientItem.querySelector('.recipient-name').textContent;
+          
+          removeRecipient(recipientId, name);
+          e.stopPropagation();
+        });
+      });
+    }
+    
+    /**
+     * Show the recipient modal
+     * @param {string} [id] - Optional recipient ID for editing
+     * @param {string} [name] - Optional recipient name for editing
+     * @param {string} [email] - Optional recipient email for editing
+     */
+    function showRecipientModal(id, name, email) {
+      const modal = document.getElementById('recipientModal');
+      const modalTitle = document.getElementById('recipientModalTitle');
+      const recipientName = document.getElementById('recipientName');
+      const recipientEmail = document.getElementById('recipientEmail');
+      
+      // Set modal for add or edit
+      if (id) {
+        modalTitle.textContent = 'Edit Recipient';
+        recipientName.value = name || '';
+        recipientEmail.value = email || '';
+        modal.setAttribute('data-edit-id', id);
+      } else {
+        modalTitle.textContent = 'Add Recipient';
+        recipientName.value = '';
+        recipientEmail.value = '';
+        modal.removeAttribute('data-edit-id');
+      }
+      
+      // Show modal
+      modal.classList.add('active');
+    }
+    
+    /**
+     * Edit a recipient
+     * @param {string} id - Recipient ID
+     * @param {string} name - Recipient name
+     * @param {string} email - Recipient email
+     */
+    function editRecipient(id, name, email) {
+      showRecipientModal(id, name, email);
+    }
+    
+    /**
+     * Remove a recipient
+     * @param {string} id - Recipient ID
+     * @param {string} name - Recipient name for confirmation
+     */
+    function removeRecipient(id, name) {
+      // Normally would show a confirmation dialog
+      const recipientItem = document.querySelector(`.recipient-item[data-id="${id}"]`);
+      
+      // Simple fade out animation
+      recipientItem.style.opacity = '0';
+      recipientItem.style.height = recipientItem.offsetHeight + 'px';
+      recipientItem.style.overflow = 'hidden';
+      
+      // Remove after animation
+      setTimeout(() => {
+        recipientItem.style.height = '0';
+        recipientItem.style.margin = '0';
+        recipientItem.style.padding = '0';
+        
+        setTimeout(() => {
+          recipientItem.remove();
+          
+          // Show toast
+          showToast('Recipient Removed', `✅ ${name} has been removed from recipients`, 'success');
+        }, 300);
+      }, 300);
+    }
+    
+    /**
+     * Initialize field actions
+     */
+    function initFieldActions() {
+      // Remove field when clicking the X
+      document.querySelectorAll('.chip-close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', (e) => {
+          const chip = e.target.closest('.chip');
+          const fieldName = chip.querySelector('span').textContent;
+          
+          // Animation for removing
+          chip.style.transform = 'scale(0.8)';
+          chip.style.opacity = '0';
+          
+          setTimeout(() => {
+            chip.remove();
+            
+            // Show toast
+            showToast('Field Removed', `❌ ${fieldName} has been removed`, 'info');
+          }, 300);
+        });
+      });
+      
+      // Add custom field button
+      document.querySelectorAll('#addFieldBtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          showFieldSelectionModal();
+        });
+      });
+    }
+    
+    /**
+     * Show field selection modal
+     */
+    function showFieldSelectionModal() {
+      document.getElementById('fieldSelectionModal').classList.add('active');
+      
+      // Reset checkboxes
+      document.querySelectorAll('#fieldSelectionModal input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      
+      document.getElementById('customFieldName').value = '';
+    }
+    
+    /**
+     * Add a field chip to the field list
+     * @param {string} fieldName - Name of the field
+     * @param {Element} container - Container to add the chip to (optional)
+     */
+    function addFieldChip(fieldName, container) {
+      // If no container specified, use the one from the currently visible tab
+      if (!container) {
+        const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+        container = document.querySelector(`#${activeTab}Tab .form-group:nth-of-type(3) .chip`).parentNode;
+      }
+      
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = `
+        <span>${fieldName}</span>
+        <span class="chip-close">×</span>
+      `;
+      
+      // Add to container
+      container.appendChild(chip);
+      
+      // Add animation
+      chip.style.transform = 'scale(0.8)';
+      chip.style.opacity = '0';
+      
+      setTimeout(() => {
+        chip.style.transform = 'scale(1)';
+        chip.style.opacity = '1';
+        chip.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        
+        // Add click handler for close button
+        chip.querySelector('.chip-close').addEventListener('click', () => {
+          chip.style.transform = 'scale(0.8)';
+          chip.style.opacity = '0';
+          
+          setTimeout(() => {
+            chip.remove();
+            showToast('Field Removed', `❌ ${fieldName} has been removed`, 'info');
+          }, 300);
+        });
+      }, 10);
+      
+      // Show toast
+      showToast('Field Added', `✅ ${fieldName} has been added`, 'success');
+    }
+    
+    /**
+     * Initialize chart checkboxes
+     */
+    function initChartCheckboxes() {
+      document.querySelectorAll('.chart-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('click', () => {
+          checkbox.classList.toggle('checked');
+          
+          // Get chart name
+          const chartName = checkbox.closest('.chart-item').querySelector('.chart-item-header').textContent;
+          
+          // Show toast
+          if (checkbox.classList.contains('checked')) {
+            showToast('Chart Added', `✅ ${chartName} will be included`, 'success');
+          } else {
+            showToast('Chart Removed', `❌ ${chartName} will not be included`, 'info');
+          }
+        });
+      });
+    }
+    
+    /**
+     * Initialize modal actions
+     */
+    function initModalActions() {
+      // Recipient modal
+      document.getElementById('closeRecipientModal').addEventListener('click', closeRecipientModal);
+      document.getElementById('cancelRecipientBtn').addEventListener('click', closeRecipientModal);
+      
+      document.getElementById('saveRecipientBtn').addEventListener('click', saveRecipient);
+      
+      // Field Selection modal
+      document.getElementById('closeFieldSelectionModal').addEventListener('click', closeFieldSelectionModal);
+      document.getElementById('cancelFieldBtn').addEventListener('click', closeFieldSelectionModal);
+      
+      document.getElementById('addFieldsBtn').addEventListener('click', addSelectedFields);
+      
+      // Email preview modal
+      document.getElementById('previewEmailBtn').addEventListener('click', showEmailPreviewModal);
+      document.getElementById('closeEmailPreviewModal').addEventListener('click', closeEmailPreviewModal);
+      document.getElementById('closePreviewBtn').addEventListener('click', closeEmailPreviewModal);
+    }
+    
+    /**
+     * Close the recipient modal
+     */
+    function closeRecipientModal() {
+      document.getElementById('recipientModal').classList.remove('active');
+    }
+    
+    /**
+     * Close field selection modal
+     */
+    function closeFieldSelectionModal() {
+      document.getElementById('fieldSelectionModal').classList.remove('active');
+    }
+    
+    /**
+     * Save recipient from modal
+     */
+    function saveRecipient() {
+      const modal = document.getElementById('recipientModal');
+      const name = document.getElementById('recipientName').value.trim();
+      const email = document.getElementById('recipientEmail').value.trim();
+      const role = document.getElementById('recipientRole').value;
+      
+      // Validate
+      if (!name) {
+        showToast('Error', '❌ Please enter a name', 'error');
+        return;
+      }
+      
+      if (!email || !validateEmail(email)) {
+        showToast('Error', '❌ Please enter a valid email address', 'error');
+        return;
+      }
+      
+      // Check if editing or adding
+      const editId = modal.getAttribute('data-edit-id');
+      
+      if (editId) {
+        // Update existing recipient
+        const recipientItem = document.querySelector(`.recipient-item[data-id="${editId}"]`);
+        if (recipientItem) {
+          recipientItem.querySelector('.recipient-name').textContent = name;
+          recipientItem.querySelector('.recipient-email').textContent = email;
+          recipientItem.querySelector('.recipient-avatar').textContent = getInitials(name);
+          
+          showToast('Recipient Updated', `✅ ${name} has been updated`, 'success');
+        }
+      } else {
+        // Add new recipient
+        const newId = Date.now().toString();
+        const recipientsList = document.getElementById('recipientsList');
+        
+        const newRecipient = document.createElement('div');
+        newRecipient.className = 'recipient-item';
+        newRecipient.setAttribute('data-id', newId);
+        newRecipient.innerHTML = `
+          <div class="recipient-info">
+            <div class="recipient-avatar">${getInitials(name)}</div>
+            <div class="recipient-details">
+              <div class="recipient-name">${name}</div>
+              <div class="recipient-email">${email}</div>
+            </div>
+          </div>
+          <div class="recipient-actions">
+            <button class="btn btn-icon btn-secondary edit-recipient" title="Edit Recipient">
+              <i class="material-icons-round">edit</i>
+            </button>
+            <button class="btn btn-icon btn-secondary remove-recipient" title="Remove Recipient">
+              <i class="material-icons-round">delete</i>
+            </button>
+          </div>
+        `;
+        
+        recipientsList.appendChild(newRecipient);
+        
+        // Add event listeners to the new buttons
+        newRecipient.querySelector('.edit-recipient').addEventListener('click', (e) => {
+          editRecipient(newId, name, email);
+          e.stopPropagation();
+        });
+        
+        newRecipient.querySelector('.remove-recipient').addEventListener('click', (e) => {
+          removeRecipient(newId, name);
+          e.stopPropagation();
+        });
+        
+        // Animation for adding
+        newRecipient.style.opacity = '0';
+        newRecipient.style.transform = 'translateY(10px)';
+        
+        setTimeout(() => {
+          newRecipient.style.opacity = '1';
+          newRecipient.style.transform = 'translateY(0)';
+          newRecipient.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        }, 10);
+        
+        showToast('Recipient Added', `✅ ${name} has been added as a recipient`, 'success');
+      }
+      
+      // Close modal
+      closeRecipientModal();
+    }
+    
+    /**
+     * Add selected fields from the field selection modal
+     */
+    function addSelectedFields() {
+      const checkboxes = document.querySelectorAll('#fieldSelectionModal input[type="checkbox"]:checked');
+      const customField = document.getElementById('customFieldName').value.trim();
+      
+      // Get the active tab for determining where to add fields
+      const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+      const container = document.querySelector(`#${activeTab}Tab .form-group:nth-of-type(3) .chip`).parentNode;
+      
+      // Add selected fields
+      checkboxes.forEach(checkbox => {
+        const fieldName = checkbox.nextElementSibling.textContent;
+        addFieldChip(fieldName, container);
+      });
+      
+      // Add custom field if provided
+      if (customField) {
+        addFieldChip(customField, container);
+      }
+      
+      // Close modal
+      closeFieldSelectionModal();
+      
+      // Show toast if fields were added
+      if (checkboxes.length > 0 || customField) {
+        showToast('Fields Added', `✅ ${checkboxes.length + (customField ? 1 : 0)} fields added successfully`, 'success');
+      } else {
+        showToast('No Fields Added', '❗ No fields were selected', 'warning');
+      }
+    }
+    
+    /**
+     * Validate email format
+     * @param {string} email - Email address to validate
+     * @return {boolean} Whether the email is valid
+     */
+    function validateEmail(email) {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
+    }
+    
+    /**
+     * Get initials from a name
+     * @param {string} name - Full name
+     * @return {string} Initials (up to 2 characters)
+     */
+    function getInitials(name) {
+      if (!name) return '?';
+      
+      const parts = name.split(' ');
+      if (parts.length === 1) {
+        return parts[0].charAt(0).toUpperCase();
+      }
+      
+      return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    }
+    
+    /**
+     * Show email preview modal
+     */
+    function showEmailPreviewModal() {
+      document.getElementById('emailPreviewModal').classList.add('active');
+    }
+    
+    /**
+     * Close email preview modal
+     */
+    function closeEmailPreviewModal() {
+      document.getElementById('emailPreviewModal').classList.remove('active');
+    }
+    
+    /**
+     * Initialize date range export
+     */
+    function initDateRangeExport() {
+      document.getElementById('dateRangeExport').addEventListener('change', function() {
+        const customRange = document.getElementById('customDateRange');
+        
+        if (this.value === 'custom') {
+          customRange.style.display = 'block';
+          
+          // Add subtle slide down animation
+          customRange.style.maxHeight = '0';
+          customRange.style.transition = 'max-height 0.3s ease-in-out';
+          setTimeout(() => {
+            customRange.style.maxHeight = '200px';
+          }, 10);
+        } else {
+          // Add subtle slide up animation
+          customRange.style.maxHeight = '0';
+          setTimeout(() => {
+            customRange.style.display = 'none';
+          }, 300);
+        }
+      });
+    }
+    
+    /**
+     * Initialize action buttons
+     */
+    function initActionButtons() {
+      // Email config buttons
+      document.getElementById('cancelEmailConfigBtn').addEventListener('click', () => {
+        showToast('Changes Discarded', '❌ Email configuration changes have been discarded', 'warning');
+      });
+      
+      document.getElementById('testEmailBtn').addEventListener('click', () => {
+        // Show animated loading toast
+        const toast = showToast('Sending Test Email', '📧 Sending a test email to your address...', 'info');
+        
+        // Add loading animation to toast
+        const icon = toast.querySelector('.toast-icon i');
+        icon.style.animation = 'rotation 1.5s infinite linear';
+        
+        // Simulate API call
+        setTimeout(() => {
+          // Remove loading toast
+          removeToast(toast);
+          
+          // Show success toast
+          showToast('Test Email Sent', '✅ A test email has been sent to your address', 'success');
+        }, 1800);
+      });
+      
+      document.getElementById('saveEmailConfigBtn').addEventListener('click', () => {
+        // Add interactive animation
+        const btn = document.getElementById('saveEmailConfigBtn');
+        const originalContent = btn.innerHTML;
+        
+        // Show saving state
+        btn.innerHTML = '<i class="material-icons-round" style="animation: rotation 1.5s infinite linear;">autorenew</i> Saving...';
+        btn.disabled = true;
+        
+        // Simulate saving
+        setTimeout(() => {
+          // Restore button
+          btn.innerHTML = originalContent;
+          btn.disabled = false;
+          
+          // Show success toast
+          showToast('Configuration Saved', '✅ Email configuration has been saved successfully', 'success');
+          
+          // Create completion sparkles
+          const btnRect = btn.getBoundingClientRect();
+          for (let i = 0; i < 20; i++) {
+            createCompletionSparkle(btnRect);
+          }
+        }, 1500);
+      });
+      
+      // Export config buttons
+      document.getElementById('cancelExportConfigBtn').addEventListener('click', () => {
+        showToast('Changes Discarded', '❌ Export configuration changes have been discarded', 'warning');
+      });
+      
+      document.getElementById('generateNowBtn').addEventListener('click', () => {
+        // Show animated loading toast
+        const toast = showToast('Generating Export', '📊 Generating export file...', 'info');
+        
+        // Add loading animation to toast
+        const icon = toast.querySelector('.toast-icon i');
+        icon.style.animation = 'rotation 1.5s infinite linear';
+        
+        // Simulate API call
+        setTimeout(() => {
+          // Remove loading toast
+          removeToast(toast);
+          
+          // Get selected format
+          const format = document.querySelector('.export-option.selected').getAttribute('data-format');
+          let formatIcon = '📊';
+          
+          switch (format) {
+            case 'spreadsheet': formatIcon = '📊'; break;
+            case 'csv': formatIcon = '📝'; break;
+            case 'pdf': formatIcon = '📃'; break;
+          }
+          
+          // Show success toast
+          showToast('Export Generated', `${formatIcon} Your export file is ready for download`, 'success');
+        }, 2000);
+      });
+      
+      document.getElementById('saveExportConfigBtn').addEventListener('click', () => {
+        // Add interactive animation
+        const btn = document.getElementById('saveExportConfigBtn');
+        const originalContent = btn.innerHTML;
+        
+        // Show saving state
+        btn.innerHTML = '<i class="material-icons-round" style="animation: rotation 1.5s infinite linear;">autorenew</i> Saving...';
+        btn.disabled = true;
+        
+        // Simulate saving
+        setTimeout(() => {
+          // Restore button
+          btn.innerHTML = originalContent;
+          btn.disabled = false;
+          
+          // Show success toast
+          showToast('Configuration Saved', '✅ Export configuration has been saved successfully', 'success');
+          
+          // Create completion sparkles
+          const btnRect = btn.getBoundingClientRect();
+          for (let i = 0; i < 20; i++) {
+            createCompletionSparkle(btnRect);
+          }
+        }, 1500);
+      });
+      
+      // Dashboard and help buttons
+      document.getElementById('dashboardBtn').addEventListener('click', () => {
+        // Show animated loading toast
+        const toast = showToast('Navigating', '🔄 Returning to dashboard...', 'info');
+        
+        // Simulate navigation
+        setTimeout(() => {
+          removeToast(toast);
+          
+          // Would normally call google.script.run here
+          // For demo, simulate navigating to dashboard
+          window.location.href = "?page=dashboard";
+        }, 1000);
+      });
+      
+      document.getElementById('helpBtn').addEventListener('click', () => {
+        // Would normally show help documentation
+        showToast('Help', '📚 Opening help documentation...', 'info');
+      });
+    }
+    
+    /**
+     * Create completion sparkle animation
+     * @param {DOMRect} sourceRect - Rectangle of the source element
+     */
+    function createCompletionSparkle(sourceRect) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'completion-sparkle';
+      
+      // Style the sparkle
+      const size = Math.random() * 8 + 4;
+      sparkle.style.width = `${size}px`;
+      sparkle.style.height = `${size}px`;
+      sparkle.style.backgroundColor = `hsl(${Math.random() * 60 + 120}, 100%, 60%)`;
+      sparkle.style.position = 'fixed';
+      sparkle.style.borderRadius = '50%';
+      sparkle.style.zIndex = '9999';
+      sparkle.style.pointerEvents = 'none';
+      
+      // Position near source button center
+      const centerX = sourceRect.left + sourceRect.width / 2;
+      const centerY = sourceRect.top + sourceRect.height / 2;
+      
+      // Random starting position near button
+      const offsetX = (Math.random() - 0.5) * sourceRect.width * 1.5;
+      const offsetY = (Math.random() - 0.5) * sourceRect.height * 1.5;
+      
+      sparkle.style.left = `${centerX + offsetX}px`;
+      sparkle.style.top = `${centerY + offsetY}px`;
+      
+      // Add to document
+      document.body.appendChild(sparkle);
+      
+      // Animate outward in random direction
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * 100 + 50;
+      const duration = Math.random() * 1000 + 800;
+      
+      sparkle.style.transition = `all ${duration}ms cubic-bezier(0.165, 0.84, 0.44, 1)`;
+      
+      setTimeout(() => {
+        sparkle.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`;
+        sparkle.style.opacity = '0';
+      }, 10);
+      
+      // Remove after animation completes
+      setTimeout(() => sparkle.remove(), duration + 100);
+    }
+    
+    /**
+     * Set default dates for date inputs
+     */
+    function setDefaultDates() {
+      const today = new Date();
+      const startOfLastWeek = new Date(today);
+      startOfLastWeek.setDate(today.getDate() - 7);
+      
+      // Format dates for input fields (YYYY-MM-DD)
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      
+      // Set date inputs if they exist
+      if (document.getElementById('startDate')) {
+        document.getElementById('startDate').value = formatDate(startOfLastWeek);
+      }
+      
+      if (document.getElementById('endDate')) {
+        document.getElementById('endDate').value = formatDate(today);
+      }
+    }
+    
+    /**
+     * Show a toast notification
+     * @param {string} title - Toast title
+     * @param {string} message - Toast message
+     * @param {string} type - Toast type: 'success', 'error', 'warning', 'info'
+     * @return {HTMLElement} The created toast element
+     */
+    function showToast(title, message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      
+      // Set icon based on type
+      let iconName = 'info';
+      switch (type) {
+        case 'success': iconName = 'check_circle'; break;
+        case 'error': iconName = 'error'; break;
+        case 'warning': iconName = 'warning'; break;
+      }
+      
+      toast.innerHTML = `
+        <div class="toast-icon">
+          <i class="material-icons-round">${iconName}</i>
+        </div>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close">
+          <i class="material-icons-round">close</i>
+        </button>
+      `;
+      
+      // Add to container
+      container.appendChild(toast);
+      
+      // Add close event
+      toast.querySelector('.toast-close').addEventListener('click', () => {
+        removeToast(toast);
+      });
+      
+      // Trigger animation after a small delay
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+      
+      // Auto remove after a delay
+      setTimeout(() => {
+        removeToast(toast);
+      }, 5000);
+      
+      return toast;
+    }
+    
+    /**
+     * Remove a toast notification with animation
+     * @param {HTMLElement} toast - The toast element to remove
+     */
+    function removeToast(toast) {
+      toast.classList.remove('show');
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }
+  </script>
+</body>
+</html>
