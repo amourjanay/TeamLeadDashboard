@@ -1,0 +1,3433 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One-on-One Session</title>
+  
+  <!-- Include Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* === VARIABLES === */
+    :root {
+      /* Colors */
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #60a5fa;
+      --primary-bg: rgba(37, 99, 235, 0.1);
+      --secondary: #0ea5e9;
+      --secondary-dark: #0284c7;
+      --success: #16a34a;
+      --success-light: rgba(22, 163, 74, 0.1);
+      --danger: #dc2626;
+      --danger-light: rgba(220, 38, 38, 0.1);
+      --warning: #f59e0b;
+      --warning-light: rgba(245, 158, 11, 0.1);
+      --info: #3b82f6;
+      --info-light: rgba(59, 130, 246, 0.1);
+      
+      /* Session Type Colors */
+      --regular: #0891b2;
+      --regular-light: rgba(8, 145, 178, 0.1);
+      --coaching: #7e22ce;
+      --coaching-light: rgba(126, 34, 206, 0.1);
+      --performance: #ea580c;
+      --performance-light: rgba(234, 88, 12, 0.1);
+      
+      /* Surface Colors */
+      --surface: #ffffff;
+      --surface-1: #f8fafc;
+      --surface-2: #f1f5f9;
+      --surface-3: #e2e8f0;
+      
+      /* Text Colors */
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --text-on-primary: #ffffff;
+      
+      /* Borders */
+      --border-color: #cbd5e1;
+      --border-color-light: #e2e8f0;
+      
+      /* Sizes */
+      --border-radius-sm: 4px;
+      --border-radius: 8px;
+      --border-radius-md: 10px;
+      --border-radius-lg: 12px;
+      --border-radius-xl: 16px;
+      --border-radius-pill: 9999px;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      
+      /* Animations */
+      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-bounce: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* === BASE STYLES === */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-size: 15px;
+      background-color: var(--surface-1);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* === ANIMATIONS === */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideInUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes slideInLeft {
+      from { transform: translateX(-20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* === APP LAYOUT === */
+    .app-container {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      grid-template-columns: 260px 1fr;
+      grid-template-areas:
+        "header header"
+        "sidebar main"
+        "footer footer";
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* === HEADER === */
+    .app-header {
+      grid-area: header;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border-color-light);
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .app-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text-primary);
+    }
+
+    .session-type-select {
+      position: relative;
+    }
+
+    .session-type-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background-color: var(--regular-light);
+      color: var(--regular);
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .session-type-badge.coaching {
+      background-color: var(--coaching-light);
+      color: var(--coaching);
+    }
+
+    .session-type-badge.performance {
+      background-color: var(--performance-light);
+      color: var(--performance);
+    }
+
+    .session-date {
+      background-color: var(--surface-1);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 0.5rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      width: 150px;
+      transition: all var(--transition-fast);
+    }
+
+    .session-date:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-bg);
+    }
+
+    .session-type-dropdown {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      left: 0;
+      width: 220px;
+      background-color: var(--surface);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      z-index: 20;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all var(--transition);
+    }
+
+    .session-type-select:hover .session-type-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .type-option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .type-option:hover {
+      background-color: var(--surface-1);
+    }
+
+    .type-option.active {
+      background-color: var(--primary-bg);
+    }
+
+    .type-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .type-regular .type-icon {
+      background-color: var(--regular-light);
+      color: var(--regular);
+    }
+
+    .type-coaching .type-icon {
+      background-color: var(--coaching-light);
+      color: var(--coaching);
+    }
+
+    .type-performance .type-icon {
+      background-color: var(--performance-light);
+      color: var(--performance);
+    }
+
+    .type-info {
+      flex: 1;
+    }
+
+    .type-name {
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .type-desc {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    /* === SIDEBAR === */
+    .app-sidebar {
+      grid-area: sidebar;
+      background-color: var(--surface);
+      border-right: 1px solid var(--border-color-light);
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color-light);
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background-color: var(--surface-2);
+      border-radius: var(--border-radius-pill);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--primary);
+      border-radius: var(--border-radius-pill);
+      width: 0;
+      transition: width 0.5s ease;
+    }
+
+    .tab-navigation {
+      flex: 1;
+      padding: 1.25rem 0.75rem;
+    }
+
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      border-radius: var(--border-radius);
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-tab:hover {
+      background-color: var(--surface-1);
+    }
+
+    .nav-tab.active {
+      background-color: var(--primary-bg);
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .nav-tab.completed::after {
+      content: '';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+    }
+
+    .nav-tab.active.completed::after {
+      background-color: var(--primary);
+    }
+
+    .nav-tab i {
+      font-size: 1.25rem;
+    }
+
+    .nav-tab-ripple {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.1);
+      transform: scale(0);
+      border-radius: 50%;
+    }
+
+    .team-member-card {
+      display: none;
+      background-color: var(--primary-bg);
+      border-radius: var(--border-radius-lg);
+      padding: 1.25rem;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .member-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--border-radius);
+      background-color: var(--primary);
+      color: var(--text-on-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .member-info {
+      flex: 1;
+    }
+
+    .member-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .member-role {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    /* === MAIN CONTENT === */
+    .main-content {
+      grid-area: main;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .content-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .content-title i {
+      color: var(--primary);
+    }
+
+    /* === FOOTER === */
+    .app-footer {
+      grid-area: footer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background-color: var(--surface);
+      border-top: 1px solid var(--border-color-light);
+      box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .autosave-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .autosave-indicator i {
+      font-size: 1rem;
+    }
+
+    /* === FORM STYLES === */
+    .form-row {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      background-color: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      transition: all var(--transition-fast);
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-bg);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.6;
+    }
+
+    /* === TEAM MEMBER SELECTION === */
+    .member-search-container {
+      display: block;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background-color: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 0 0.75rem;
+      margin-bottom: 1rem;
+      transition: all var(--transition-fast);
+    }
+
+    .search-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-bg);
+    }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      padding: 0.75rem 0;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      background: none;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .search-box i {
+      color: var(--text-muted);
+    }
+
+    .team-member-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-color-light);
+      border-radius: var(--border-radius);
+    }
+
+    .team-member-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-color-light);
+      transition: all var(--transition-fast);
+    }
+
+    .team-member-item:last-child {
+      border-bottom: none;
+    }
+
+    .team-member-item:hover {
+      background-color: var(--surface-1);
+    }
+
+    .team-member-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--border-radius);
+      background-color: var(--primary-bg);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .team-member-details {
+      flex: 1;
+    }
+
+    .team-member-name {
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .team-member-role {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .add-member-option {
+      text-align: center;
+      padding: 0.75rem;
+      background-color: var(--surface-1);
+      border-radius: var(--border-radius);
+    }
+
+    .manual-entry-form {
+      display: none;
+      background-color: var(--surface-1);
+      border-radius: var(--border-radius);
+      padding: 1rem;
+    }
+
+    /* === METRICS === */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .metric-card {
+      padding: 1rem;
+      background-color: var(--surface);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color-light);
+    }
+
+    .metric-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-value-input {
+      width: 100%;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      background-color: var(--surface);
+      transition: all var(--transition-fast);
+    }
+
+    .metric-value-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-bg);
+    }
+
+    /* === FOLLOW UP === */
+    .follow-up-container {
+      background-color: var(--surface);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      border: 1px solid var(--border-color-light);
+    }
+
+    .follow-up-toggle {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .switch-container {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch-input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--surface-3);
+      border-radius: 34px;
+      transition: var(--transition);
+    }
+
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--surface);
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .switch-input:checked + .switch-slider {
+      background-color: var(--primary);
+    }
+
+    .switch-input:focus + .switch-slider {
+      box-shadow: 0 0 1px var(--primary);
+    }
+
+    .switch-input:checked + .switch-slider:before {
+      transform: translateX(26px);
+    }
+
+    .switch-label {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* === ACTION ITEMS === */
+    .action-item {
+      background-color: var(--surface);
+      border: 1px solid var(--border-color-light);
+      border-radius: var(--border-radius);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition);
+    }
+
+    .action-item:hover {
+      box-shadow: var(--shadow);
+      border-color: var(--primary-light);
+    }
+
+    .action-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .action-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .action-item-title {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .action-item-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--text-muted);
+    }
+
+    .action-btn:hover {
+      background-color: var(--surface-2);
+      color: var(--text-primary);
+    }
+
+    .action-btn.edit:hover {
+      background-color: var(--primary-bg);
+      color: var(--primary);
+    }
+
+    .action-btn.delete:hover {
+      background-color: var(--danger-light);
+      color: var(--danger);
+    }
+
+    .action-item-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      font-size: 0.9375rem;
+    }
+
+    .action-item-field {
+      padding: 0.5rem;
+      background-color: var(--surface-1);
+      border-radius: var(--border-radius);
+    }
+
+    .action-item-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .action-item-value {
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .add-action-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px dashed var(--border-color);
+      border-radius: var(--border-radius);
+      background-color: var(--surface);
+      color: var(--primary);
+      font-family: inherit;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .add-action-button:hover {
+      border-color: var(--primary);
+      background-color: var(--primary-bg);
+    }
+
+    /* === BUTTONS === */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
+    }
+
+    .btn:active::after {
+      animation: ripple 0.6s ease-out;
+    }
+
+    .btn.primary {
+      background-color: var(--primary);
+      color: var(--text-on-primary);
+    }
+
+    .btn.primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn.primary:active {
+      transform: translateY(0);
+    }
+
+    .btn.secondary {
+      background-color: var(--surface-2);
+      color: var(--text-secondary);
+    }
+
+    .btn.secondary:hover {
+      background-color: var(--surface-3);
+      transform: translateY(-2px);
+    }
+
+    .btn.secondary:active {
+      transform: translateY(0);
+    }
+
+    .btn.danger {
+      background-color: var(--danger-light);
+      color: var(--danger);
+    }
+
+    .btn.danger:hover {
+      background-color: var(--danger);
+      color: var(--text-on-primary);
+    }
+
+    .btn.text {
+      background: none;
+      color: var(--primary);
+      padding: 0.375rem 0.75rem;
+    }
+
+    .btn.text:hover {
+      background-color: var(--primary-bg);
+    }
+
+    /* === SECTION DIVIDER === */
+    .section-divider {
+      margin: 2rem 0;
+      height: 1px;
+      background-color: var(--border-color-light);
+    }
+
+    /* === LOADING === */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(3px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .loading-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--primary-bg);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    /* === MODAL STYLES === */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background-color: var(--surface);
+      border-radius: var(--border-radius-lg);
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+      animation: fadeIn 0.3s, slideInUp 0.3s;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--border-color-light);
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .close-button {
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--border-radius);
+      transition: all var(--transition-fast);
+    }
+
+    .close-button:hover {
+      background-color: var(--surface-2);
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding: 1.25rem;
+      border-top: 1px solid var(--border-color-light);
+      background-color: var(--surface);
+    }
+
+    /* === EMAIL PREVIEW STYLES === */
+    .email-preview-content {
+      max-width: 100%;
+      overflow-x: auto;
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color-light);
+    }
+
+    /* === RADIO BUTTON STYLES === */
+    .radio-container {
+      display: flex;
+      flex-direction: column;
+      padding: 0.75rem;
+      border: 1px solid var(--border-color-light);
+      border-radius: var(--border-radius);
+      flex: 1;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+
+    .radio-container:hover {
+      background-color: var(--surface-2);
+    }
+
+    .radio-container input {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .radio-container input:checked + .radio-label {
+      color: var(--primary);
+    }
+
+    .radio-container input:checked ~ .radio-description {
+      color: var(--text-secondary);
+    }
+
+    .radio-container input:checked + .radio-label:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 2px solid var(--primary);
+      border-radius: var(--border-radius);
+      box-sizing: border-box;
+    }
+
+    .radio-label {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      transition: all var(--transition-fast);
+    }
+
+    .radio-description {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      transition: all var(--transition-fast);
+    }
+
+    /* === RESPONSIVE ADJUSTMENTS === */
+    @media (max-width: 768px) {
+      .app-container {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "header"
+          "main"
+          "footer";
+      }
+
+      .app-sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 class="app-title">One-on-One Session ✨</h1>
+        
+        <div class="session-type-select">
+          <div id="sessionTypeBadge" class="session-type-badge">
+            <i class="material-icons-round">chat</i>
+            Regular Check-in
+          </div>
+          
+          <div class="session-type-dropdown">
+            <div class="type-option type-regular active" data-type="regular">
+              <div class="type-icon">
+                <i class="material-icons-round">chat</i>
+              </div>
+              <div class="type-info">
+                <div class="type-name">Regular Check-in</div>
+                <div class="type-desc">Standard one-on-one session</div>
+              </div>
+            </div>
+            
+            <div class="type-option type-coaching" data-type="coaching">
+              <div class="type-icon">
+                <i class="material-icons-round">auto_graph</i>
+              </div>
+              <div class="type-info">
+                <div class="type-name">Priority Coaching</div>
+                <div class="type-desc">Focus on specific development areas</div>
+              </div>
+            </div>
+            
+            <div class="type-option type-performance" data-type="performance">
+              <div class="type-icon">
+                <i class="material-icons-round">analytics</i>
+              </div>
+              <div class="type-info">
+                <div class="type-name">Performance Review</div>
+                <div class="type-desc">Formal performance assessment</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="header-right">
+        <input type="date" id="sessionDateInput" class="session-date">
+        <select id="sessionTypeSelect" style="display:none;">
+          <option value="regular">Regular Check-in</option>
+          <option value="coaching">Priority Coaching</option>
+          <option value="performance">Performance Review</option>
+        </select>
+      </div>
+    </header>
+    
+    <!-- Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div id="memberCard" class="team-member-card">
+          <div id="memberAvatar" class="member-avatar">TM</div>
+          <div class="member-info">
+            <div id="memberName" class="member-name">Team Member</div>
+            <div id="memberRole" class="member-role">Crisis Counselor</div>
+          </div>
+        </div>
+        
+        <div class="progress-info">
+          <div class="progress-text">Progress</div>
+          <div class="progress-text"><span id="completedSections">0</span>/<span id="totalSections">0</span></div>
+        </div>
+        
+        <div class="progress-bar-container">
+          <div id="sessionProgress" class="progress-bar" style="width: 0%"></div>
+        </div>
+      </div>
+      
+      <div id="navTabs" class="tab-navigation">
+        <!-- Tabs will be dynamically generated here -->
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div id="contentArea">
+        <!-- Tab content will be rendered here -->
+      </div>
+      
+      <!-- Team Member Selection Area -->
+      <div id="memberSearchContainer" class="member-search-container">
+        <div class="search-box">
+          <i class="material-icons-round">search</i>
+          <input type="text" id="teamMemberSearch" placeholder="Search team members...">
+        </div>
+        
+        <div id="teamMemberList" class="team-member-list">
+          <!-- Team members will be listed here -->
+        </div>
+        
+        <div class="add-member-option">
+          <button id="manualEntryButton" class="btn text">
+            <i class="material-icons-round">add</i>
+            Add Team Member Manually
+          </button>
+        </div>
+      </div>
+      
+      <!-- Manual Team Member Entry Form -->
+      <div id="manualEntryForm" class="manual-entry-form">
+        <div class="form-row">
+          <label for="manualName">Name</label>
+          <input type="text" id="manualName" placeholder="Enter team member name">
+        </div>
+        
+        <div class="form-row">
+          <label for="manualRole">Role</label>
+          <select id="manualRole">
+            <option value="Crisis Counselor">Crisis Counselor</option>
+            <option value="Senior Crisis Counselor">Senior Crisis Counselor</option>
+            <option value="Team Lead">Team Lead</option>
+            <option value="Supervisor">Supervisor</option>
+            <option value="Other">Other...</option>
+          </select>
+        </div>
+        
+        <div id="otherRoleField" class="form-row" style="display: none;">
+          <label for="otherRoleInput">Specify Role</label>
+          <input type="text" id="otherRoleInput" placeholder="Enter custom role">
+        </div>
+        
+        <div class="form-row">
+          <label for="manualEmail">Email (optional)</label>
+          <input type="email" id="manualEmail" placeholder="Enter email address">
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+          <button id="cancelManualEntry" class="btn secondary">Cancel</button>
+          <button id="confirmManualEntry" class="btn primary">Add Team Member</button>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <div class="autosave-indicator">
+          <i class="material-icons-round">check_circle</i>
+          <span>All changes saved</span>
+        </div>
+      </div>
+      
+      <div class="footer-right">
+        <button id="prevTabBtn" class="btn secondary">
+          <i class="material-icons-round">arrow_back</i>
+          Previous
+        </button>
+        
+        <button id="nextTabBtn" class="btn primary">
+          Next
+          <i class="material-icons-round">arrow_forward</i>
+        </button>
+      </div>
+    </footer>
+    
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading...</div>
+    </div>
+    
+    <!-- Email Preview Modal -->
+    <div id="emailPreviewModal" class="modal">
+      <div class="modal-content" style="max-width: 700px; width: 90%;">
+        <div class="modal-header">
+          <h3>Email Preview</h3>
+          <button id="closeEmailPreview" class="close-button">
+            <i class="material-icons-round">close</i>
+          </button>
+        </div>
+        <div class="modal-body" style="padding: 0;">
+          <div id="emailPreviewContent" class="email-preview-content" style="height: 500px; overflow-y: auto;"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="closeEmailPreview2" class="btn secondary">Close</button>
+          <button id="confirmSendEmail" class="btn primary">
+            <i class="material-icons-round">send</i>
+            Send Email
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Global variables
+    let sessionData = {
+      ID: null,
+      TeamMemberID: null,
+      TeamMember: null,
+      TeamMemberRole: null,
+      Date: new Date().toISOString().split('T')[0],
+      SessionType: 'regular',
+      Status: 'Scheduled',
+      FollowUpDate: null,
+      CreatedAt: new Date().toISOString(),
+      UpdatedAt: new Date().toISOString(),
+      CompletedAt: null
+    };
+
+    // Session tabs and content
+    let tabs = [];
+    let currentTabIndex = 0;
+    let teamMembers = [];
+
+    // Initialize when document is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set current date in header
+      document.getElementById('sessionDateInput').value = sessionData.Date;
+      
+      // Set up event listeners
+      setupEventListeners();
+      
+      // Load team members
+      loadTeamMembers();
+      
+      // Check if we're editing an existing session or creating a new one
+      checkForExistingSession();
+      
+      // Show loading overlay
+      showLoading(true);
+    });
+
+    /**
+     * Set up event listeners
+     */
+    function setupEventListeners() {
+      // Session type dropdown options
+      document.querySelectorAll('.type-option').forEach(option => {
+        option.addEventListener('click', function() {
+          const type = this.dataset.type;
+          
+          // Update active state
+          document.querySelectorAll('.type-option').forEach(opt => {
+            opt.classList.remove('active');
+          });
+          this.classList.add('active');
+          
+          // Update session type
+          sessionData.SessionType = type;
+          document.getElementById('sessionTypeSelect').value = type;
+          updateSessionTypeBadge(type);
+          buildTabsForSessionType(type);
+        });
+      });
+      
+      // Session type select (hidden, used for data binding)
+      document.getElementById('sessionTypeSelect').addEventListener('change', function() {
+        const type = this.value;
+        sessionData.SessionType = type;
+        updateSessionTypeBadge(type);
+        buildTabsForSessionType(type);
+        
+        // Update dropdown active state
+        document.querySelectorAll('.type-option').forEach(opt => {
+          opt.classList.toggle('active', opt.dataset.type === type);
+        });
+      });
+      
+      // Session date change
+      document.getElementById('sessionDateInput').addEventListener('change', function() {
+        sessionData.Date = this.value;
+        saveSession();
+      });
+      
+      // Team member search
+      document.getElementById('teamMemberSearch').addEventListener('input', debounce(function() {
+        filterTeamMembers(this.value);
+      }, 300));
+      
+      // Manual entry button
+      document.getElementById('manualEntryButton').addEventListener('click', function() {
+        document.getElementById('memberSearchContainer').style.display = 'none';
+        document.getElementById('manualEntryForm').style.display = 'block';
+      });
+      
+      // Cancel manual entry
+      document.getElementById('cancelManualEntry').addEventListener('click', function() {
+        document.getElementById('memberSearchContainer').style.display = 'block';
+        document.getElementById('manualEntryForm').style.display = 'none';
+      });
+      
+      // Confirm manual entry
+      document.getElementById('confirmManualEntry').addEventListener('click', function() {
+        addManualTeamMember();
+      });
+      
+      // Manual role select change
+      document.getElementById('manualRole').addEventListener('change', function() {
+        document.getElementById('otherRoleField').style.display = this.value === 'Other' ? 'block' : 'none';
+      });
+      
+      // Navigation buttons
+      document.getElementById('prevTabBtn').addEventListener('click', goToPreviousTab);
+      document.getElementById('nextTabBtn').addEventListener('click', goToNextTab);
+      
+      // Email modal close buttons
+      if (document.getElementById('closeEmailPreview')) {
+        document.getElementById('closeEmailPreview').addEventListener('click', closeEmailPreview);
+      }
+      
+      if (document.getElementById('closeEmailPreview2')) {
+        document.getElementById('closeEmailPreview2').addEventListener('click', closeEmailPreview);
+      }
+      
+      // Add event listener for confirm send email button in modal
+      if (document.getElementById('confirmSendEmail')) {
+        document.getElementById('confirmSendEmail').addEventListener('click', function() {
+          // Close the modal
+          document.getElementById('emailPreviewModal').classList.remove('active');
+          
+          // Send the email
+          sendSessionEmail();
+        });
+      }
+    }
+
+    /**
+     * Check if we're editing an existing session
+     */
+    function checkForExistingSession() {
+      google.script.run
+        .withSuccessHandler(function(params) {
+          if (params && params.sessionId) {
+            // Load existing session
+            loadExistingSession(params.sessionId);
+          } else if (params && params.teamMemberId) {
+            // Pre-select team member
+            sessionData.TeamMemberID = params.teamMemberId;
+            loadTeamMemberDetails(params.teamMemberId);
+          } else {
+            // New session, initialize tabs
+            buildTabsForSessionType('regular');
+            hideLoading();
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error checking for existing session: ' + error);
+          buildTabsForSessionType('regular');
+          hideLoading();
+        })
+        .getOneOnOneParams();
+    }
+
+    /**
+     * Load existing session by ID
+     * @param {string} sessionId - Session ID
+     */
+    function loadExistingSession(sessionId) {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result) {
+            // Store session data
+            sessionData = result;
+            
+            // Update UI with session data
+            document.getElementById('sessionTypeSelect').value = sessionData.SessionType || 'regular';
+            document.getElementById('sessionDateInput').value = formatDateForInput(sessionData.Date);
+            
+            // Update session type badge
+            updateSessionTypeBadge(sessionData.SessionType);
+            
+            // Update dropdown active state
+            document.querySelectorAll('.type-option').forEach(opt => {
+              opt.classList.toggle('active', opt.dataset.type === sessionData.SessionType);
+            });
+            
+            // Show team member if available
+            if (sessionData.TeamMemberID) {
+              showSelectedTeamMember(sessionData.TeamMemberID, sessionData.TeamMember, sessionData.TeamMemberRole);
+            }
+            
+            // Build tabs for session type
+            buildTabsForSessionType(sessionData.SessionType || 'regular');
+          } else {
+            showError("Could not load session. It may have been deleted.");
+            hideLoading();
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error loading session: ' + error);
+          showError("Error loading session: " + error);
+          hideLoading();
+        })
+        .getOneOnOneSessionById(sessionId);
+    }
+
+    /**
+     * Load team members for selection
+     */
+    function loadTeamMembers() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          teamMembers = result || [];
+          renderTeamMemberList(teamMembers);
+          
+          // If we have a pre-selected team member, show it
+          if (sessionData.TeamMemberID) {
+            showSelectedTeamMember(
+              sessionData.TeamMemberID, 
+              sessionData.TeamMember, 
+              sessionData.TeamMemberRole
+            );
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error loading team members: ' + error);
+          showError("Error loading team members. Please try refreshing the page.");
+        })
+        .getTeamMembersForOneOnOne();
+    }
+
+    /**
+     * Render team member list
+     * @param {Array} members - Team members array
+     */
+    function renderTeamMemberList(members) {
+      const container = document.getElementById('teamMemberList');
+      
+      if (members.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 2rem 1rem; text-align: center; color: var(--text-muted);">
+            No team members found. Use the form below to add a team member manually.
+          </div>
+        `;
+        return;
+      }
+      
+      // Create HTML for each team member
+      container.innerHTML = '';
+      
+      members.forEach(member => {
+        const initials = getInitials(member.name);
+        
+        const item = document.createElement('div');
+        item.className = 'team-member-item';
+        item.dataset.id = member.id;
+        item.innerHTML = `
+          <div class="team-member-avatar">${initials}</div>
+          <div class="team-member-details">
+            <div class="team-member-name">${member.name}</div>
+            <div class="team-member-role">${member.role || 'Crisis Counselor'}</div>
+          </div>
+        `;
+        
+        // Add click event
+        item.addEventListener('click', function() {
+          selectTeamMember(member);
+        });
+        
+        container.appendChild(item);
+      });
+    }
+
+    /**
+     * Filter team members based on search input
+     * @param {string} query - Search query
+     */
+    function filterTeamMembers(query) {
+      query = query.toLowerCase().trim();
+      
+      // If empty query, show all
+      if (!query) {
+        renderTeamMemberList(teamMembers);
+        return;
+      }
+      
+      // Filter members
+      const filtered = teamMembers.filter(member => {
+        return (
+          member.name.toLowerCase().includes(query) ||
+          (member.role && member.role.toLowerCase().includes(query))
+        );
+      });
+      
+      renderTeamMemberList(filtered);
+    }
+
+    /**
+     * Select a team member
+     * @param {Object} member - Team member object
+     */
+    function selectTeamMember(member) {
+      sessionData.TeamMemberID = member.id;
+      sessionData.TeamMember = member.name;
+      sessionData.TeamMemberRole = member.role;
+      
+      showSelectedTeamMember(member.id, member.name, member.role);
+      saveSession();
+    }
+
+    /**
+     * Show selected team member UI
+     * @param {string} id - Team member ID
+     * @param {string} name - Team member name
+     * @param {string} role - Team member role
+     */
+    function showSelectedTeamMember(id, name, role) {
+      // Update member card
+      document.getElementById('memberName').textContent = name;
+      document.getElementById('memberRole').textContent = role || 'Crisis Counselor';
+      document.getElementById('memberAvatar').textContent = getInitials(name);
+      
+      // Show member card, hide search
+      document.getElementById('memberCard').style.display = 'flex';
+      document.getElementById('memberSearchContainer').style.display = 'none';
+      document.getElementById('manualEntryForm').style.display = 'none';
+      
+      // Update progress
+      updateSessionProgress();
+    }
+
+    /**
+     * Change selected team member
+     */
+    function changeMember() {
+      document.getElementById('memberCard').style.display = 'none';
+      document.getElementById('memberSearchContainer').style.display = 'block';
+      document.getElementById('teamMemberSearch').value = '';
+      renderTeamMemberList(teamMembers);
+    }
+
+    /**
+     * Add manual team member
+     */
+    function addManualTeamMember() {
+      const name = document.getElementById('manualName').value.trim();
+      const role = document.getElementById('manualRole').value;
+      let finalRole = role;
+      
+      if (role === 'Other') {
+        finalRole = document.getElementById('otherRoleInput').value.trim() || 'Crisis Counselor';
+      }
+      
+      const email = document.getElementById('manualEmail').value.trim();
+      
+      if (!name) {
+        alert('Please enter a team member name.');
+        return;
+      }
+      
+      showLoading(true);
+      
+      // Create team member on server
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success && result.data) {
+            // Update session data
+            sessionData.TeamMemberID = result.data.id;
+            sessionData.TeamMember = name;
+            sessionData.TeamMemberRole = finalRole;
+            
+            // Update UI
+            showSelectedTeamMember(result.data.id, name, finalRole);
+            
+            // Add to team members array for future use
+            teamMembers.push({
+              id: result.data.id,
+              name: name,
+              role: finalRole,
+              email: email
+            });
+            
+            // Save session
+            saveSession();
+          } else {
+            showError("Error creating team member: " + (result.message || "Unknown error"));
+          }
+          
+          hideLoading();
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error creating team member: ' + error);
+          showError("Error creating team member: " + error);
+          hideLoading();
+        })
+        .createTeamMember({
+          name: name,
+          role: finalRole,
+          email: email
+        });
+    }
+
+    /**
+     * Build tabs based on session type
+     * @param {string} sessionType - Session type
+     */
+    function buildTabsForSessionType(sessionType) {
+      tabs = [
+        {
+          id: 'teamMember',
+          label: 'Team Member',
+          icon: 'person',
+          isCompleted: !!sessionData.TeamMemberID,
+          render: renderTeamMemberTab
+        }
+      ];
+      
+      // Add tabs based on session type
+      switch (sessionType) {
+        case 'regular':
+          tabs = tabs.concat([
+            {
+              id: 'statusSync',
+              label: 'Status Sync',
+              icon: 'chat',
+              isCompleted: !!sessionData.statusSyncNotes,
+              render: renderStatusSyncTab
+            },
+            {
+              id: 'currentState',
+              label: 'Current State',
+              icon: 'blur_on',
+              isCompleted: !!(sessionData.workloadStatus || sessionData.energyLevel || sessionData.blockers),
+              render: renderCurrentStateTab
+            },
+            {
+              id: 'development',
+              label: 'Development',
+              icon: 'trending_up',
+              isCompleted: !!(sessionData.developmentGoals || sessionData.skillMapping || sessionData.supportNeeds),
+              render: renderDevelopmentTab
+            },
+            {
+              id: 'metrics',
+              label: 'Metrics',
+              icon: 'insights',
+              isCompleted: !!(sessionData.answerRate || sessionData.avgTalkTime || sessionData.acwPercentage || sessionData.onQueuePercentage || sessionData.metricsComments),
+              render: renderMetricsTab
+            },
+            {
+              id: 'followUp',
+              label: 'Follow-up',
+              icon: 'event_repeat',
+              isCompleted: !!sessionData.FollowUpDate,
+              render: renderFollowUpTab
+            }
+          ]);
+          break;
+          
+        case 'coaching':
+          tabs = tabs.concat([
+            {
+              id: 'coachingFocus',
+              label: 'Coaching Focus',
+              icon: 'track_changes',
+              isCompleted: !!(sessionData.coachingFocus || sessionData.coachingContext),
+              render: renderCoachingFocusTab
+            },
+            {
+              id: 'observations',
+              label: 'Observations',
+              icon: 'visibility',
+              isCompleted: !!(sessionData.strengths || sessionData.growthAreas),
+              render: renderObservationsTab
+            },
+            {
+              id: 'developmentPlan',
+              label: 'Development Plan',
+              icon: 'assignment',
+              isCompleted: !!(sessionData.specificTechniques || sessionData.practiceOpportunities || sessionData.resources),
+              render: renderDevelopmentPlanTab
+            },
+            {
+              id: 'metrics',
+              label: 'Metrics',
+              icon: 'insights',
+              isCompleted: !!(sessionData.answerRate || sessionData.avgTalkTime || sessionData.acwPercentage || sessionData.onQueuePercentage || sessionData.metricsComments),
+              render: renderMetricsTab
+            },
+            {
+              id: 'followUp',
+              label: 'Follow-up',
+              icon: 'event_repeat',
+              isCompleted: !!sessionData.FollowUpDate,
+              render: renderFollowUpTab
+            }
+          ]);
+          break;
+          
+        case 'performance':
+          tabs = tabs.concat([
+            {
+              id: 'performanceMetrics',
+              label: 'Metrics',
+              icon: 'analytics',
+              isCompleted: !!(sessionData.answerRate || sessionData.avgTalkTime || sessionData.acwPercentage || sessionData.onQueuePercentage || sessionData.metricsComments),
+              render: renderPerformanceMetricsTab
+            },
+            {
+              id: 'qaScores',
+              label: 'QA Scores',
+              icon: 'grade',
+              isCompleted: !!(sessionData.overallQAScore || sessionData.qaComments),
+              render: renderQAScoresTab
+            },
+            {
+              id: 'performancePlan',
+              label: 'Performance Plan',
+              icon: 'assignment_turned_in',
+              isCompleted: !!(sessionData.strengthsToLeverage || sessionData.areasForImprovement || sessionData.actionPlan || sessionData.performanceResources),
+              render: renderPerformancePlanTab
+            },
+            {
+              id: 'actionItems',
+              label: 'Action Items',
+              icon: 'checklist',
+              isCompleted: true, // Always considered completed as it's optional
+              render: renderActionItemsTab
+            },
+            {
+              id: 'followUp',
+              label: 'Follow-up',
+              icon: 'event_repeat',
+              isCompleted: !!sessionData.FollowUpDate,
+              render: renderFollowUpTab
+            }
+          ]);
+          break;
+      }
+      
+      // Render tabs in sidebar
+      renderTabNavigation();
+      
+      // Set current tab to first or keep existing if valid
+      if (currentTabIndex >= tabs.length) {
+        currentTabIndex = 0;
+      }
+      
+      // Render current tab content
+      renderCurrentTab();
+      
+      // Update progress bar
+      updateSessionProgress();
+      
+      // Hide loading
+      hideLoading();
+    }
+
+    /**
+     * Render tab navigation in sidebar
+     */
+    function renderTabNavigation() {
+      const container = document.getElementById('navTabs');
+      container.innerHTML = '';
+      
+      tabs.forEach((tab, index) => {
+        const tabElement = document.createElement('div');
+        tabElement.className = `nav-tab ${index === currentTabIndex ? 'active' : ''} ${tab.isCompleted ? 'completed' : ''}`;
+        tabElement.dataset.index = index;
+        tabElement.dataset.id = tab.id;
+        tabElement.innerHTML = `
+          <i class="material-icons-round">${tab.icon}</i> 
+          <span class="nav-tab-label">${tab.label}</span> `;
+              tabElement.addEventListener('click', function() {
+      // Only allow clicking if it's not the current tab
+      if (index !== currentTabIndex) {
+        saveCurrentTabData();
+        currentTabIndex = index;
+        renderCurrentTab();
+        
+        // Add ripple effect
+        const ripple = document.createElement('div');
+        ripple.className = 'nav-tab-ripple';
+        this.appendChild(ripple);
+        
+        // Animate ripple
+        ripple.style.animation = 'ripple 0.6s linear';
+        setTimeout(() => {
+          this.removeChild(ripple);
+        }, 600);
+        
+        // Update active tab styling
+        document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Update navigation buttons
+        updateNavigationButtons();
+      }
+    });
+    
+    container.appendChild(tabElement);
+  });
+  
+  // Update navigation buttons
+  updateNavigationButtons();
+}
+
+/**
+ * Render current tab content
+ */
+function renderCurrentTab() {
+  if (tabs[currentTabIndex]) {
+    tabs[currentTabIndex].render();
+  }
+}
+
+/**
+ * Update navigation buttons based on current tab
+ */
+function updateNavigationButtons() {
+  const prevBtn = document.getElementById('prevTabBtn');
+  const nextBtn = document.getElementById('nextTabBtn');
+  
+  // Previous button
+  if (currentTabIndex === 0) {
+    prevBtn.style.visibility = 'hidden';
+  } else {
+    prevBtn.style.visibility = 'visible';
+  }
+  
+  // Next button
+  if (currentTabIndex === tabs.length - 1) {
+    nextBtn.innerHTML = `
+      <i class="material-icons-round">save</i>
+      Save & Finish
+    `;
+  } else {
+    nextBtn.innerHTML = `
+      Next
+      <i class="material-icons-round">arrow_forward</i>
+    `;
+  }
+}
+
+/**
+ * Go to previous tab
+ */
+function goToPreviousTab() {
+  if (currentTabIndex > 0) {
+    saveCurrentTabData();
+    currentTabIndex--;
+    renderCurrentTab();
+    
+    // Update active tab styling
+    document.querySelectorAll('.nav-tab').forEach((el, index) => {
+      el.classList.toggle('active', index === currentTabIndex);
+    });
+    
+    // Update navigation buttons
+    updateNavigationButtons();
+  }
+}
+
+/**
+ * Go to next tab
+ */
+function goToNextTab() {
+  saveCurrentTabData();
+  
+  // If last tab, save and close
+  if (currentTabIndex === tabs.length - 1) {
+    saveAndCloseSession();
+    return;
+  }
+  
+  // Otherwise go to next tab
+  currentTabIndex++;
+  renderCurrentTab();
+  
+  // Update active tab styling
+  document.querySelectorAll('.nav-tab').forEach((el, index) => {
+    el.classList.toggle('active', index === currentTabIndex);
+  });
+  
+  // Update navigation buttons
+  updateNavigationButtons();
+}
+
+/**
+ * Save data from current tab
+ */
+function saveCurrentTabData() {
+  const tab = tabs[currentTabIndex];
+  if (!tab) return;
+  
+  switch (tab.id) {
+    case 'statusSync':
+      sessionData.statusSyncNotes = document.getElementById('statusSyncNotes').value;
+      tab.isCompleted = !!sessionData.statusSyncNotes;
+      break;
+      
+    case 'currentState':
+      sessionData.workloadStatus = document.getElementById('workloadStatus').value;
+      sessionData.energyLevel = document.getElementById('energyLevel').value;
+      sessionData.blockers = document.getElementById('blockers').value;
+      tab.isCompleted = !!(sessionData.workloadStatus || sessionData.energyLevel || sessionData.blockers);
+      break;
+      
+    case 'development':
+      sessionData.developmentGoals = document.getElementById('developmentGoals').value;
+      sessionData.skillMapping = document.getElementById('skillMapping').value;
+      sessionData.supportNeeds = document.getElementById('supportNeeds').value;
+      tab.isCompleted = !!(sessionData.developmentGoals || sessionData.skillMapping || sessionData.supportNeeds);
+      break;
+      
+    case 'coachingFocus':
+      sessionData.coachingFocus = document.getElementById('coachingFocus').value;
+      sessionData.coachingContext = document.getElementById('coachingContext').value;
+      tab.isCompleted = !!(sessionData.coachingFocus || sessionData.coachingContext);
+      break;
+      
+    case 'observations':
+      sessionData.strengths = document.getElementById('strengths').value;
+      sessionData.growthAreas = document.getElementById('growthAreas').value;
+      tab.isCompleted = !!(sessionData.strengths || sessionData.growthAreas);
+      break;
+      
+    case 'developmentPlan':
+      sessionData.specificTechniques = document.getElementById('specificTechniques').value;
+      sessionData.practiceOpportunities = document.getElementById('practiceOpportunities').value;
+      sessionData.resources = document.getElementById('resources').value;
+      tab.isCompleted = !!(sessionData.specificTechniques || sessionData.practiceOpportunities || sessionData.resources);
+      break;
+      
+    case 'metrics':
+    case 'performanceMetrics':
+      sessionData.answerRate = document.getElementById('answerRate').value;
+      sessionData.avgTalkTime = document.getElementById('avgTalkTime').value;
+      sessionData.acwPercentage = document.getElementById('acwPercentage').value;
+      sessionData.onQueuePercentage = document.getElementById('onQueuePercentage').value;
+      sessionData.metricsComments = document.getElementById('metricsComments').value;
+      tab.isCompleted = !!(sessionData.answerRate || sessionData.avgTalkTime || sessionData.acwPercentage || sessionData.onQueuePercentage || sessionData.metricsComments);
+      break;
+      
+    case 'qaScores':
+      sessionData.overallQAScore = document.getElementById('overallQAScore').value;
+      sessionData.qaComments = document.getElementById('qaComments').value;
+      tab.isCompleted = !!(sessionData.overallQAScore || sessionData.qaComments);
+      break;
+      
+    case 'performancePlan':
+      sessionData.strengthsToLeverage = document.getElementById('strengthsToLeverage').value;
+      sessionData.areasForImprovement = document.getElementById('areasForImprovement').value;
+      sessionData.actionPlan = document.getElementById('actionPlan').value;
+      sessionData.performanceResources = document.getElementById('performanceResources').value;
+      tab.isCompleted = !!(sessionData.strengthsToLeverage || sessionData.areasForImprovement || sessionData.actionPlan || sessionData.performanceResources);
+      break;
+      
+    case 'followUp':
+      sessionData.FollowUpDate = document.getElementById('followUpDateCheck').checked ? 
+        document.getElementById('followUpDate').value : null;
+      tab.isCompleted = !!sessionData.FollowUpDate;
+      break;
+  }
+  
+  // Update tab status
+  updateTabStatus(currentTabIndex, tab.isCompleted);
+  
+  // Update progress
+  updateSessionProgress();
+  
+  // Save session data
+  saveSession();
+}
+
+/**
+ * Update tab status in UI
+ * @param {number} index - Tab index
+ * @param {boolean} isCompleted - Whether tab is completed
+ */
+function updateTabStatus(index, isCompleted) {
+  const tabElements = document.querySelectorAll('.nav-tab');
+  if (tabElements[index]) {
+    if (isCompleted) {
+      tabElements[index].classList.add('completed');
+    } else {
+      tabElements[index].classList.remove('completed');
+    }
+  }
+}
+
+/**
+ * Update session progress in UI
+ */
+function updateSessionProgress() {
+  const completedCount = tabs.filter(tab => tab.isCompleted).length;
+  const totalCount = tabs.length;
+  const progressPercentage = (completedCount / totalCount) * 100;
+  
+  document.getElementById('completedSections').textContent = completedCount;
+  document.getElementById('totalSections').textContent = totalCount;
+  document.getElementById('sessionProgress').style.width = progressPercentage + '%';
+}
+
+/**
+ * Update session type badge
+ * @param {string} type - Session type
+ */
+function updateSessionTypeBadge(type) {
+  const badge = document.getElementById('sessionTypeBadge');
+  badge.className = 'session-type-badge';
+  
+  let icon = 'chat';
+  let text = 'Regular Check-in';
+  
+  switch (type) {
+    case 'coaching':
+      badge.classList.add('coaching');
+      icon = 'auto_graph';
+      text = 'Priority Coaching';
+      break;
+      
+    case 'performance':
+      badge.classList.add('performance');
+      icon = 'analytics';
+      text = 'Performance Review';
+      break;
+      
+    default:
+      badge.classList.add('regular');
+      break;
+  }
+  
+  badge.innerHTML = `<i class="material-icons-round">${icon}</i>${text}`;
+}
+
+/**
+ * Save session to server
+ */
+function saveSession() {
+  // Don't save if no team member selected
+  if (!sessionData.TeamMemberID) return;
+  
+  // Update timestamp
+  sessionData.UpdatedAt = new Date().toISOString();
+  
+  // Show autosave indicator
+  const indicator = document.querySelector('.autosave-indicator');
+  indicator.innerHTML = `<i class="material-icons-round">sync</i><span>Saving changes...</span>`;
+  
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result && result.success && result.data) {
+        // Update session ID if new
+        if (!sessionData.ID && result.data.ID) {
+          sessionData.ID = result.data.ID;
+        }
+        
+        // Show saved indicator
+        indicator.innerHTML = `<i class="material-icons-round">check_circle</i><span>All changes saved</span>`;
+        
+        // Reset after a delay
+        setTimeout(() => {
+          indicator.innerHTML = `<i class="material-icons-round">check_circle</i><span>All changes saved</span>`;
+        }, 3000);
+      } else {
+        // Show error indicator
+        indicator.innerHTML = `<i class="material-icons-round" style="color: var(--danger);">error</i><span style="color: var(--danger);">Error saving</span>`;
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Error saving session: ' + error);
+      
+      // Show error indicator
+      indicator.innerHTML = `<i class="material-icons-round" style="color: var(--danger);">error</i><span style="color: var(--danger);">Error saving</span>`;
+    })
+    .saveOneOnOneSession(sessionData);
+}
+
+/**
+ * Save and close session
+ */
+function saveAndCloseSession() {
+  // Save current tab data
+  saveCurrentTabData();
+  
+  // Check if team member is selected
+  if (!sessionData.TeamMemberID) {
+    alert('Please select a team member before saving.');
+    currentTabIndex = 0;
+    renderCurrentTab();
+    return;
+  }
+  
+  // Show loading
+  showLoading(true);
+  
+  // Final save with completion
+  sessionData.UpdatedAt = new Date().toISOString();
+  
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result && result.success) {
+        // Close the dialog
+        google.script.host.close();
+      } else {
+        showError("Error saving session: " + (result.message || "Unknown error"));
+        hideLoading();
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Error saving session: ' + error);
+      showError("Error saving session: " + error);
+      hideLoading();
+    })
+    .saveOneOnOneSession(sessionData);
+}
+
+/**
+ * Cancel session and close
+ */
+function cancelSession() {
+  // Ask for confirmation if we've made changes
+  if (sessionData.ID) {
+    if (!confirm('Are you sure you want to cancel? Your changes will be saved, but not completed.')) {
+      return;
+    }
+    
+    // Save current state before closing
+    saveSession();
+  } else {
+    // For new sessions, ask if they want to discard
+    if (sessionData.TeamMemberID && !confirm('Are you sure you want to cancel? This session will not be saved.')) {
+      return;
+    }
+  }
+  
+  // Close dialog
+  google.script.host.close();
+}
+
+/**
+ * Load team member details
+ * @param {string} teamMemberId - Team member ID
+ */
+function loadTeamMemberDetails(teamMemberId) {
+  google.script.run
+    .withSuccessHandler(function(member) {
+      if (member) {
+        sessionData.TeamMember = member.name;
+        sessionData.TeamMemberRole = member.role;
+        showSelectedTeamMember(teamMemberId, member.name, member.role);
+      }
+      
+      // Build tabs
+      buildTabsForSessionType(sessionData.SessionType);
+      hideLoading();
+    })
+    .withFailureHandler(function(error) {
+      console.error('Error loading team member details: ' + error);
+      // Build tabs anyway
+      buildTabsForSessionType(sessionData.SessionType);
+      hideLoading();
+    })
+    .getTeamMemberById(teamMemberId);
+}
+
+/**
+ * Show loading overlay
+ * @param {boolean} show - Whether to show or hide
+ */
+function showLoading(show = true) {
+  document.getElementById('loadingOverlay').className = show ? 'loading-overlay active' : 'loading-overlay';
+}
+
+/**
+ * Hide loading overlay
+ */
+function hideLoading() {
+  showLoading(false);
+}
+
+/**
+ * Show error message
+ * @param {string} message - Error message
+ */
+function showError(message) {
+  alert(message);
+}
+
+/**
+ * Close email preview modal
+ */
+function closeEmailPreview() {
+  document.getElementById('emailPreviewModal').classList.remove('active');
+}
+
+/**
+ * Get team member email from stored team members array
+ * @return {string} Email or empty string
+ */
+function getTeamMemberEmail() {
+  if (!sessionData.TeamMemberID) return '';
+  
+  const member = teamMembers.find(m => m.id === sessionData.TeamMemberID);
+  return member && member.email ? member.email : '';
+}
+
+/**
+ * Preview session email
+ */
+function previewSessionEmail() {
+  // Save current tab data first
+  saveCurrentTabData();
+  
+  // Check if team member is selected
+  if (!sessionData.TeamMemberID) {
+    showError('Please select a team member before previewing email.');
+    return;
+  }
+  
+  // Get email detail level
+  const detailLevel = document.querySelector('input[name="emailDetail"]:checked').value;
+  
+  // Show loading in preview modal
+  const modal = document.getElementById('emailPreviewModal');
+  const content = document.getElementById('emailPreviewContent');
+  content.innerHTML = `
+    <div style="display: flex; justify-content: center; padding: 3rem;">
+      <div class="loading-spinner"></div>
+    </div>
+  `;
+  modal.classList.add('active');
+  
+  // Get recipient email
+  const recipient = document.getElementById('emailRecipient').value;
+  const cc = document.getElementById('emailCc').value;
+  
+  // Generate email preview
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result && result.success) {
+        // Show preview
+        content.innerHTML = result.emailHtml || 'Email preview could not be generated.';
+        
+        // Store email data for sending
+        sessionData._emailData = {
+          recipient: recipient,
+          cc: cc,
+          detailLevel: detailLevel,
+          html: result.emailHtml
+        };
+      } else {
+        content.innerHTML = `
+          <div style="color: var(--danger); padding: 1.5rem; text-align: center;">
+            <i class="material-icons-round" style="font-size: 3rem;">error</i>
+            <p style="margin-top: 1rem;">Error generating email preview: ${result.message || 'Unknown error'}</p>
+          </div>
+        `;
+      }
+    })
+    .withFailureHandler(function(error) {
+      content.innerHTML = `
+        <div style="color: var(--danger); padding: 1.5rem; text-align: center;">
+          <i class="material-icons-round" style="font-size: 3rem;">error</i>
+          <p style="margin-top: 1rem;">Error generating email preview: ${error}</p>
+        </div>
+      `;
+    })
+    .generateOneOnOneEmailPreview({
+      sessionId: sessionData.ID,
+      sessionData: sessionData,
+      detailLevel: detailLevel
+    });
+}
+
+/**
+ * Send session email
+ */
+function sendSessionEmail() {
+  // Check if email has been previewed
+  if (!sessionData._emailData) {
+    previewSessionEmail();
+    showError('Please preview the email before sending.');
+    return;
+  }
+  
+  // Validate recipient email
+  const recipient = document.getElementById('emailRecipient').value.trim();
+  if (!recipient) {
+    showError('Please enter a recipient email address.');
+    return;
+  }
+  
+  // Confirm sending
+  if (!confirm(`Send this email to ${recipient}?`)) {
+    return;
+  }
+  
+  // Update email data with latest recipient/cc
+  sessionData._emailData.recipient = recipient;
+  sessionData._emailData.cc = document.getElementById('emailCc').value.trim();
+  
+  // Show loading overlay
+  showLoading(true);
+  
+  // Send email
+  google.script.run
+    .withSuccessHandler(function(result) {
+      hideLoading();
+      
+      if (result && result.success) {
+        // Close email preview modal if open
+        document.getElementById('emailPreviewModal').classList.remove('active');
+        
+        // Show success message
+        alert('Email sent successfully! 📧✅');
+        
+        // Clear email data
+        delete sessionData._emailData;
+      } else {
+        showError(`Failed to send email: ${result.message || 'Unknown error'}`);
+      }
+    })
+    .withFailureHandler(function(error) {
+      hideLoading();
+      showError(`Failed to send email: ${error}`);
+    })
+    .sendOneOnOneEmail({
+      sessionId: sessionData.ID,
+      sessionData: sessionData,
+      recipient: sessionData._emailData.recipient,
+      cc: sessionData._emailData.cc,
+      detailLevel: sessionData._emailData.detailLevel
+    });
+}
+
+/* === TAB CONTENT RENDERERS === */
+
+/**
+ * Render team member tab
+ */
+function renderTeamMemberTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  if (sessionData.TeamMemberID) {
+    // If team member already selected, show info
+    contentArea.innerHTML = `
+      <h2 class="content-title">
+        <i class="material-icons-round">person</i>
+        Selected Team Member
+      </h2>
+      <div style="margin-bottom: 1.5rem;">
+        You've selected <strong>${sessionData.TeamMember}</strong> for this one-on-one session. 
+        You can change the team member by clicking the Change button.
+      </div>
+      
+      <div style="background-color: var(--surface-1); border-radius: var(--border-radius-lg); padding: 1.5rem; text-align: center;">
+        <div style="width: 80px; height: 80px; border-radius: var(--border-radius); background-color: var(--primary-bg); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 600; margin: 0 auto 1.25rem;">
+          ${getInitials(sessionData.TeamMember)}
+        </div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">${sessionData.TeamMember}</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">${sessionData.TeamMemberRole || 'Crisis Counselor'}</p>
+        <button class="btn primary" onclick="changeMember()">
+          <i class="material-icons-round">edit</i>
+          Change Team Member
+        </button>
+      </div>
+    `;
+  } else {
+    // Otherwise show team member selection
+    contentArea.innerHTML = `
+      <h2 class="content-title">
+        <i class="material-icons-round">person_add</i>
+        Select Team Member
+      </h2>
+      <div style="margin-bottom: 1.5rem;">
+        Select a team member for this one-on-one session. You can search for existing team members 
+        or add a new team member manually.
+      </div>
+    `;
+    
+    // Empty the member card
+    document.getElementById('memberCard').style.display = 'none';
+    
+    // Show the search container
+    document.getElementById('memberSearchContainer').style.display = 'block';
+    document.getElementById('manualEntryForm').style.display = 'none';
+    document.getElementById('teamMemberSearch').value = '';
+    
+    // Refresh team member list
+    renderTeamMemberList(teamMembers);
+  }
+}
+
+/**
+ * Render status sync tab for regular sessions
+ */
+function renderStatusSyncTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">chat</i>
+      Status Sync
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Capture key points from your general status sync conversation with ${sessionData.TeamMember}.
+    </div>
+    
+    <div class="form-row">
+      <label for="statusSyncNotes">Conversation Notes</label>
+      <textarea id="statusSyncNotes" rows="10" placeholder="Enter notes from your status sync conversation...">${sessionData.statusSyncNotes || ''}</textarea>
+    </div>
+    
+    <div class="section-divider"></div>
+    
+    <div style="font-size: 0.9375rem; color: var(--text-muted);">
+      <p><strong>Tips:</strong></p>
+      <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+        <li>Focus on capturing key points rather than a complete transcript</li>
+        <li>Include any concerns or questions raised during the conversation</li>
+        <li>Note any specific insights that should be followed up on</li>
+      </ul>
+    </div>
+  `;
+}
+
+/**
+ * Render current state tab for regular sessions
+ */
+function renderCurrentStateTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">blur_on</i>
+      Current State
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Assess ${sessionData.TeamMember}'s current workload, energy level, and any blockers they're facing.
+    </div>
+    
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="workloadStatus">Workload Status</label>
+        <select id="workloadStatus">
+          <option value="">Select status...</option>
+          <option value="Underutilized" ${sessionData.workloadStatus === 'Underutilized' ? 'selected' : ''}>Underutilized</option>
+          <option value="Balanced" ${sessionData.workloadStatus === 'Balanced' ? 'selected' : ''}>Balanced</option>
+          <option value="At Capacity" ${sessionData.workloadStatus === 'At Capacity' ? 'selected' : ''}>At Capacity</option>
+          <option value="Overloaded" ${sessionData.workloadStatus === 'Overloaded' ? 'selected' : ''}>Overloaded</option>
+        </select>
+      </div>
+      
+      <div class="form-row">
+        <label for="energyLevel">Energy Level</label>
+        <select id="energyLevel">
+          <option value="">Select level...</option>
+          <option value="Very Low" ${sessionData.energyLevel === 'Very Low' ? 'selected' : ''}>Very Low</option>
+          <option value="Low" ${sessionData.energyLevel === 'Low' ? 'selected' : ''}>Low</option>
+          <option value="Moderate" ${sessionData.energyLevel === 'Moderate' ? 'selected' : ''}>Moderate</option>
+          <option value="High" ${sessionData.energyLevel === 'High' ? 'selected' : ''}>High</option>
+          <option value="Very High" ${sessionData.energyLevel === 'Very High' ? 'selected' : ''}>Very High</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <label for="blockers">Current Blockers or Challenges</label>
+      <textarea id="blockers" rows="6" placeholder="Describe any blockers, challenges, or obstacles the team member is currently facing...">${sessionData.blockers || ''}</textarea>
+    </div>
+  `;
+}
+
+/**
+ * Render development tab for regular sessions
+ */
+function renderDevelopmentTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">trending_up</i>
+      Development
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Discuss ${sessionData.TeamMember}'s growth and development goals, skills they're working on, 
+      and support they need.
+    </div>
+    
+    <div class="form-row">
+      <label for="developmentGoals">Goals & Progress</label>
+      <textarea id="developmentGoals" rows="4" placeholder="Discuss current development goals and progress toward them...">${sessionData.developmentGoals || ''}</textarea>
+    </div>
+    
+    <div class="form-row">
+      <label for="skillMapping">Skill Development</label>
+      <textarea id="skillMapping" rows="4" placeholder="Note specific skills being developed and their application to current work...">${sessionData.skillMapping || ''}</textarea>
+    </div>
+    
+    <div class="form-row">
+      <label for="supportNeeds">Support Needs</label>
+      <textarea id="supportNeeds" rows="4" placeholder="What resources, training, or support is needed to help reach development goals...">${sessionData.supportNeeds || ''}</textarea>
+    </div>
+  `;
+}
+
+/**
+ * Render coaching focus tab for coaching sessions
+ */
+function renderCoachingFocusTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">track_changes</i>
+      Coaching Focus
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Identify the specific area of focus for this coaching session with ${sessionData.TeamMember}.
+    </div>
+    
+    <div class="form-row">
+      <label for="coachingFocus">Focus Area</label>
+      <input type="text" id="coachingFocus" placeholder="E.g., De-escalation techniques, Time management, Self-care strategies..." value="${sessionData.coachingFocus || ''}">
+    </div>
+    
+    <div class="form-row">
+      <label for="coachingContext">Context & Background</label>
+      <textarea id="coachingContext" rows="6" placeholder="Provide context about why this area was selected for coaching...">${sessionData.coachingContext || ''}</textarea>
+    </div>
+  `;
+}
+
+/**
+ * Render observations tab for coaching sessions
+ */
+function renderObservationsTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">visibility</i>
+      Observations
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Document observed strengths and growth areas for ${sessionData.TeamMember} related to the coaching focus.
+    </div>
+    
+    <div class="form-row">
+      <label for="strengths">Observed Strengths</label>
+      <textarea id="strengths" rows="4" placeholder="Document specific strengths observed in this focus area...">${sessionData.strengths || ''}</textarea>
+    </div>
+    
+    <div class="form-row">
+      <label for="growthAreas">Growth Opportunities</label>
+      <textarea id="growthAreas" rows="4" placeholder="Identify specific areas for growth and improvement...">${sessionData.growthAreas || ''}</textarea>
+    </div>
+  `;
+}
+
+/**
+ * Render development plan tab for coaching sessions
+ */
+function renderDevelopmentPlanTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">assignment</i>
+      Development Plan
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Create a tailored development plan for ${sessionData.TeamMember} based on observations.
+    </div>
+    
+    <div class="form-row">
+      <label for="specificTechniques">Specific Techniques/Approaches</label>
+      <textarea id="specificTechniques" rows="4" placeholder="Outline specific techniques or approaches to develop...">${sessionData.specificTechniques || ''}</textarea>
+    </div>
+    
+    <div class="form-row">
+      <label for="practiceOpportunities">Practice Opportunities</label>
+      <textarea id="practiceOpportunities" rows="4" placeholder="Identify specific opportunities to practice these skills...">${sessionData.practiceOpportunities || ''}</textarea>
+    </div>
+    
+    <div class="form-row">
+      <label for="resources">Resources Provided</label>
+      <textarea id="resources" rows="4" placeholder="List resources provided (articles, videos, training materials, etc.)...">${sessionData.resources || ''}</textarea>
+    </div>
+  `;
+}
+
+/**
+ * Render metrics tab for all session types
+ */
+function renderMetricsTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">insights</i>
+      Performance Metrics
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Review key performance metrics for ${sessionData.TeamMember}.
+    </div>
+    
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Answer Rate</div>
+        <input type="text" id="answerRate" class="metric-value-input" placeholder="e.g., 95%" value="${sessionData.answerRate || ''}">
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-label">Avg Talk Time</div>
+        <input type="text" id="avgTalkTime" class="metric-value-input" placeholder="e.g., 12:30" value="${sessionData.avgTalkTime || ''}">
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-label">ACW %</div>
+        <input type="text" id="acwPercentage" class="metric-value-input" placeholder="e.g., 15%" value="${sessionData.acwPercentage || ''}">
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-label">On Queue %</div>
+        <input type="text" id="onQueuePercentage" class="metric-value-input" placeholder="e.g., 80%" value="${sessionData.onQueuePercentage || ''}">
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <label for="metricsComments">Metrics Analysis</label>
+      <textarea id="metricsComments" rows="4" placeholder="Provide analysis and context for the metrics...">${sessionData.metricsComments || ''}</textarea>
+    </div>
+  `;
+}
+
+/**
+ * Render performance metrics tab for performance reviews
+ */
+function renderPerformanceMetricsTab() {
+  // Use the same rendering as regular metrics tab
+  renderMetricsTab();
+}
+
+/**
+ * Render QA scores tab for performance reviews
+ */
+function renderQAScoresTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">grade</i>
+      QA Scores
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Document quality assessment scores and feedback for ${sessionData.TeamMember}.
+    </div>
+    
+    <div style="background-color: var(--surface-1); border-radius: var(--border-radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+      <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Overall QA Score</div>
+      <input type="text" id="overallQAScore" style="font-size: 2.5rem; font-weight: 700; width: 120px; text-align: center; border-radius: var(--border-radius);" placeholder="0-100" value="${sessionData.overallQAScore || ''}">
+    </div>
+    
+    <div class="form-row">
+      <label for="qaComments">QA Comments</label>
+      <textarea id="qaComments" rows="6" placeholder="Provide detailed feedback on quality assessment findings...">${sessionData.qaComments || ''}</textarea>
+    </div>
+  `;
+}
+
+/**
+ * Render performance plan tab for performance reviews
+ */
+function renderPerformancePlanTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">assignment_turned_in</i>
+      Performance Plan
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Create a clear performance plan for ${sessionData.TeamMember} based on metrics and QA findings.
+    </div>
+    
+    <div class="form-row">
+      <label for="strengthsToLeverage">Strengths to Leverage</label>
+      <textarea id="strengthsToLeverage" rows="4" placeholder="Identify key strengths that can be leveraged for success...">${sessionData.strengthsToLeverage || ''}</textarea>
+    </div>
+    
+    <div class="form-row">
+      <label for="areasForImprovement">Areas for Improvement</label>
+      <textarea id="areasForImprovement" rows="4" placeholder="Document specific areas that need improvement...">${sessionData.areasForImprovement || ''}</textarea>
+    </div>
+    
+    <div class="form-row">
+      <label for="actionPlan">Action Plan</label>
+      <textarea id="actionPlan" rows="4" placeholder="Outline specific steps to improve performance...">${sessionData.actionPlan || ''}</textarea>
+    </div>
+    
+    <div class="form-row">
+      <label for="performanceResources">Resources Required</label>
+      <textarea id="performanceResources" rows="4" placeholder="List resources needed to support improvement...">${sessionData.performanceResources || ''}</textarea>
+    </div>
+  `;
+}
+
+/**
+ * Render action items tab for performance reviews
+ */
+function renderActionItemsTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">checklist</i>
+      Action Items
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Track specific action items for ${sessionData.TeamMember} from this performance review.
+    </div>
+    
+    <div id="actionItemsContainer">
+      <!-- Action items will be loaded here -->
+      <div style="display: flex; justify-content: center; padding: 2rem;">
+        <div class="loading-spinner" style="width: 30px; height: 30px;"></div>
+      </div>
+    </div>
+    
+    <button id="addActionItemBtn" class="add-action-button" style="margin-top: 1rem;">
+      <i class="material-icons-round">add</i>
+      Add Action Item
+    </button>
+  `;
+  
+  // Add action item button click event
+  document.getElementById('addActionItemBtn').addEventListener('click', function() {
+    showActionItemForm();
+  });
+  
+  // Load action items if session is saved
+  if (sessionData.ID) {
+    loadActionItems();
+  } else {
+    document.getElementById('actionItemsContainer').innerHTML = `
+      <div style="text-align: center; padding: 1.5rem; color: var(--text-muted);">
+        Save the session first to add action items
+      </div>
+    `;
+  }
+}
+
+/**
+ * Render follow-up tab for all session types
+ */
+function renderFollowUpTab() {
+  const contentArea = document.getElementById('contentArea');
+  
+  const hasFollowUp = !!sessionData.FollowUpDate;
+  const followUpDate = sessionData.FollowUpDate ? formatDateForInput(sessionData.FollowUpDate) : '';
+  
+  contentArea.innerHTML = `
+    <h2 class="content-title">
+      <i class="material-icons-round">event_repeat</i>
+      Follow-up
+    </h2>
+    <div style="margin-bottom: 1.5rem;">
+      Schedule a follow-up session with ${sessionData.TeamMember} and send summary emails.
+    </div>
+    
+    <div class="follow-up-container">
+      <div class="follow-up-toggle">
+        <label class="switch-container">
+          <input type="checkbox" id="followUpDateCheck" class="switch-input" ${hasFollowUp ? 'checked' : ''}>
+          <span class="switch-slider"></span>
+        </label>
+        <span class="switch-label">Schedule follow-up session</span>
+      </div>
+      
+      <div id="followUpDateContainer" style="margin-top: 1.5rem; ${hasFollowUp ? '' : 'display: none;'}">
+        <div class="form-row">
+          <label for="followUpDate">Follow-up Date</label>
+          <input type="date" id="followUpDate" value="${followUpDate}">
+        </div>
+      </div>
+    </div>
+    
+    <div class="section-divider"></div>
+    
+    <!-- Email Section -->
+    <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.125rem; margin-bottom: 1rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+        <i class="material-icons-round" style="color: var(--primary);">email</i>
+        Session Summary Email
+      </h3>
+      
+      <div style="background-color: var(--surface-1); border-radius: var(--border-radius); padding: 1.5rem;">
+        <div style="margin-bottom: 1.25rem;">
+          <div style="font-weight: 500; margin-bottom: 0.5rem;">Email Detail Level</div>
+          <div style="display: flex; gap: 1rem;">
+            <label class="radio-container">
+              <input type="radio" name="emailDetail" value="simple" checked>
+              <span class="radio-label">Simple</span>
+              <span class="radio-description">Brief summary and key points</span>
+            </label>
+            <label class="radio-container">
+              <input type="radio" name="emailDetail" value="standard">
+              <span class="radio-label">Standard</span>
+              <span class="radio-description">Complete session overview</span>
+            </label>
+            <label class="radio-container">
+              <input type="radio" name="emailDetail" value="detailed">
+              <span class="radio-label">Detailed</span>
+              <span class="radio-description">Comprehensive with all notes</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-row" style="margin-bottom: 0.75rem;">
+          <label for="emailRecipient">Send To</label>
+          <input type="email" id="emailRecipient" placeholder="Enter recipient email" value="${getTeamMemberEmail() || ''}">
+        </div>
+        
+        <div class="form-row">
+          <label for="emailCc">CC (Optional)</label>
+          <input type="email" id="emailCc" placeholder="Enter CC email">
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+          <button id="previewEmailBtn" class="btn primary" style="margin-right: 0.75rem;">
+            <i class="material-icons-round">visibility</i>
+            Preview Email
+          </button>
+          <button id="sendEmailBtn" class="btn primary" style="background-color: var(--success);">
+            <i class="material-icons-round">send</i>
+            Send Email
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Action Items -->
+    <div style="margin-top: 2.5rem;">
+      <h3 style="font-size: 1.125rem; margin-bottom: 1rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+        <i class="material-icons-round" style="color: var(--primary);">checklist</i>
+        Action Items
+      </h3>
+      
+      <div id="actionItemsContainer">
+        <!-- Action items will be loaded here -->
+        <div style="display: flex; justify-content: center; padding: 2rem;">
+          <div class="loading-spinner" style="width: 30px; height: 30px;"></div>
+        </div>
+      </div>
+      
+      <button id="addActionItemBtn" class="add-action-button" style="margin-top: 1rem;">
+        <i class="material-icons-round">add</i>
+        Add Action Item
+      </button>
+    </div>
+  `;
+  
+  // Set up follow-up toggle event
+  document.getElementById('followUpDateCheck').addEventListener('change', function() {
+    document.getElementById('followUpDateContainer').style.display = this.checked ? 'block' : 'none';
+    
+    if (this.checked && !document.getElementById('followUpDate').value) {
+      // Set default follow-up date to 2 weeks from now
+      const followUpDate = new Date();
+      followUpDate.setDate(followUpDate.getDate() + 14);
+      document.getElementById('followUpDate').value = formatDateForInput(followUpDate);
+    }
+  });
+  
+  // Add action item button click event
+  document.getElementById('addActionItemBtn').addEventListener('click', function() {
+    showActionItemForm();
+  });
+  
+  // Preview email button click event
+  document.getElementById('previewEmailBtn').addEventListener('click', function() {
+    previewSessionEmail();
+  });
+  
+  // Send email button click event
+  document.getElementById('sendEmailBtn').addEventListener('click', function() {
+    sendSessionEmail();
+  });
+  
+  // Load action items if session is saved
+  if (sessionData.ID) {
+    loadActionItems();
+  } else {
+    document.getElementById('actionItemsContainer').innerHTML = `
+      <div style="text-align: center; padding: 1.5rem; color: var(--text-muted);">
+        Save the session first to add action items
+      </div>
+    `;
+  }
+}
+
+/**
+ * Load action items for current session
+ */
+function loadActionItems() {
+  document.getElementById('actionItemsContainer').innerHTML = `
+    <div style="display: flex; justify-content: center; padding: 2rem;">
+      <div class="loading-spinner" style="width: 30px; height: 30px;"></div>
+    </div>
+  `;
+  
+  google.script.run
+    .withSuccessHandler(function(actionItems) {
+      renderActionItems(actionItems);
+    })
+    .withFailureHandler(function(error) {
+      console.error('Error loading action items: ' + error);
+      document.getElementById('actionItemsContainer').innerHTML = `
+        <div style="text-align: center; padding: 1.5rem; color: var(--danger);">
+          Error loading action items: ${error}
+        </div>
+      `;
+    })
+    .getActionItemsForSession(sessionData.ID);
+}
+
+/**
+ * Render action items list
+ * @param {Array} actionItems - Action items array
+ */
+function renderActionItems(actionItems) {
+  const container = document.getElementById('actionItemsContainer');
+  
+  if (!actionItems || actionItems.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 1.5rem; color: var(--text-muted);">
+        No action items yet. Add your first action item above.
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = '';
+  
+  actionItems.forEach(item => {
+    const itemElement = document.createElement('div');
+    itemElement.className = 'action-item';
+    itemElement.innerHTML = `
+      <div class="action-item-header">
+        <div class="action-item-title">${item.Description}</div>
+        <div class="action-item-actions">
+          <button class="action-btn edit" title="Edit" onclick="editActionItem('${item.ID}')">
+            <i class="material-icons-round">edit</i>
+          </button>
+          <button class="action-btn delete" title="Delete" onclick="deleteActionItem('${item.ID}')">
+            <i class="material-icons-round">delete</i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="action-item-grid">
+        <div class="action-item-field">
+          <div class="action-item-label">Priority</div>
+          <div class="action-item-value">${item.Priority || 'Medium'}</div>
+        </div>
+        <div class="action-item-field">
+          <div class="action-item-label">Due Date</div>
+          <div class="action-item-value">${item.DueDate ? formatDate(item.DueDate) : 'Not set'}</div>
+        </div>
+        <div class="action-item-field">
+          <div class="action-item-label">Status</div>
+          <div class="action-item-value">${item.Status || 'Pending'}</div>
+        </div>
+      </div>
+    `;
+    
+    container.appendChild(itemElement);
+  });
+}
+
+/**
+ * Show action item form
+ * @param {string} [itemId] - Action item ID for editing
+ */
+function showActionItemForm(itemId) {
+  // Create modal if it doesn't exist
+  let modal = document.getElementById('actionItemModal');
+  
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'actionItemModal';
+    modal.className = 'modal';
+    
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="actionItemModalTitle">Add Action Item</h3>
+          <button id="closeActionItemModal" class="close-button">
+            <i class="material-icons-round">close</i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="actionItemForm">
+            <input type="hidden" id="actionItemId">
+            <div class="form-row">
+              <label for="actionItemDescription">Description</label>
+              <textarea id="actionItemDescription" rows="3" placeholder="Describe the action item..."></textarea>
+            </div>
+            <div class="form-row">
+              <label for="actionItemPriority">Priority</label>
+              <select id="actionItemPriority">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="actionItemDueDate">Due Date</label>
+              <input type="date" id="actionItemDueDate">
+            </div>
+            <div class="form-row">
+              <label for="actionItemStatus">Status</label>
+              <select id="actionItemStatus">
+                <option value="Pending" selected>Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="actionItemNotes">Notes (Optional)</label>
+              <textarea id="actionItemNotes" rows="2" placeholder="Add additional notes..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelActionItem" class="btn secondary">Cancel</button>
+          <button id="saveActionItem" class="btn primary">Save</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Add event listeners
+    document.getElementById('closeActionItemModal').addEventListener('click', closeActionItemModal);
+    document.getElementById('cancelActionItem').addEventListener('click', closeActionItemModal);
+    document.getElementById('saveActionItem').addEventListener('click', saveActionItem);
+  }
+  
+  // Reset form
+  document.getElementById('actionItemModalTitle').textContent = itemId ? 'Edit Action Item' : 'Add Action Item';
+  document.getElementById('actionItemForm').reset();
+  document.getElementById('actionItemId').value = itemId || '';
+  
+  // If editing, load action item data
+  if (itemId) {
+    google.script.run
+      .withSuccessHandler(function(item) {
+        if (item) {
+          document.getElementById('actionItemDescription').value = item.Description || '';
+          document.getElementById('actionItemPriority').value = item.Priority || 'Medium';
+          document.getElementById('actionItemDueDate').value = formatDateForInput(item.DueDate);
+          document.getElementById('actionItemStatus').value = item.Status || 'Pending';
+          document.getElementById('actionItemNotes').value = item.Notes || '';
+        }
+      })
+      .withFailureHandler(function(error) {
+        console.error('Error loading action item: ' + error);
+        showError("Error loading action item: " + error);
+      })
+      .getActionItemById(itemId);
+  }
+  
+  // Show modal
+  modal.classList.add('active');
+}
+
+/**
+ * Close action item modal
+ */
+function closeActionItemModal() {
+  const modal = document.getElementById('actionItemModal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+}
+
+/**
+ * Save action item
+ */
+function saveActionItem() {
+  const itemId = document.getElementById('actionItemId').value;
+  const description = document.getElementById('actionItemDescription').value.trim();
+  
+  if (!description) {
+    alert('Please enter a description for the action item.');
+    return;
+  }
+  
+  // Collect form data
+  const actionItemData = {
+    ID: itemId || null,
+    SessionID: sessionData.ID,
+    Description: description,
+    Priority: document.getElementById('actionItemPriority').value,
+    Status: document.getElementById('actionItemStatus').value,
+    DueDate: document.getElementById('actionItemDueDate').value || null,
+    Notes: document.getElementById('actionItemNotes').value || ''
+  };
+  
+  // Close modal
+  closeActionItemModal();
+  
+  // Show loading
+  const container = document.getElementById('actionItemsContainer');
+  container.innerHTML = `
+    <div style="display: flex; justify-content: center; padding: 2rem;">
+      <div class="loading-spinner" style="width: 30px; height: 30px;"></div>
+    </div>
+  `;
+  
+  // Save action item
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result && result.success) {
+        // Reload action items
+        loadActionItems();
+      } else {
+        console.error('Error saving action item:', result);
+        showError("Error saving action item: " + (result && result.message ? result.message : "Unknown error"));
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Error saving action item: ' + error);
+      showError("Error saving action item: " + error);
+      loadActionItems(); // Reload anyway
+    })
+    .saveActionItem(actionItemData);
+}
+
+/**
+ * Edit action item
+ * @param {string} itemId - Action item ID
+ */
+function editActionItem(itemId) {
+  event.stopPropagation();
+  showActionItemForm(itemId);
+}
+
+/**
+ * Delete action item
+ * @param {string} itemId - Action item ID
+ */
+function deleteActionItem(itemId) {
+  event.stopPropagation();
+  
+  if (!confirm('Are you sure you want to delete this action item?')) {
+    return;
+  }
+  
+  // Show loading
+  const container = document.getElementById('actionItemsContainer');
+  container.innerHTML = `
+    <div style="display: flex; justify-content: center; padding: 2rem;">
+      <div class="loading-spinner" style="width: 30px; height: 30px;"></div>
+    </div>
+  `;
+  
+  // Delete action item
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result && result.success) {
+        // Reload action items
+        loadActionItems();
+      } else {
+        console.error('Error deleting action item:', result);
+        showError("Error deleting action item: " + (result && result.message ? result.message : "Unknown error"));
+        loadActionItems(); // Reload anyway
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Error deleting action item: ' + error);
+      showError("Error deleting action item: " + error);
+      loadActionItems(); // Reload anyway
+    })
+    .deleteActionItem(itemId);
+}
+
+/**
+ * Format date for HTML input value
+ * @param {string|Date} date - Date to format
+ * @return {string} Formatted date string in YYYY-MM-DD format
+ */
+function formatDateForInput(date) {
+  if (!date) return '';
+  
+  try {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+  } catch (e) {
+    console.error('Error formatting date: ' + e);
+    return '';
+  }
+}
+
+/**
+ * Format date for display
+ * @param {string|Date} date - Date to format
+ * @return {string} Formatted date string
+ */
+function formatDate(date) {
+  if (!date) return '';
+  
+  try {
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  } catch (e) {
+    console.error('Error formatting date: ' + e);
+    return '';
+  }
+}
+
+/**
+ * Get initials from a name
+ * @param {string} name - Full name
+ * @return {string} Initials (1-2 characters)
+ */
+function getInitials(name) {
+  if (!name) return '??';
+  
+  const parts = name.trim().split(/\s+/);
+  
+  if (parts.length === 1) {
+    return parts[0].charAt(0).toUpperCase();
+  }
+  
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+/**
+ * Debounce function to limit execution frequency
+ * @param {Function} func - Function to debounce
+ * @param {number} wait - Wait time in milliseconds
+ * @return {Function} Debounced function
+ */
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+</script> 
+</body> 
+</html> 
